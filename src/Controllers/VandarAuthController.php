@@ -4,6 +4,7 @@ namespace Vandar\VandarCashier\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use SebastianBergmann\CodeCoverage\Report\PHP;
 use Vandar\VandarCashier\Models\VandarAuthList;
 
@@ -26,33 +27,30 @@ class VandarAuthController extends Controller
 
     public static function refreshToken($refreshToken = null)
     {
-        ($refreshToken) ?? $refreshToken = VandarAuthList::get('refresh_token')->last();
+        ($refreshToken) ?? $refreshToken = (VandarAuthList::get('refresh_token')->last())->refresh_token;
 
-        #2 Send request to  API address with refresh_token
-        $jsonResponse = "{name : amir}";
+        $response = Http::asForm()->post('https://api.vandar.io/v3/refreshtoken', [
+            'refreshtoken' => $refreshToken
+        ]);
 
-        // $jsonResponse = file_get_contents(dirname(__DIR__, 4) . '/packageData.json');
 
-        $objectResponse = json_decode($jsonResponse);
 
-        self::addAuthData($objectResponse);
+        self::addAuthData($response);
 
-        return $jsonResponse;
+        return $response;
     }
 
 
     public static function login()
     {
-        # Get data from HTTP Request with $_ENV['VANDAR_USERNAME']    $_ENV['VANDAR_PASSWORD']
-        $jsonResponse = "{name : amir}";
+        $response = Http::asForm()->post('https://api.vandar.io/v3/login', [
+            'mobile' => $_ENV['VANDAR_USERNAME'],
+            'password' => $_ENV['VANDAR_PASSWORD'],
+        ]);
 
-        // $jsonResponse = file_get_contents(dirname(__DIR__, 4) . '/packageData.json');
+        self::addAuthData($response);
 
-        $objectResponse = json_decode($jsonResponse);
-
-        self::addAuthData($objectResponse);
-
-        return $jsonResponse;
+        return $response;
     }
 
 
@@ -64,17 +62,17 @@ class VandarAuthController extends Controller
     }
 
 
-    private static function addAuthData($objectResponse)
+    private static function addAuthData($response)
     {
         $auth_id = (VandarAuthList::get('id')->last())['id'] ?? 1;
 
         VandarAuthList::updateOrCreate(
             array('id' => $auth_id),
             [
-                'token_type' =>  $objectResponse->token_type,
-                'expires_in' =>  $objectResponse->expires_in + time(),
-                'access_token' =>  $objectResponse->access_token,
-                'refresh_token' =>  $objectResponse->refresh_token,
+                'token_type' =>  $response['token_type'],
+                'expires_in' =>  $response['expires_in'] + time(),
+                'access_token' =>  $response['access_token'],
+                'refresh_token' =>  $response['refresh_token'],
             ]
         );
     }
