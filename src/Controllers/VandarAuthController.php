@@ -10,6 +10,7 @@ use Vandar\VandarCashier\Models\VandarAuthList;
 
 class VandarAuthController extends Controller
 {
+    const LOGIN_BASE_URL = 'https://api.vandar.io/v3';
 
     public static function getToken()
     {
@@ -29,10 +30,9 @@ class VandarAuthController extends Controller
     {
         ($refreshToken) ?? $refreshToken = (VandarAuthList::get('refresh_token')->last())->refresh_token;
 
-        $response = Http::asForm()->post('https://api.vandar.io/v3/refreshtoken', [
+        $response = Http::asForm()->post(self::LOGIN_BASE_URL . '/refreshtoken', [
             'refreshtoken' => $refreshToken
         ]);
-
 
 
         self::addAuthData($response);
@@ -43,7 +43,7 @@ class VandarAuthController extends Controller
 
     public static function login()
     {
-        $response = Http::asForm()->post('https://api.vandar.io/v3/login', [
+        $response = Http::asForm()->post(self::LOGIN_BASE_URL . '/login', [
             'mobile' => $_ENV['VANDAR_USERNAME'],
             'password' => $_ENV['VANDAR_PASSWORD'],
         ]);
