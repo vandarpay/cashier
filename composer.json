@@ -1,0 +1,27 @@
+{
+    "name": "vandar/vandar-cashier",
+    "description": "Official Vander package for easier access to Vander documents",
+    "type": "library",
+    "license": "MIT",
+    "authors": [{
+        "name": "Vandar",
+        "email": "info@vandar.io"
+    }],
+    "minimum-stability": "dev",
+
+    "require": {},
+
+    "autoload": {
+        "psr-4": {
+            "Vandar\\VandarCashier\\": "src/"
+        }
+    },
+
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Vandar\\VandarCashier\\VandarCashierServiceProvider"
+            ]
+        }
+    }
+}
