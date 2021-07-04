@@ -19,7 +19,10 @@ First, install the Cacshier package for Vandar, using the composer package manag
 
 Vandar Cashier package registers its own database migration directory, so remember to migrate your database after installing the package.
 
-The Vandar Cashier migrations will add a table to your database to store your authentication in the database. It will make your access to authentication values easier
+The Vandar Cashier migrations will add 2 tables into your database to save:
+1. Your authentication data (for easy access to authentication data)
+2. All transaction data that you get from Vandar response (For a detailed review of all transactions)
+
 
 
 At first you need to publish the migrations by using `vendor:publish` artisan command and then migrate it:
@@ -56,8 +59,30 @@ VANDAR_API_KEY=
 
 
 
-#### #Usage
+#### #Use Package
+To use Vandar package in your project, you must **use** it everywhere you want work with it:
 
+```php
+
+use Vandar\VandarCashier;
+
+```
+
+#### #Model
+When you make mdoels for your project, you need to put following Method to accept the polymorphic-relations in the database
+
+```php
+
+ public function vandar_payment()
+    {
+        return $this->morphMany(VandarPayment::class, 'vandar_paymentable');
+    }
+
+```
+
+#### #**Usage**
+
+#### #Authentication
 ```php
 
 VandarAuth::token() // get token
@@ -69,6 +94,19 @@ VandarAuth::isTokenValid() // check the token validation (expired or no?)
 VandarAuth::refreshToken() // refresh the token and get new one
 
 ```
+
+#### #Authentication
+```php
+VandarIPG::pay($params) // pass **$payment** parameter that mentioned in the Vandar Document to do the all payment process.
+
+// following methods will be use automatically when you use the **VandarIPG::pay($params)** But if you want to do the other process manually, you can use these methods:
+
+VandarIPG::addTransactionData() // Add transaction data that get from Vandar into Database
+VandarIPG::verifyPayment()	// Verify the payment status that return from payment page 
+VandarIPG::verifyTransaction() // Verify the transaction finally and Complete the transaction process
+
+```
+
 
 #### #Credits
 

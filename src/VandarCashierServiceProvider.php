@@ -16,6 +16,8 @@ class VandarCashierServiceProvider extends ServiceProvider
         //
     }
 
+
+
     /**
      * Bootstrap services.
      *
@@ -23,15 +25,16 @@ class VandarCashierServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        /**
-         * Loading and Publishing migration files
-         */
-        $this->loadMigrationsFrom(__DIR__ . '/../migrations');
+        $migrations_path =  __DIR__ . '/../migrations/';
+        
+        
+        $this->loadMigrationsFrom($migrations_path);
+
+        // php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=migrations
         $this->publishes([
-            __DIR__ . '/../migrations/' => database_path('migrations')
+            $migrations_path => database_path('migrations')
         ], 'migrations');
     }
 }
 
 
-///  publish ->  php artisan vendor:publish --tag=Vandar\VandarCashier\VandarCashierServiceProvider   ///
