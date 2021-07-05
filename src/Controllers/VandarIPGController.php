@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Vandar\VandarCashier\Models\VandarPayment;
+use Vandar\VandarCashier\VandarIPG;
 
 class VandarIPGController extends Controller
 {
@@ -30,7 +31,7 @@ class VandarIPGController extends Controller
             'amount' => $params['amount'],
             'callback_url' => $params['callback_url'] ?? ($_ENV['VANDAR_CALLBACK_URL']),
             'mobile_number' => $params['mobile_number'] ?? NULL,
-            'factorNumber' => $params['factorNumber'] ?? NULL,
+            'factorNumber' => $params['factor_number'] ?? NULL,
             'description' => $params['description'] ?? NULL,
             'valid_card_number' => $params['valid_card_number'] ?? NULL,
         ]);
@@ -39,17 +40,16 @@ class VandarIPGController extends Controller
             dd($response['errors']);
 
 
-        self::$payment_token = $response['token'];
+        $payment_token = $response['token'];
+        $params['token'] = $payment_token;
 
-        $token_status = ['token' => self::$payment_token, 'status' => 0];
-        self::$data = array_merge($params, $token_status);
-
-
-        VandarPayment::create(self::$data);
-
+        // dd($params);
+        VandarPayment::create($params);
 
         # TODO => check Redirection (check "return")
-        return redirect(self::IPG_BASE_URL . '/v3/' . self::$payment_token);
+        dd(self::IPG_BASE_URL . '/v3/' . $payment_token);
+        // return redirect()->away(self::IPG_BASE_URL . '/v3/' . $payment_token);
+        // return redirect(self::IPG_BASE_URL . '/v3/' . $payment_token);
     }
 
 
@@ -60,21 +60,33 @@ class VandarIPGController extends Controller
      *
      * @return method verifyTransaction()
      */
-    public static function addTransactionData()
+    public static function addTransactionData($payment_token)
     {
         $response = Http::asForm()->post(self::IPG_BASE_URL . '/api/ipg/2step/transaction', [
             'api_key' => $_ENV['VANDAR_API_KEY'],
-            'token' => self::$payment_token,
+            'token' => $payment_token,
         ]);
 
+        if (!$response['status']) {
+            VandarPayment::where('token', $payment_token)
+                ->update([
+                    'errors' => $response['errors'],
+                    'status' => 'FAILED'
+                ]);
+
+            dd($response['errors']);
+        }
+
         $response = (array)json_decode($response);
-        self::$data = array_merge(self::$data, $response);
 
-        VandarPayment::where('token', self::$payment_token)
-            ->update(self::$data);
+        # prepare response to compatible with DB
+        $response = self::prepareStep3($response);
+
+        VandarPayment::where('token', $payment_token)
+            ->update($response);
 
 
-        return self::verifyTransaction();
+        return self::verifyTransaction($payment_token);
     }
 
 
@@ -84,22 +96,35 @@ class VandarIPGController extends Controller
      *
      * @return bool 1:SUCCEED
      */
-    public static function verifyTransaction()
+    public static function verifyTransaction($payment_token)
     {
         $response = Http::asForm()->post(self::IPG_BASE_URL . '/api/v3/verify', [
             'api_key' => $_ENV['VANDAR_API_KEY'],
-            'token' => self::$payment_token,
+            'token' => $payment_token,
         ]);
 
+        if (!$response['status']) {
+            VandarPayment::where('token', $payment_token)
+                ->update([
+                    'errors' => $response['errors'],
+                    'status' => 'FAILED'
+                ]);
 
-        # Add response parameters into DB
+            dd($response['errors']);
+        }
+
         $response = (array)json_decode($response);
-        self::$data = array_merge(self::$data, $response);
 
-        VandarPayment::where('token', self::$payment_token)
-            ->update(self::$data);
+        # prepare response to compatible with DB
+        $response = self::prepareStep4($response);
 
-        return 1;
+        $response['status'] = 'SUCCEED';
+
+        VandarPayment::where('token', $payment_token)
+            ->update($response);
+
+        echo "پرداخت با موفقیت انجام شد";
+        return;
     }
 
 
@@ -111,13 +136,83 @@ class VandarIPGController extends Controller
      */
     public static function verifyPayment()
     {
-        $payment_status = (\Request::query())['payment_status'];
+        $response = (\Request::query());
         # TODO => update payment status in database
-        if ($payment_status != 'OK') {
-            echo "پرداخت موفقیت آمیز نبود";
+        if ($response['payment_status'] != 'OK') {
+
+            VandarPayment::where('token', $response['token'])
+                ->update([
+                    'errors' => 'failed payment',
+                    'status' => 'FAILED'
+                ]);
+
+
+            echo "فرایند پرداخت با خطا مواجه شد <br> لطفا مجدداً تلاش کنید";
+
             return;
         }
 
-        return self::addTransactionData();
+        return self::addTransactionData($response['token']);
+    }
+
+
+
+
+
+    private static function prepareStep3($array)
+    {
+        // transId / refnumber / trackingCode / factorNumber / mobile / cardNumber / paymentData / CID
+        
+        $array['real_amount'] = $array['realAmount'];
+        unset($array['realAmount']);
+
+        $array['trans_id'] = $array['transId'];
+        unset($array['transId']);
+
+        $array['ref_number'] = $array['refnumber'];
+        unset($array['refnumber']);
+
+        $array['tracking_code'] = $array['trackingCode'];
+        unset($array['trackingCode']);
+
+        $array['factor_number'] = $array['factorNumber'];
+        unset($array['factorNumber']);
+
+        $array['mobile_number'] = $array['mobile'];
+        unset($array['mobile']);
+
+        $array['card_number'] = $array['cardNumber'];
+        unset($array['cardNumber']);
+
+        $array['payment_start'] = $array['paymentStart'];
+        unset($array['paymentStart']);
+
+
+        return $array;
+    }
+
+    private static function prepareStep4($array)
+    {
+        // realAmount / transId / factorNumber / mobile / cardNumber / paymentDate
+
+        $array['trans_id'] = $array['transId'];
+        unset($array['transId']);
+
+        $array['factor_number'] = $array['factorNumber'];
+        unset($array['factorNumber']);
+
+        $array['mobile_number'] = $array['mobile'];
+        unset($array['mobile']);
+
+        $array['card_number'] = $array['cardNumber'];
+        unset($array['cardNumber']);
+
+        $array['payment_date'] = $array['paymentDate'];
+        unset($array['paymentDate']);
+
+        $array['real_amount'] = $array['realAmount'];
+        unset($array['realAmount']);
+
+        return $array;
     }
 }

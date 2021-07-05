@@ -7,7 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class VandarPayment extends Model
 {
+    protected $guarded =['id'];
+    
 
+    public function vandar_payable()
+    {
+        return $this->morphTo();
+    }
 
     public function vandar_paymentable()
     {

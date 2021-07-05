@@ -14,29 +14,10 @@ class VandarIPG
      * 
      * @param associative_array array of payment parameters
      */
-    public  static function pay(array $params)
+    public  static function pay(array $params, $payableId = null, $payableType = null, $paymentableId = null, $paymentableType = null)
     {
         VandarIPGController::pay($params);
     }
-
-
-    /**
-     * Get Transaction data by sending TOKEN & API_KEY & save them into Database
-     */
-    public static function addTransactionData()
-    {
-        VandarIPGController::addTransactionData();
-    }
-
-
-    /**
-     *  Verify the transaction at the end by sending TOKEN & API_KEY
-     */
-    public static function verifyTransaction()
-    {
-        VandarIPGController::verifyTransaction();
-    }
-
 
 
     /**
