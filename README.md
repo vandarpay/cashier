@@ -69,8 +69,7 @@ use Vandar\VandarCashier;
 ```
 
 #### #Model
-When you make mdoels for your project, you need to put following Method to accept the polymorphic-relations in the database
-
+VandarPayment Model and table, use the Polyphorphism relations, so if you want to add and use new model in your project that related to VandarPayment table, you must put following method in your Model:
 ```php
 
  public function vandar_payment()
@@ -99,11 +98,7 @@ VandarAuth::refreshToken() // refresh the token and get new one
 ```php
 VandarIPG::pay($params) // pass **$payment** parameter that mentioned in the Vandar Document to do the all payment process.
 
-// following methods will be use automatically when you use the **VandarIPG::pay($params)** But if you want to do the other process manually, you can use these methods:
-
-VandarIPG::addTransactionData() // Add transaction data that get from Vandar into Database
-VandarIPG::verifyPayment()	// Verify the payment status that return from payment page 
-VandarIPG::verifyTransaction() // Verify the transaction finally and Complete the transaction process
+VandarIPG::verifyPayment()	// to Verify the payment after return from payment page, you must use this method in the {callback page} that you added its URL(callback_url) in your Vandar Account to verify and continue the transaction process 
 
 ```
 
