@@ -24,7 +24,7 @@ class VandarIPGController extends Controller
      * 
      * @return  redirect  Payment Page
      */
-    public static function pay(array $params)
+    public static function pay(array $params = null, $payable_type = null, $payable_id = null, $paymentable_type = null, $paymentable_id = null)
     {
         $response = Http::asForm()->post(self::IPG_BASE_URL . '/api/v3/send', [
             'api_key' => $_ENV['VANDAR_API_KEY'],
@@ -39,9 +39,16 @@ class VandarIPGController extends Controller
         if (!$response['status'])
             dd($response['errors']);
 
+        $morphs = [
+            'vandar_payable_type' => $payable_type,
+            'vandar_payable_id' => $payable_id,
+            'vandar_paymentable_type' => $paymentable_type,
+            'vandar_paymentable_id' => $paymentable_id
+        ];
 
         $payment_token = $response['token'];
         $params['token'] = $payment_token;
+        $params = array_merge($params, $morphs);
 
         // dd($params);
         VandarPayment::create($params);
@@ -162,7 +169,7 @@ class VandarIPGController extends Controller
     private static function prepareStep3($array)
     {
         // transId / refnumber / trackingCode / factorNumber / mobile / cardNumber / paymentData / CID
-        
+
         $array['real_amount'] = $array['realAmount'];
         unset($array['realAmount']);
 
