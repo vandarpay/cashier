@@ -63,19 +63,23 @@ VANDAR_API_KEY=
 To use Vandar package in your project, you must **use** it everywhere you want work with it:
 
 ```php
-
 use Vandar\VandarCashier;
 
 ```
 
 #### #Model
-VandarPayment Model and table, use the Polyphorphism relations, so if you want to add and use new model in your project that related to VandarPayment table, you must put following method in your Model:
-```php
+VandarPayment Model and table, use the Polyphorphism relations
 
- public function vandar_payment()
-    {
-        return $this->morphMany(VandarPayment::class, 'vandar_paymentable');
-    }
+**payable**(person who pay)
+    
+**paymentable**(what the payment was done for)
+
+So if you want, use one of these traits(As needed) in your Model:
+
+```php
+use Payable;
+
+use Paymentable;
 
 ```
 
@@ -83,7 +87,6 @@ VandarPayment Model and table, use the Polyphorphism relations, so if you want t
 
 #### #Authentication
 ```php
-
 VandarAuth::token() // get token
 
 VandarAuth::login() // login to Vandar account and get token
