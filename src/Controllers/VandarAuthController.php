@@ -22,21 +22,27 @@ class VandarAuthController extends Controller
         if (!self::isTokenValid($authData->expires_in))
             return self::refreshToken($authData->refresh_token);
 
+        # return
         return $authData->access_token;
     }
 
 
-    public static function refreshToken($refreshToken = null)
+    public static function refreshToken($refresh_token = null)
     {
-        $data = json_encode(['refreshtoken' => $refreshToken]);
-        ($refreshToken) ?? $refreshToken = (VandarAuthList::get('refresh_token')->last())->refresh_token;
+        
+        ($refresh_token) ?? $refresh_token = (VandarAuthList::get('refresh_token')->last())->refresh_token;
+                
+        // echo $refresh_token;
 
         $response = Http::asForm()->post(self::LOGIN_BASE_URL . '/refreshtoken', [
-            $data
+            'refreshtoken' => $refresh_token,
         ]);
+        
+        // dd(json_decode($response));
 
         self::addAuthData($response);
 
+        # return
         return $response;
     }
 
@@ -51,9 +57,8 @@ class VandarAuthController extends Controller
 
         self::addAuthData($response);
 
-        // return $response;
-        echo $response;
-        return;
+        # return
+        return $response;
     }
 
 
@@ -70,6 +75,7 @@ class VandarAuthController extends Controller
         $auth_id = (VandarAuthList::get('id')->last())['id'] ?? 1;
 
         $response = (array)json_decode($response);
+        // dd($response);
         $response['expires_in'] += time();
 
         VandarAuthList::updateOrCreate(array('id' => $auth_id), $response);

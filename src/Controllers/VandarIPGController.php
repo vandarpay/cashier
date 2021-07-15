@@ -62,43 +62,6 @@ class VandarIPGController extends Controller
 
 
     /**
-     * Retrieve Transaction data by sending {TOKEN & API_KEY} 
-     * Save them into Database
-     *
-     * @return method verifyTransaction()
-     */
-    public static function addTransactionData($payment_token)
-    {
-        $response = Http::asForm()->post(self::IPG_BASE_URL . '/api/ipg/2step/transaction', [
-            'api_key' => $_ENV['VANDAR_API_KEY'],
-            'token' => $payment_token,
-        ]);
-
-        if (!$response['status']) {
-            VandarPayment::where('token', $payment_token)
-                ->update([
-                    'errors' => $response['errors'],
-                    'status' => 'FAILED'
-                ]);
-
-            dd($response['errors']);
-        }
-
-        $response = (array)json_decode($response);
-
-        # prepare response to compatible with DB
-        $response = self::prepareStep3($response);
-
-        VandarPayment::where('token', $payment_token)
-            ->update($response);
-
-
-        return self::verifyTransaction($payment_token);
-    }
-
-
-
-    /**
      * Verify the all transaction by sending {TOKEN & API_KEY} 
      *
      * @return bool 1:SUCCEED
@@ -159,44 +122,11 @@ class VandarIPGController extends Controller
             return;
         }
 
-        return self::addTransactionData($response['token']);
+        return self::verifyTransaction($response['token']);
     }
 
 
 
-
-
-    private static function prepareStep3($array)
-    {
-        // transId / refnumber / trackingCode / factorNumber / mobile / cardNumber / paymentData / CID
-
-        $array['real_amount'] = $array['realAmount'];
-        unset($array['realAmount']);
-
-        $array['trans_id'] = $array['transId'];
-        unset($array['transId']);
-
-        $array['ref_number'] = $array['refnumber'];
-        unset($array['refnumber']);
-
-        $array['tracking_code'] = $array['trackingCode'];
-        unset($array['trackingCode']);
-
-        $array['factor_number'] = $array['factorNumber'];
-        unset($array['factorNumber']);
-
-        $array['mobile_number'] = $array['mobile'];
-        unset($array['mobile']);
-
-        $array['card_number'] = $array['cardNumber'];
-        unset($array['cardNumber']);
-
-        $array['payment_start'] = $array['paymentStart'];
-        unset($array['paymentStart']);
-
-
-        return $array;
-    }
 
     private static function prepareStep4($array)
     {
