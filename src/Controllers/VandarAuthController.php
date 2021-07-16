@@ -32,13 +32,9 @@ class VandarAuthController extends Controller
 
         ($refresh_token) ?? $refresh_token = (VandarAuthList::get('refresh_token')->last())->refresh_token;
 
-        // echo $refresh_token;
-
         $response = Http::asForm()->post(self::LOGIN_BASE_URL . '/refreshtoken', [
             'refreshtoken' => $refresh_token,
         ]);
-
-        // dd(json_decode($response));
 
         self::addAuthData($response);
 
@@ -54,10 +50,6 @@ class VandarAuthController extends Controller
             'mobile' => $_ENV['VANDAR_USERNAME'],
             'password' => $_ENV['VANDAR_PASSWORD']
         ]);
-
-        // dd($response);
-        $response = json_decode($response);
-        // dd($response);
 
         self::addAuthData($response);
 
@@ -80,7 +72,7 @@ class VandarAuthController extends Controller
         $auth_id = (VandarAuthList::get('id')->last())['id'] ?? 1;
 
         $response = (array)json_decode($response);
-        // dd($response);
+
         $response['expires_in'] += time();
 
         VandarAuthList::updateOrCreate(array('id' => $auth_id), $response);
