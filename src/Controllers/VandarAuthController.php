@@ -29,15 +29,15 @@ class VandarAuthController extends Controller
 
     public static function refreshToken($refresh_token = null)
     {
-        
+
         ($refresh_token) ?? $refresh_token = (VandarAuthList::get('refresh_token')->last())->refresh_token;
-                
+
         // echo $refresh_token;
 
         $response = Http::asForm()->post(self::LOGIN_BASE_URL . '/refreshtoken', [
             'refreshtoken' => $refresh_token,
         ]);
-        
+
         // dd(json_decode($response));
 
         self::addAuthData($response);
@@ -55,10 +55,15 @@ class VandarAuthController extends Controller
             'password' => $_ENV['VANDAR_PASSWORD']
         ]);
 
+        // dd($response);
+        $response = json_decode($response);
+        // dd($response);
+
         self::addAuthData($response);
 
         # return
         return $response;
+        // dd($response);
     }
 
 
