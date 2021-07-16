@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Vandar\VandarCashier\VandarAuth;
 
 class VandarBusinessController extends Controller
+
 {
 
     /**

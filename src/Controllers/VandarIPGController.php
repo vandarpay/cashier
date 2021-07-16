@@ -93,8 +93,8 @@ class VandarIPGController extends Controller
         VandarPayment::where('token', $payment_token)
             ->update($response);
 
-        echo "پرداخت با موفقیت انجام شد";
-        return;
+        # return $response;
+        dd($response);
     }
 
 

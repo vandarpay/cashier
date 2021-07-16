@@ -38,15 +38,25 @@ class VandarBillsController extends Controller
      *
      * @return array $data
      */
-    public static function getBills(int $per_page = null, int $page = null, string $business = null)
+    public static function getBills($params)
     {
         $token = VandarAuth::token();
 
         $response = Http::withHeaders([
             'Authorization' => "Bearer {$token}",
         ])->get(self::BILLING_URL('transaction'), [
-            'per_page' => $per_page ?? 10,
-            'page' => $page ?? 1
+            $params['per_page'] => $per_page ?? 10,
+            $params['page'] => $page ?? 1,
+            $params['fromDate'] => $params['fromDate'] ?? NULL,
+            $params['toDate'] => $params['toDate'] ?? NULL,
+            $params['statusKind'] => $params['statusKind'] ?? NULL, # transactions|settlements
+            $params['status'] => $params['status'] ?? NULL,  # succeed|failed|pending|canceled 
+            $params['channel'] => $params['channel'] ?? NULL, # ipg|form|p2p|subscription|settlements
+            $params['formId'] => $params['formId'] ?? NULL,
+            $params['ref_id'] => $params['ref_id'] ?? NULL,
+            $params['tracking_code'] => $params['tracking_code'] ?? NULL,
+            $params['q'] => $params['q'] ?? NULL
+
         ]);
 
         $data = json_decode($response)->data;
