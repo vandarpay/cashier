@@ -15,20 +15,20 @@ class CreateVandarSettlementsTable extends Migration
     {
         Schema::create('vandar_settlements', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->decimal('amount', 20, 0)->comment('Cuurency : TOMAN');
+            $table->string('settlement_id')->nullable();
+            $table->decimal('amount', 20, 0)->comment('Cuurency : RIAL');
             $table->string('iban');
             $table->string('iban_id')->nullable();
-            $table->string('track_id');
+            $table->uuid('track_id');
             $table->string('payment_number')->nullable();
-            $table->string('settlement_id')->nullable();
             $table->string('transaction_id')->nullable();
             $table->string('gateway_transaction_id')->nullable();
             $table->enum('status', ['INIT', 'PENDING', 'DONE', 'FAILED', 'CANCELED']);
-            $table->decimal('wallet', 20, 0)->nullable();
+            $table->decimal('wallet', 20, 0)->nullable()->comment('Cuurency : RIAL');;
             $table->date('settlement_date')->nullable();
             $table->time('settlement_time')->nullable();
             $table->string('notify_url')->nullable();
-            $table->string('errors');
+            $table->string('errors')->nullable();
             $table->timestamps();
         });
     }

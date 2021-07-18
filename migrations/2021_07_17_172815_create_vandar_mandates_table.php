@@ -5,7 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVandarSubscriptionsTable extends Migration
+class CreateVandarMandatesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,17 +14,17 @@ class CreateVandarSubscriptionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('vandar_subscriptions', function (Blueprint $table) {
+        Schema::create('vandar_mandates', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('token');
-            $table->string('subscription_code')->nullable();
-            $table->integer('bank_code');
-            $table->integer('count');
-            $table->integer('limit');
+            $table->string('authorization_id')->nullable();
             $table->string('name')->nullable();
             $table->string('mobile')->nullable();
             $table->string('email')->nullable();
+            $table->integer('count');
+            $table->decimal('limit', 20, 0)->comment('Cuurency : RIAL');
             $table->date('expiration_date');
+            $table->integer('bank_code');
             $table->boolean('is_active')->default(false);
             $table->json('errors')->nullable();
             $table->timestamps();
@@ -38,6 +38,6 @@ class CreateVandarSubscriptionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('vandar_subscriptions');
+        Schema::dropIfExists('vandar_mandates');
     }
 }

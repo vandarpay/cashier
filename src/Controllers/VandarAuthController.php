@@ -53,7 +53,6 @@ class VandarAuthController extends Controller
 
         self::addAuthData($response);
 
-        # return
         return $response;
         // dd($response);
     }

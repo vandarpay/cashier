@@ -2,10 +2,10 @@
 
 namespace Vandar\VandarCashier;
 
-use Vandar\VandarCashier\Controllers\VandarSubscriptionController;
+use Vandar\VandarCashier\Controllers\VandarMandateController;
 
 
-class VandarSubscription
+class VandarMandate
 {
     /**
      * Store new subscription
@@ -15,7 +15,7 @@ class VandarSubscription
      */
     public static function store($params)
     {
-        VandarSubscriptionController::store($params);
+        VandarMandateController::store($params);
     }
 
 
@@ -26,7 +26,7 @@ class VandarSubscription
      */
     public static function list()
     {
-        VandarSubscriptionController::list();
+        VandarMandateController::list();
     }
 
 
@@ -39,7 +39,7 @@ class VandarSubscription
      */
     public static function show($subscription_code)
     {
-        VandarSubscriptionController::show($subscription_code);
+        VandarMandateController::show($subscription_code);
     }
 
 
@@ -53,7 +53,7 @@ class VandarSubscription
      */
     public static function revoke($subscription_code)
     {
-        VandarSubscriptionController::revoke($subscription_code);
+        VandarMandateController::revoke($subscription_code);
     }
 
     /**
@@ -61,6 +61,6 @@ class VandarSubscription
      */
     public static function verifySubscription()
     {
-        VandarSubscriptionController::verifySubscription();
+        VandarMandateController::verifySubscription();
     }
 }

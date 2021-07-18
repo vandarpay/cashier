@@ -18,8 +18,8 @@ class CreateVandarPaymentsTable extends Migration
             $table->string('token');
             $table->nullableMorphs('vandar_payable', 'payable');
             $table->nullableMorphs('vandar_paymentable', 'paymentable');
-            $table->decimal('amount', 20, 0);
-            $table->decimal('real_amount', 20, 0)->nullable();
+            $table->decimal('amount', 20, 0)->comment('Cuurency : RIAL');
+            $table->decimal('real_amount', 20, 0)->nullable()->comment('Cuurency : RIAL');
             $table->decimal('wage', 20, 0)->nullable();
             $table->enum('status', ['INIT', 'SUCCEED', 'FAILED'])->comment('0:INIT 1:SUCCEED 2:FAILED');
             $table->string('mobile_number')->nullable();

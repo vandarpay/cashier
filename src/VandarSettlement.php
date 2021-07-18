@@ -3,7 +3,6 @@
 namespace Vandar\VandarCashier;
 
 use Illuminate\Http\Request;
-use Vandar\VandarCashier\Controllers\VandarIPGController;
 use Illuminate\Support\Facades\Http;
 use Vandar\VandarCashier\Controllers\VandarSettlementController;
 
@@ -15,18 +14,19 @@ class VandarSettlement
         VandarSettlementController::store($params);
     }
 
-    public static function getDetails($params)
+    public static function show($params)
     {
-        VandarSettlementController::getDetails($params);
+        VandarSettlementController::show($params);
     }
 
-    public static function getList($per_page = 10, $page = 1)
+    public static function list($per_page = 10, $page = 1)
     {
-        VandarSettlementController::getList($per_page, $page);
+        VandarSettlementController::list($per_page, $page);
     }
 
     public static function cancel($params)
     {
         VandarSettlementController::cancel($params);
     }
+
 }

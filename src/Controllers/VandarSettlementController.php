@@ -20,6 +20,9 @@ class VandarSettlementController extends Controller
      */
     public static function store($params)
     {
+        VandarSettlement::create($params);
+        $params['amount'] /= 10; // convert RIAL to TOMAN (for sending request)
+
         $response = Http::withToken(VandarAuth::token())->post(self::SETTLEMENT_BASE_URL('/store', 'v3'), [
             'amount' => $params['amount'],
             'iban' => $params['iban'],
@@ -33,9 +36,16 @@ class VandarSettlementController extends Controller
         if (!$response->status)
             dd($response->error);
 
+        $response->settlement_id = $response->id;
+        unset($response->id);
+
         $data = $response->data->settlement[0];
 
-        // return $response;
+        VandarSettlement::where('track_id', $data->track_id)
+            ->update([$response]);
+
+
+        # return $response;
         dd($data);
     }
 
@@ -47,7 +57,7 @@ class VandarSettlementController extends Controller
      * @param int $settlement_id
      * @return array settlement details
      */
-    public static function getDetails($settlement_id)
+    public static function show($settlement_id)
     {
         $response = Http::withToken(VandarAuth::token())->get(self::SETTLEMENT_BASE_URL("/$settlement_id"));
 
@@ -63,7 +73,7 @@ class VandarSettlementController extends Controller
      * @param int $page
      * @return array List of settlements lsit
      */
-    public static function getList($per_page, $page)
+    public static function list($per_page, $page)
     {
         $response = Http::withToken(VandarAuth::token())->get(self::SETTLEMENT_BASE_URL(), [
             'per_page' => $per_page,

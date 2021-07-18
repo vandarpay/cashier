@@ -2,13 +2,13 @@
 
 namespace Vandar\VandarCashier\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Vandar\VandarCashier\VandarAuth;
 use Illuminate\Support\Facades\Http;
 use Vandar\VandarCashier\Models\VandarSubscription;
 
-class VandarSubscriptionController extends Controller
+class VandarMandateController extends Controller
 {
     const REDIRECT_URL = 'https://subscription.vandar.io/authorizations/';
 
@@ -53,7 +53,7 @@ class VandarSubscriptionController extends Controller
             'Authorization' => "Bearer {$access_token}",
             'Accept' => 'application/json',
         ])->post(self::SUBSCRIPTION_BASE_URL('/store'), [
-            'bank_code' => $_ENV['VANDAR_BANK_CODE'],
+            'bank_code' => $params['VANDAR_BANK_CODE'],
             'mobile' => $params['mobile'],
             'callback_url' => $_ENV['VANDAR_CALLBACK_URL'],
             'count' => $params['count'],
@@ -141,6 +141,7 @@ class VandarSubscriptionController extends Controller
         # return $response;
         dd($response);
     }
+
 
 
 
