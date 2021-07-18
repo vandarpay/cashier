@@ -35,8 +35,8 @@ class VandarSettlementController extends Controller
 
         $data = $response->data->settlement[0];
 
-        return $response;
-        // dd($data);
+        // return $response;
+        dd($data);
     }
 
 
@@ -108,10 +108,11 @@ class VandarSettlementController extends Controller
 
 
     /**
-     * Undocumented function
+     * Prepare Settlement Url for sending request
      *
      * @param string $param(parameters for adding at the end of the request)
      * @param string $version(Vandar API version)
+     * 
      * @return string SETTLEMENT_BASE_URL
      */
     private static function SETTLEMENT_BASE_URL($param = null, $version = 'v2.1')

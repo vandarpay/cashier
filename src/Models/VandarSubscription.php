@@ -1,0 +1,12 @@
+<?php
+
+namespace Vandar\VandarCashier\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class VandarSubscription extends Model
+{
+    protected $guarded = ['id'];
+
+}

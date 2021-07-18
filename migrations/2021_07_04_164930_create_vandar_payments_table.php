@@ -34,7 +34,7 @@ class CreateVandarPaymentsTable extends Migration
             $table->string('payment_start')->nullable();
             $table->dateTime('payment_date')->nullable();
             $table->string('message')->nullable();
-            $table->string('errors')->nullable();
+            $table->json('errors')->nullable();
             $table->timestamps();
         });
     }

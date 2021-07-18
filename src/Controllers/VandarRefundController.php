@@ -58,8 +58,7 @@ class VandarRefundController extends Controller
     /**
      * Prepare Business Url for sending request
      *
-     * @param string|null $business
-     * @param string|null $transaction_id
+     * @param array $params
      * 
      * @return string $url
      */

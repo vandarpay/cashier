@@ -12,7 +12,6 @@ class VandarIPGController extends Controller
 {
     const IPG_BASE_URL = "https://ipg.vandar.io";
     public static $data;
-    private static $payment_token;
 
 
     /**
@@ -76,7 +75,7 @@ class VandarIPGController extends Controller
         if (!$response['status']) {
             VandarPayment::where('token', $payment_token)
                 ->update([
-                    'errors' => $response['errors'],
+                    'errors' => json_encode($response['errors']),
                     'status' => 'FAILED'
                 ]);
 
@@ -101,8 +100,7 @@ class VandarIPGController extends Controller
     /**
      * Check the payment status at the {CallBack Page}
      *
-     * @return string show message if payment is not successfull
-     * @return method addTransactionData()
+     * @return method verifyTransaction()
      */
     public static function verifyPayment()
     {
@@ -112,7 +110,7 @@ class VandarIPGController extends Controller
 
             VandarPayment::where('token', $response['token'])
                 ->update([
-                    'errors' => 'failed payment',
+                    'errors' => json_encode('failed payment'),
                     'status' => 'FAILED'
                 ]);
 
