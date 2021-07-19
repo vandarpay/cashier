@@ -17,6 +17,8 @@ class CreateVandarSettlementsTable extends Migration
             $table->bigIncrements('id');
             $table->string('settlement_id')->nullable();
             $table->decimal('amount', 20, 0)->comment('Cuurency : RIAL');
+            $table->decimal('amount_toman', 20, 0)->comment('Cuurency : TOMAN')->nullable();
+            $table->decimal('wage_toman', 20, 0)->comment('Cuurency : TOMAN')->nullable();
             $table->string('iban');
             $table->string('iban_id')->nullable();
             $table->uuid('track_id');
@@ -24,9 +26,12 @@ class CreateVandarSettlementsTable extends Migration
             $table->string('transaction_id')->nullable();
             $table->string('gateway_transaction_id')->nullable();
             $table->enum('status', ['INIT', 'PENDING', 'DONE', 'FAILED', 'CANCELED']);
-            $table->decimal('wallet', 20, 0)->nullable()->comment('Cuurency : RIAL');;
+            $table->decimal('wallet', 20, 0)->nullable()->comment('Cuurency : RIAL');
+            $table->boolean('is_instant')->default(false);
             $table->date('settlement_date')->nullable();
             $table->time('settlement_time')->nullable();
+            $table->date('settlement_date_jalali')->nullable();
+            $table->json('prediction')->nullable();
             $table->string('notify_url')->nullable();
             $table->string('errors')->nullable();
             $table->timestamps();

@@ -9,25 +9,22 @@ use Vandar\VandarCashier\VandarAuth;
 
 class VandarBillsController extends Controller
 {
+    const BASE_BILLING_URL = 'https://api.vandar.io/v2/business/';
 
     /**
      * Get Wallet Balance
      *
      * @return array $data
      */
-    public static function balance(string $business = null)
+    public static function balance()
     {
-        $token = VandarAuth::token();
+        $response = self::request('balance');
 
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$token}",
-        ])->get(self::BILLING_URL('balance'));
+        if ($response->status() != 200)
+            dd($response->object()->error);
 
-        $data = json_decode($response)->data;
-
-        # return
-        dd($data);
-        // return $data;
+        # return $response->object();
+        dd($response->object()->data);
     }
 
 
@@ -38,50 +35,47 @@ class VandarBillsController extends Controller
      *
      * @return array $data
      */
-    public static function getBills($params)
+    public static function list($params)
     {
-        $token = VandarAuth::token();
+        $response = self::request('transaction', $params);
 
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$token}",
-        ])->get(self::BILLING_URL('transaction'), [
-            $params['per_page'] => $per_page ?? 10,
-            $params['page'] => $page ?? 1,
-            $params['fromDate'] => $params['fromDate'] ?? NULL,
-            $params['toDate'] => $params['toDate'] ?? NULL,
-            $params['statusKind'] => $params['statusKind'] ?? NULL, # transactions|settlements
-            $params['status'] => $params['status'] ?? NULL,  # succeed|failed|pending|canceled 
-            $params['channel'] => $params['channel'] ?? NULL, # ipg|form|p2p|subscription|settlements
-            $params['formId'] => $params['formId'] ?? NULL,
-            $params['ref_id'] => $params['ref_id'] ?? NULL,
-            $params['tracking_code'] => $params['tracking_code'] ?? NULL,
-            $params['q'] => $params['q'] ?? NULL
+        if ($response->status() != 200)
+            dd($response->object()->error);
 
-        ]);
-
-        $data = json_decode($response)->data;
-
-        # return
-        dd($data);
-        // return $data;
+        # return $response->object()->data;
+        dd($response->object()->data);
     }
 
 
 
     /**
-     * Set Bills Base Url
+     * Send Request for Billing
+     *
+     * @param string $url_param
+     * @param array $params 
+     */
+    private static function request($url_param, $params = null)
+    {
+        $access_token = VandarAuth::token();
+
+        $response = Http::withHeaders([
+            'Authorization' => "Bearer {$access_token}",
+        ])->get(self::BILLING_URL($url_param), $params);
+
+        return $response;
+    }
+
+
+
+    /**
+     * Set Billing Url
      *
      * @param string $param
-     * @param string|null $business
      * 
-     * @return string $url 
+     * @return string  
      */
-    private static function BILLING_URL(string $param, string $business = null)
+    private static function BILLING_URL(string $param)
     {
-        $business = $business ?? $_ENV['VANDAR_BUSINESS_NAME'];
-
-        $url = "https://api.vandar.io/v2/business/$business/$param";
-
-        return $url;
+        return self::BASE_BILLING_URL . $_ENV['VANDAR_BUSINESS_NAME'] . "/$param";
     }
 }

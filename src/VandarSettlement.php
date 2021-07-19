@@ -19,9 +19,9 @@ class VandarSettlement
         VandarSettlementController::show($params);
     }
 
-    public static function list($per_page = 10, $page = 1)
+    public static function list($params = null)
     {
-        VandarSettlementController::list($per_page, $page);
+        VandarSettlementController::list($params);
     }
 
     public static function cancel($params)

@@ -16,38 +16,38 @@ class VandarSettlementController extends Controller
      * Store a new settlement
      *
      * @param  $params
-     * @return array result
+     * 
+     * @return array 
      */
     public static function store($params)
     {
+        $params['notify_url'] = $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL'];
         VandarSettlement::create($params);
+        $params['track_id'] = VandarSettlement::get('track_id')->last()['track_id'];
         $params['amount'] /= 10; // convert RIAL to TOMAN (for sending request)
 
-        $response = Http::withToken(VandarAuth::token())->post(self::SETTLEMENT_BASE_URL('/store', 'v3'), [
-            'amount' => $params['amount'],
-            'iban' => $params['iban'],
-            'track_id' => $params['track_id'],
-            'payment_number' => $params['payment_number'] ?? NULL,
-            'notify_url' => $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL']
-        ]);
+        $response = self::request('post', $params, 'store', 'v3');
 
-        $response = json_decode($response);
-
-        if (!$response->status)
-            dd($response->error);
-
-        $response->settlement_id = $response->id;
-        unset($response->id);
-
-        $data = $response->data->settlement[0];
-
-        VandarSettlement::where('track_id', $data->track_id)
-            ->update([$response]);
+        if ($response->status() != 200)
+            dd($response->object());
 
 
+        # convert id to settlement_id for database compatible
+        $data = $response->object()->data->settlement[0];
+
+
+        $data->settlement_id = $data->id;
+        $data->prediction = json_encode($data->prediction);
+        unset($data->id);
+
+
+        VandarSettlement::where('track_id', $params['track_id'])
+            ->update((array)$data);
+
+        dd($response->object()->data->settlement[0]);
         # return $response;
-        dd($data);
     }
+
 
 
 
@@ -55,34 +55,43 @@ class VandarSettlementController extends Controller
      * Get Complete Details about a settlement
      *
      * @param int $settlement_id
-     * @return array settlement details
+     * 
+     * @return array
      */
     public static function show($settlement_id)
     {
-        $response = Http::withToken(VandarAuth::token())->get(self::SETTLEMENT_BASE_URL("/$settlement_id"));
+        $response = self::request('get', '', $settlement_id);
 
-        dd(json_decode($response));
+
+        if ($response->status() != 200)
+            dd($response->object());
+
+
+        # return $response->object()->data->settlement;
+        dd($response->object()->data->settlement);
     }
+
 
 
 
     /**
-     * Undocumented function
+     * Get the list of settlements
      *
-     * @param int $per_page
-     * @param int $page
-     * @return array List of settlements lsit
+     * @param array|null $params
+     *
+     * @return array
      */
-    public static function list($per_page, $page)
+    public static function list($params = null)
     {
-        $response = Http::withToken(VandarAuth::token())->get(self::SETTLEMENT_BASE_URL(), [
-            'per_page' => $per_page,
-            'page' => $page
-        ]);
+        $response = self::request('get', $params);
 
-        dd(json_decode($response));
-        // return json_decode($response);
+        if ($response->status() != 200)
+            dd($response->object());
+
+        # return $response->object();
+        dd($response->object()->data);
     }
+
 
 
 
@@ -90,43 +99,63 @@ class VandarSettlementController extends Controller
      * Cancel the stored settlement 
      *
      * @param int $transaction_id
-     * @return string response message
+     * 
+     * @return string
      */
     public static function cancel($transaction_id)
     {
-        $response = Http::withToken(VandarAuth::token())->delete(self::SETTLEMENT_BASE_URL("/$transaction_id"));
+        $response = self::request('delete', '', $transaction_id);
 
-        // if (!$response['status']) {
-        //     VandarSettlement::where('transaction_id', $transaction_id)
-        //         ->update([
-        //             'errors' => $response['error']
-        //         ]);
-        //     dd($response['errors']);
-        // }
+        if ($response->status() != 200) {
+            VandarSettlement::where('transaction_id', $transaction_id)
+                ->update([
+                    'errors' => $response->object()->error
+                ]);
+            dd($response->object());
+        }
 
-        // VandarSettlement::where('transaction_id', $transaction_id)
-        //     ->update([
-        //         'status' => 'CANCELED',
-        //     ]);
+        VandarSettlement::where('transaction_id', $transaction_id)
+            ->update([
+                'status' => 'CANCELED',
+            ]);
 
-        $response = json_decode($response);
-        // return $response;
 
-        dd($response);
+        dd($response->object()->message);
     }
+
+
+
+
+    /**
+     * Send Request for Settlement
+     *
+     * @param string $url_param
+     * @param array $params 
+     */
+    private static function request($method, $params = null, $url_param = null, $version = null)
+    {
+        $access_token = VandarAuth::token();
+
+        $response = Http::withHeaders([
+            'Authorization' => "Bearer {$access_token}",
+        ])->$method(self::SETTLEMENT_URL($url_param), $params);
+
+        return $response;
+    }
+
 
 
 
     /**
      * Prepare Settlement Url for sending request
      *
-     * @param string $param(parameters for adding at the end of the request)
-     * @param string $version(Vandar API version)
+     * @param string $param
+     * @param string $version
      * 
-     * @return string SETTLEMENT_BASE_URL
+     * @return string 
      */
-    private static function SETTLEMENT_BASE_URL($param = null, $version = 'v2.1')
+    private static function SETTLEMENT_URL($param = null, $version = 'v2.1')
     {
-        return "https://api.vandar.io/$version/business/{$_ENV['VANDAR_BUSINESS_NAME']}/settlement$param";
+        return "https://api.vandar.io/$version/business/{$_ENV['VANDAR_BUSINESS_NAME']}/settlement/$param";
     }
 }

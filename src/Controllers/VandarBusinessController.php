@@ -88,10 +88,10 @@ class VandarBusinessController extends Controller
      */
     public static function request($business = null, $url_param = null)
     {
-        $token = VandarAuth::token();
+        $access_token = VandarAuth::token();
 
         $response = Http::withHeaders([
-            'Authorization' => "Bearer {$token}",
+            'Authorization' => "Bearer {$access_token}",
         ])->get(self::BUSINESS_URL($business, $url_param));
 
         return $response;

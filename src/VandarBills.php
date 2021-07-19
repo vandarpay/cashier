@@ -7,13 +7,13 @@ use Vandar\VandarCashier\Controllers\VandarBillsController;
 class VandarBills
 {
 
-    public static function getBills($per_page = null, $page = null, $business = null)
+    public static function list($params = null)
     {
-        VandarBillsController::getBills($per_page, $page, $business = null);
+        VandarBillsController::list($params);
     }
 
     public static function balance()
     {
-        VandarBillsController::balance($business = null);
+        VandarBillsController::balance();
     }
 }
