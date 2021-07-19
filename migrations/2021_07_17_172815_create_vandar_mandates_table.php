@@ -24,7 +24,8 @@ class CreateVandarMandatesTable extends Migration
             $table->integer('count');
             $table->decimal('limit', 20, 0)->comment('Cuurency : RIAL');
             $table->date('expiration_date');
-            $table->integer('bank_code');
+            $table->string('bank_code');
+            $table->enum('status', ['INIT', 'FAILED', 'SUCCEED']);
             $table->boolean('is_active')->default(false);
             $table->json('errors')->nullable();
             $table->timestamps();

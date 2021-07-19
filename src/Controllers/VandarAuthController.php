@@ -11,6 +11,9 @@ use Vandar\VandarCashier\Models\VandarAuthList;
 class VandarAuthController extends Controller
 {
 
+    const LOGIN_BASE_URL = 'https://api.vandar.io/v3/';
+
+
     /**
      * Get the access token for accessing account
      *
@@ -19,12 +22,12 @@ class VandarAuthController extends Controller
     public static function getToken()
     {
         if (!(VandarAuthList::count()))
-            return (self::login());
+            return (self::login()->access_token);
 
         $authData = VandarAuthList::get()->last();
 
         if (!self::isTokenValid($authData->expires_in))
-            return self::refreshToken($authData->refresh_token);
+            return self::refreshToken($authData->refresh_token)->access_token;
 
         return $authData->access_token;
     }
@@ -37,7 +40,7 @@ class VandarAuthController extends Controller
      */
     public static function login()
     {
-        $response = Http::post(self::LOGIN_BASE_URL('login'), [
+        $response = Http::post(self::LOGIN_URL('login'), [
             'mobile' => $_ENV['VANDAR_USERNAME'],
             'password' => $_ENV['VANDAR_PASSWORD']
         ]);
@@ -67,7 +70,7 @@ class VandarAuthController extends Controller
 
         $refresh_token = $refresh_token ?? (VandarAuthList::get('refresh_token')->last())->refresh_token;
 
-        $response = Http::asForm()->post(self::LOGIN_BASE_URL . '/refreshtoken', [
+        $response = Http::asForm()->post(self::LOGIN_URL('refreshtoken'), [
             'refreshtoken' => $refresh_token,
         ]);
 
@@ -124,8 +127,8 @@ class VandarAuthController extends Controller
      * 
      * @return string 
      */
-    private static function LOGIN_BASE_URL(string $param = null)
+    private static function LOGIN_URL(string $param = null)
     {
-        return "https://api.vandar.io/v3/$param";
+        return self::LOGIN_BASE_URL . $param;
     }
 }

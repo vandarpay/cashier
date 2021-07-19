@@ -6,186 +6,167 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Vandar\VandarCashier\VandarAuth;
 use Illuminate\Support\Facades\Http;
-use Vandar\VandarCashier\Models\VandarSubscription;
+use Vandar\VandarCashier\Models\VandarMandate;
 
 class VandarMandateController extends Controller
 {
-    const REDIRECT_URL = 'https://subscription.vandar.io/authorizations/';
+    const MANDATE_REDIRECT_URL = 'https://subscription.vandar.io/authorizations/';
 
 
     /**
-     * Undocumented function
+     * Get the list of confirmed Mandates
      *
-     * @return void
+     * @return object
      */
     public static function list()
     {
-        $access_token = VandarAuth::token();
+        $response = self::request('get');
 
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$access_token}",
-            'Accept' => 'application/json',
-        ])->get(self::SUBSCRIPTION_BASE_URL());
-
-        # return OBJECT for errors
         if ($response->status() != 200)
-            dd(json_decode($response)->errors ?? json_decode($response)->error);
+            dd($response->object()->errors ?? $response->object()->error);
 
-        $response = json_decode($response);
-
-        dd($response);
+        # return $response->object();
+        dd($response->object());
     }
 
 
 
     /**
-     * Undocumented function
+     * Store new Mandate
      *
-     * @param [type] $params
-     * @return void
+     * @param array $params
      */
     public static function store($params)
     {
-        $access_token = VandarAuth::token();
         $params['expiration_date'] = $params['expiration_date'] ?? date('Y-m-d', strtotime(date('Y-m-d') . ' + 3 years'));
+        $params['callback_url'] = $params['callback_url'] ?? $_ENV['VANDAR_CALLBACK_URL'];
 
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$access_token}",
-            'Accept' => 'application/json',
-        ])->post(self::SUBSCRIPTION_BASE_URL('/store'), [
-            'bank_code' => $params['VANDAR_BANK_CODE'],
-            'mobile' => $params['mobile'],
-            'callback_url' => $params['callback_url'] ?? $_ENV['VANDAR_CALLBACK_URL'],
-            'count' => $params['count'],
-            'limit' => $params['limit'],
-            'name' => $params['name'] ?? NULL,
-            'email' => $params['email'] ?? NULL,
-            'expiration_date' => $params['expiration_date'],
-            'wage_type' => $_ENV['VANDAR_WAGE_TYPE'] ?? NULL,
-        ]);
+        $response = self::request('post', $params, 'store');
 
 
-        # return OBJECT for errors
         if ($response->status() != 200)
-            dd(json_decode($response)->errors ?? json_decode($response)->error);
-
-        $response = json_decode($response);
+            dd($response->object()->errors ?? $response->object()->error);
 
 
-        $token = $response->result->authorization->token;
-
-        $params['token'] = $token;
-        $params['bank_code'] = $_ENV['VANDAR_BANK_CODE'];
-        VandarSubscription::create($params);
+        $params['token'] = $response->object()->result->authorization->token;
 
 
-        # TODO => check Redirection (check "return")
-        dd(self::REDIRECT_URL . $token);
-        // return redirect()->away(self::REDIRECT_URL . $token);
-        // return redirect(self::REDIRECT_URL . $token);
+        VandarMandate::create($params);
+
+
+        dd(self::MANDATE_REDIRECT_URL . $params['token']);
+        // return redirect()->away(self::MANDATE_REDIRECT_URL . $token);
+        // return redirect(self::MANDATE_REDIRECT_URL . $token);
     }
 
 
 
     /**
-     * Undocumented function
+     * Show the mandate details
      *
-     * @param [type] $subscription_code
-     * @return void
+     * @param string $subscription_code
+     * 
+     * @return array
      */
-    public static function show($subscription_code)
+    public static function show($authorization_id)
     {
-        $access_token = VandarAuth::token();
+        $response = self::request('get', '', $authorization_id);
 
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$access_token}",
-            'Accept' => 'application/json',
-        ])->get(self::SUBSCRIPTION_BASE_URL("/$subscription_code"));
-
-        # return OBJECT for errors
         if ($response->status() != 200)
-            dd(json_decode($response)->errors ?? json_decode($response)->error);
+            dd($response->object()->errors ?? $response->object()->error);
 
-        $response = json_decode($response);
+
+        # return $response->object();
+        dd($response->object());
+    }
+
+
+    /**
+     * Revoke Confirmed mandates
+     *
+     * @param string $subscription_code
+     * 
+     * @return array
+     */
+    public static function revoke($authorization_id)
+    {
+        $response = self::request('delete', '', $authorization_id);
+
+
+        if ($response->status() != 200)
+            dd($response->object()->errors ?? $response->object()->error ?? $response->object()->message);
+
+
+        VandarMandate::where('authorization_id', $authorization_id)
+            ->update(['is_active' => false]);
+
+        # return $response->object();
+        dd($response->object());
+    }
+
+
+
+    /**
+     * Check the Mandate status at the CallBack Page
+     * 
+     * @return array $response
+     */
+    public static function verifyMandate()
+    {
+        $response = (\Request::query());
+
+        if ($response['status'] != 'SUCCEED') {
+            VandarMandate::where('token', $response['token'])
+                ->update([
+                    'errors' => json_encode('Failed To Access'),
+                    'status' => 'FAILED'
+                ]);
+
+            # return 
+            dd($response);
+        }
+
+
+        VandarMandate::where('token', $response['token'])
+            ->update([
+                'status' => 'SUCCEED',
+                'is_active' => true,
+                'authorization_id' => $response['authorization_id']
+            ]);
 
         # return $response;
         dd($response);
     }
 
 
+
     /**
-     * Undocumented function
+     * Send Request for Settlement
      *
-     * @param [type] $subscription_code
-     * @return void
+     * @param string $url_param
+     * @param array $params 
      */
-    public static function revoke($subscription_code)
+    private static function request($method, $params = null, $url_param = null)
     {
         $access_token = VandarAuth::token();
 
         $response = Http::withHeaders([
             'Authorization' => "Bearer {$access_token}",
-            'Accept' => 'application/json',
-        ])->delete(self::SUBSCRIPTION_BASE_URL("/$subscription_code"));
+        ])->$method(self::MANDATE_BASE_URL($url_param), $params);
 
-
-        # return OBJECT for errors
-        if ($response->status() != 200)
-            dd(json_decode($response)->errors ?? json_decode($response)->error);
-
-        $response = json_decode($response);
-
-        // VandarSubscription::where('subscription_code', $subscription_code)
-        // ->update(['is_active' => false]);
-
-        # return $response;
-        dd($response);
+        return $response;
     }
 
 
-
-
     /**
-     * Prepare Subscription Url for sending requests
+     * Prepare Mandate Url for sending requests
      *
      * @param string|null $param
      * 
      * @return string $url
      */
-    public static function SUBSCRIPTION_BASE_URL(string $param = null)
+    private static function MANDATE_BASE_URL(string $param = null)
     {
-        $url = "https://api.vandar.io/v2/business/$_ENV[VANDAR_BUSINESS_NAME]/subscription/authorization$param";
-        return $url;
-    }
-
-
-
-
-    /**
-     * Check the Subscription status at the {CallBack Page}
-     *
-     */
-    public static function verifySubscription()
-    {
-        $response = (\Request::query());
-
-        // dd(json_decode($response));
-
-        # TODO => update Subscription status in database
-        if ($response['status'] != 'SUCCEED') {
-
-            // VandarSubscription::where('token', $response['token'])
-            //     ->update([
-            //         'errors' => 'failed payment',
-            //         'status' => 'FAILED'
-            //     ]);
-
-
-            echo "فرایند پرداخت با خطا مواجه شد <br> لطفا مجدداً تلاش کنید";
-
-            return;
-        }
-        dd($response);
-        // return self::verifyTransaction($response['token']);
+        return "https://api.vandar.io/v2/business/$_ENV[VANDAR_BUSINESS_NAME]/subscription/authorization/$param";
     }
 }

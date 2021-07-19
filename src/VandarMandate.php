@@ -22,7 +22,7 @@ class VandarMandate
     /**
      * Show the list of subscriptions
      *
-     * @return array $subscriptions
+     * @return array 
      */
     public static function list()
     {
@@ -36,6 +36,7 @@ class VandarMandate
      *
      * @param string $subscription_code
      * 
+     * @return 
      */
     public static function show($subscription_code)
     {
@@ -59,8 +60,8 @@ class VandarMandate
     /**
      * check and verify the subscription
      */
-    public static function verifySubscription()
+    public static function verifyMandate()
     {
-        VandarMandateController::verifySubscription();
+        VandarMandateController::verifyMandate();
     }
 }
