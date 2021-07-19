@@ -6,9 +6,9 @@ use Vandar\VandarCashier\Controllers\VandarBusinessController;
 
 class VandarBusiness
 {
-    public static function getList()
+    public static function list()
     {
-        VandarBusinessController::getList();
+        VandarBusinessController::list();
     }
 
     

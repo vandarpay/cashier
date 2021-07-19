@@ -10,30 +10,23 @@ use Vandar\VandarCashier\VandarAuth;
 class VandarBusinessController extends Controller
 
 {
+    const BUSINESS_BASE_URL = 'https://api.vandar.io/v2/business/';
 
     /**
      * Get the list of businesses
      *
-     * @return array $response
+     * @return array
      */
-    public static function getList()
+    public static function list()
     {
-        # Request
         $response = self::request();
 
-        $response = json_decode($response);
-
-
-
-        if (!$response->status) {
-            # return
-            // return $response->error;
-            dd($response->error);
-        }
+        if ($response->status() != 200)
+            dd($response->object()->error);
 
 
         # return $response->data;
-        dd($response->data);
+        dd($response->object()->data);
     }
 
 
@@ -49,19 +42,15 @@ class VandarBusinessController extends Controller
     {
         $business = $business ?? $_ENV['VANDAR_BUSINESS_NAME'];
 
-        # Request
         $response = self::request($business);
 
-        $response = json_decode($response);
 
-        if (!$response->status) {
-            # return $response->error;
-            dd($response->error);
-        }
+        if ($response->status() != 200)
+            dd($response->object()->error);
 
 
-        # return $response->data;
-        dd($response->data);
+        # return $response->object()->data;
+        dd($response->object()->data);
     }
 
 
@@ -71,37 +60,31 @@ class VandarBusinessController extends Controller
      *
      * @param string|null $business
      * 
-     * @return object $business_users
+     * @return object 
      */
     public static function users($business = null)
     {
         $business = $business ?? $_ENV['VANDAR_BUSINESS_NAME'];
 
-        # Request
         $response = self::request($business, '/iam');
 
-        $response = json_decode($response);
 
-        if (!$response->status) {
-            # return $response->error;
-            dd($response->error);
-        }
+        if ($response->status() != 200)
+            dd($response->object()->error);
 
 
-        # return $response->data;
-        dd($response->data);
+
+        # return $response->object()->data;
+        dd($response->object()->data);
     }
 
 
 
-    ######################## REQUEST ########################
     /**
-     * Send Request By Guzzle
+     * Send Request for Business
      *
      * @param string|null $business
      * @param string|null $url_param
-     * 
-     * @return string $response
      */
     public static function request($business = null, $url_param = null)
     {
@@ -122,11 +105,10 @@ class VandarBusinessController extends Controller
      * @param string|null $business
      * @param string|null $param
      * 
-     * @return string $url
+     * @return string
      */
-    public static function BUSINESS_URL(string $business = null, string $param = null)
+    private static function BUSINESS_URL(string $business = null, string $param = null)
     {
-        $url = "https://api.vandar.io/v2/business/{$business}{$param}";
-        return $url;
+        return self::BUSINESS_BASE_URL . $business . $param;
     }
 }
