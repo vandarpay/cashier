@@ -55,7 +55,7 @@ class VandarMandateController extends Controller
         ])->post(self::SUBSCRIPTION_BASE_URL('/store'), [
             'bank_code' => $params['VANDAR_BANK_CODE'],
             'mobile' => $params['mobile'],
-            'callback_url' => $_ENV['VANDAR_CALLBACK_URL'],
+            'callback_url' => $params['callback_url'] ?? $_ENV['VANDAR_CALLBACK_URL'],
             'count' => $params['count'],
             'limit' => $params['limit'],
             'name' => $params['name'] ?? NULL,

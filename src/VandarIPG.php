@@ -12,15 +12,12 @@ class VandarIPG
     /**
      * Send payment parameters to get Payment Token
      * 
-     * @param associative_array array of payment parameters
-     * @param int payable_type
-     * @param int $name
-     * @param int $name
-     * @param int $name
+     * @param array $params
+     * @param array $morphs
      */
-    public  static function pay($params, $payable_type = null, $payable_id = null, $paymentable_type = null, $paymentable_id = null)
+    public  static function pay($params, $morphs)
     {
-        VandarIPGController::pay($params, $payable_type, $payable_id, $paymentable_type, $paymentable_id);
+        VandarIPGController::pay($params, $morphs);
     }
 
 

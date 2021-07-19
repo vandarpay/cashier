@@ -10,8 +10,6 @@ use Vandar\VandarCashier\Models\VandarAuthList;
 
 class VandarAuthController extends Controller
 {
-    const LOGIN_BASE_URL = 'https://api.vandar.io/v3';
-
 
     /**
      * Get the access token for accessing account
@@ -49,6 +47,7 @@ class VandarAuthController extends Controller
             dd($response->getReasonPhrase());
 
         self::addAuthData($response->json());
+
 
         return $response->object();
     }

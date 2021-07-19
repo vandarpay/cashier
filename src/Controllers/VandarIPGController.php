@@ -2,60 +2,52 @@
 
 namespace Vandar\VandarCashier\Controllers;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Vandar\VandarCashier\Models\VandarPayment;
-use Vandar\VandarCashier\VandarIPG;
 
 class VandarIPGController extends Controller
 {
-    const IPG_BASE_URL = "https://ipg.vandar.io";
-    public static $data;
+    const IPG_BASE_URL = "https://ipg.vandar.io/api/v3/";
+    const IPG_REDIRECT_URL = "https://ipg.vandar.io/v3/";
 
 
     /**
-     * Retrieve {payment token} by sending payment parameters
-     * Add initial data in the DB if response_status = 1
-     * redirect user to payment page
+     * Send payment parameters to get Payment Token
      * 
      * @param array $params
-     * 
-     * @return  redirect  Payment Page
+     * @param array $morphs
      */
-    public static function pay(array $params = null, $payable_type = null, $payable_id = null, $paymentable_type = null, $paymentable_id = null)
+    public static function pay(array $params = null, $morphs = null)
     {
-        $response = Http::asForm()->post(self::IPG_BASE_URL . '/api/v3/send', [
-            'api_key' => $_ENV['VANDAR_API_KEY'],
-            'amount' => $params['amount'],
-            'callback_url' => $params['callback_url'] ?? ($_ENV['VANDAR_CALLBACK_URL']),
-            'mobile_number' => $params['mobile_number'] ?? NULL,
-            'factorNumber' => $params['factor_number'] ?? NULL,
-            'description' => $params['description'] ?? NULL,
-            'valid_card_number' => $params['valid_card_number'] ?? NULL,
-        ]);
+        $params['callback_url'] = $params['callback_url'] ?? ($_ENV['VANDAR_CALLBACK_URL']);
+        $params['api_key'] = $_ENV['VANDAR_API_KEY'];
 
-        if (!$response['status'])
-            dd($response['errors']);
+        $response = self::request('post', 'send', $params);
 
-        $morphs = [
-            'vandar_payable_type' => $payable_type,
-            'vandar_payable_id' => $payable_id,
-            'vandar_paymentable_type' => $paymentable_type,
-            'vandar_paymentable_id' => $paymentable_id
-        ];
+        if ($response->status() != 200)
+            dd($response->object()->errors);
 
-        $payment_token = $response['token'];
-        $params['token'] = $payment_token;
+
+        # compatible morphs with db structure
+        foreach ($morphs as $key => $value) {
+            $morphs["vandar_$key"] = $morphs[$key];
+            unset($morphs[$key]);
+        }
+
+        # Add {payment_token} into $params
+        $params['token'] = $response->object()->token;
         $params = array_merge($params, $morphs);
 
-        // dd($params);
+
         VandarPayment::create($params);
 
-        # TODO => check Redirection (check "return")
-        dd(self::IPG_BASE_URL . '/v3/' . $payment_token);
-        // return redirect()->away(self::IPG_BASE_URL . '/v3/' . $payment_token);
-        // return redirect(self::IPG_BASE_URL . '/v3/' . $payment_token);
+
+        // return redirect()->away(self::IPG_REDIRECT_URL . $response->object()->token);
+        // return redirect(self::IPG_REDIRECT_URL . $response->object()->token);
+        dd(self::IPG_REDIRECT_URL . $response->object()->token);
     }
 
 
@@ -67,25 +59,22 @@ class VandarIPGController extends Controller
      */
     public static function verifyTransaction($payment_token)
     {
-        $response = Http::asForm()->post(self::IPG_BASE_URL . '/api/v3/verify', [
-            'api_key' => $_ENV['VANDAR_API_KEY'],
-            'token' => $payment_token,
-        ]);
+        $params = ['api_key' => $_ENV['VANDAR_API_KEY'], 'token' => $payment_token];
 
-        if (!$response['status']) {
+        $response = self::request('post', 'verify', $params);
+
+        if ($response->status() != 200) {
             VandarPayment::where('token', $payment_token)
                 ->update([
-                    'errors' => json_encode($response['errors']),
+                    'errors' => json_encode($response->object()->errors),
                     'status' => 'FAILED'
                 ]);
-
-            dd($response['errors']);
+            dd($response->object()->errors);
         }
 
-        $response = (array)json_decode($response);
 
-        # prepare response to compatible with DB
-        $response = self::prepareStep4($response);
+        # prepare response for making compatible with DB
+        $response = self::prepareResponseFormat($response->json());
 
         $response['status'] = 'SUCCEED';
 
@@ -97,6 +86,8 @@ class VandarIPGController extends Controller
     }
 
 
+
+
     /**
      * Check the payment status at the {CallBack Page}
      *
@@ -105,7 +96,7 @@ class VandarIPGController extends Controller
     public static function verifyPayment()
     {
         $response = (\Request::query());
-        # TODO => update payment status in database
+
         if ($response['payment_status'] != 'OK') {
 
             VandarPayment::where('token', $response['token'])
@@ -115,8 +106,7 @@ class VandarIPGController extends Controller
                 ]);
 
 
-            echo "فرایند پرداخت با خطا مواجه شد <br> لطفا مجدداً تلاش کنید";
-
+            echo 'فرایند پرداخت با خطا مواجه شد <br> لطفا مجدداً تلاش کنید';
             return;
         }
 
@@ -126,28 +116,46 @@ class VandarIPGController extends Controller
 
 
 
-    private static function prepareStep4($array)
+    /**
+     * Send Request for IPG(payment)
+     *
+     * @param string $method
+     * @param string $url_param
+     * @param string $params
+     */
+    private static function request($method, $url_param, $params)
     {
-        // realAmount / transId / factorNumber / mobile / cardNumber / paymentDate
+        return Http::$method(self::IPG_URL($url_param), $params);
+    }
 
-        $array['trans_id'] = $array['transId'];
-        unset($array['transId']);
 
-        $array['factor_number'] = $array['factorNumber'];
-        unset($array['factorNumber']);
 
-        $array['mobile_number'] = $array['mobile'];
+    /**
+     * Make proper IPG Url for sending requests
+     *
+     * @param string|null $param
+     * 
+     * @return string 
+     */
+    private static function IPG_URL(string $url_param)
+    {
+        return self::IPG_BASE_URL . $url_param;
+    }
+
+
+
+
+    private static function prepareResponseFormat($params)
+    {
+        $keys = array_keys($params);
+        foreach ($keys as $key) {
+            $keys[array_search($key, $keys)] = Str::of($key)->snake();
+            $params = array_combine($keys, $params);
+        }
+
+        $params['mobile_number'] = $params['mobile'];
         unset($array['mobile']);
 
-        $array['card_number'] = $array['cardNumber'];
-        unset($array['cardNumber']);
-
-        $array['payment_date'] = $array['paymentDate'];
-        unset($array['paymentDate']);
-
-        $array['real_amount'] = $array['realAmount'];
-        unset($array['realAmount']);
-
-        return $array;
+        return $params;
     }
 }
