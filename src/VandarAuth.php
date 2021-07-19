@@ -9,12 +9,9 @@ class VandarAuth
 {
 
     /**
-     * Get AccessToken 
+     * Get the access token for accessing account
      * 
-     * @param string username(mobile)
-     * @param string password
-     * 
-     * @return 
+     * @return string
      */
     public static function token()
     {
@@ -23,12 +20,9 @@ class VandarAuth
 
 
     /**
-     * Send HTTP Request (login VANDAR account && get initial data)
+     * Login into Vandar account
      * 
-     * @param string username(mobile)
-     * @param string password
-     * 
-     * @return json Account access parameters
+     * @return object
      */
     public static function login()
     {
@@ -37,9 +31,9 @@ class VandarAuth
 
 
     /**
-     * Check is AccessToken expired or no from Database
+     * Check the current token validation
      * 
-     * @return boolean true(expire) / false(not-expire)
+     * @return boolean 
      */
     public static function isTokenValid()
     {
@@ -48,14 +42,12 @@ class VandarAuth
 
 
     /**
-     * Refresh the AccessToken
+     * Refresh Current Token by refresh_token parameter
      * 
-     * @return json Account access parameters
+     * @return object 
      */
     public static function refreshToken()
     {
         return VandarAuthController::refreshToken();
     }
 }
-
-

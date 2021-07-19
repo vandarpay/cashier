@@ -12,6 +12,12 @@ class VandarAuthController extends Controller
 {
     const LOGIN_BASE_URL = 'https://api.vandar.io/v3';
 
+
+    /**
+     * Get the access token for accessing account
+     *
+     * @return string
+     */
     public static function getToken()
     {
         if (!(VandarAuthList::count()))
@@ -22,42 +28,68 @@ class VandarAuthController extends Controller
         if (!self::isTokenValid($authData->expires_in))
             return self::refreshToken($authData->refresh_token);
 
-        # return
         return $authData->access_token;
     }
 
 
+    /**
+     * Login into Vandar account
+     *
+     * @return object 
+     */
+    public static function login()
+    {
+        $response = Http::post(self::LOGIN_BASE_URL('login'), [
+            'mobile' => $_ENV['VANDAR_USERNAME'],
+            'password' => $_ENV['VANDAR_PASSWORD']
+        ]);
+
+
+        if ($response->status() != 200)
+            dd($response->getReasonPhrase());
+
+        self::addAuthData($response->json());
+
+        return $response->object();
+    }
+
+
+
+
+    /**
+     * Refresh Current Token by refresh_token parameter
+     *
+     * @param string $refresh_token
+     * 
+     * @return object
+     */
     public static function refreshToken($refresh_token = null)
     {
 
-        ($refresh_token) ?? $refresh_token = (VandarAuthList::get('refresh_token')->last())->refresh_token;
+        $refresh_token = $refresh_token ?? (VandarAuthList::get('refresh_token')->last())->refresh_token;
 
         $response = Http::asForm()->post(self::LOGIN_BASE_URL . '/refreshtoken', [
             'refreshtoken' => $refresh_token,
         ]);
 
-        self::addAuthData($response);
+        if ($response->status() != 200)
+            dd($response->getReasonPhrase());
 
-        # return
-        return $response;
+        self::addAuthData($response->json());
+
+        return $response->object();
     }
 
 
-    public static function login()
-    {
-
-        $response = Http::asForm()->post(self::LOGIN_BASE_URL . '/login', [
-            'mobile' => $_ENV['VANDAR_USERNAME'],
-            'password' => $_ENV['VANDAR_PASSWORD']
-        ]);
-
-        self::addAuthData($response);
-
-        return $response;
-        // dd($response);
-    }
 
 
+    /**
+     * Check the current token validation
+     *
+     * @param int $expirationTime
+     * 
+     * @return boolean
+     */
     public static function isTokenValid($expirationTime = null)
     {
         ($expirationTime) ?? $expirationTime = VandarAuthList::get('expires_in')->last();
@@ -66,14 +98,35 @@ class VandarAuthController extends Controller
     }
 
 
+
+    /**
+     * Add new authentication data into database
+     *
+     * @param array $response
+     */
     private static function addAuthData($response)
     {
         $auth_id = (VandarAuthList::get('id')->last())['id'] ?? 1;
 
-        $response = (array)json_decode($response);
+        // $response = (array)$response;
 
         $response['expires_in'] += time();
 
-        VandarAuthList::updateOrCreate(array('id' => $auth_id), $response);
+        VandarAuthList::updateOrCreate(['id' => $auth_id], $response);
+    }
+
+
+
+
+    /**
+     * Prepare Login Url for sending requests
+     *
+     * @param string|null $param
+     * 
+     * @return string 
+     */
+    private static function LOGIN_BASE_URL(string $param = null)
+    {
+        return "https://api.vandar.io/v3/$param";
     }
 }
