@@ -126,7 +126,6 @@ class VandarMandateController extends Controller
             dd($response);
         }
 
-
         VandarMandate::where('token', $response['token'])
             ->update([
                 'status' => 'SUCCEED',
@@ -137,6 +136,7 @@ class VandarMandateController extends Controller
         # return $response;
         dd($response);
     }
+
 
 
 

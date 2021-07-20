@@ -24,7 +24,7 @@ class VandarIPGController extends Controller
     {
         $params['callback_url'] = $params['callback_url'] ?? ($_ENV['VANDAR_CALLBACK_URL']);
         $params['api_key'] = $_ENV['VANDAR_API_KEY'];
-
+        
         $response = self::request('post', 'send', $params);
 
         if ($response->status() != 200)
@@ -153,8 +153,10 @@ class VandarIPGController extends Controller
             $params = array_combine($keys, $params);
         }
 
-        $params['mobile_number'] = $params['mobile'];
-        unset($array['mobile']);
+        if (array_key_exists('mobile', $params)) {
+            $params['mobile_number'] = $params['mobile'];
+            unset($params['mobile']);
+        }
 
         return $params;
     }

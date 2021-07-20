@@ -64,4 +64,10 @@ class VandarMandate
     {
         VandarMandateController::verifyMandate();
     }
+
+    public function __call($name, $arguments)
+    {
+        dd($name . " " . $arguments);
+    }
+
 }

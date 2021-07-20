@@ -2,10 +2,11 @@
 
 namespace Vandar\VandarCashier\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Vandar\VandarCashier\VandarAuth;
-use Illuminate\Http\Request;
+use Vandar\VandarCashier\Models\VandarWithdrawal;
 
 class VandarWithdrawalController extends Controller
 {
@@ -15,35 +16,30 @@ class VandarWithdrawalController extends Controller
      *
      * @param array $params
      * 
-     * @return object $response
+     * @return object $data
      */
     public static function store($params)
     {
-        $access_token = VandarAuth::token();
-        $params['withdrawal_date'] = $params['withdrawal_date'] ?? date('Y-m-d', strtotime(date('Y-m-d')));
-
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$access_token}",
-            'Accept' => 'application/json',
-        ])->post(self::WITHDRAWAL_BASE_URL('/store'), [
-            'authorization_id' => $params['authorization_id'],
-            'amount' => $params['amount'],
-            'withdrawal_date' => $params['withdrawal_date'],
-            'is_instant' => $params['is_instant'],
-            'notify_url' => $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL'],
-            'max_retry_count' => $params['max_retry_count'] ?? 1,
-        ]);
+        $params['notify_url'] = $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL'];
+        // dd($params);
+        $response = self::request('post', 'store', $params);
 
 
-        # return OBJECT for errors
         if ($response->status() != 200)
-            dd(json_decode($response)->errors ?? json_decode($response)->error);
+            dd($response->object()->errors ?? $response->object()->error);
 
-        $response = json_decode($response);
+        # prepare data for DB structure
+        $data = $response->object()->result->withdrawal;
+
+        $data->withdrawal_id = $data->id;
+        unset($data->id);
 
 
-        # return $response;
-        dd($response);
+        VandarWithdrawal::create((array)$data);
+
+
+        # return $data;
+        dd($data);
     }
 
 
@@ -51,22 +47,19 @@ class VandarWithdrawalController extends Controller
     /**
      * Show the list of withdrawals
      *
-     * @return object $response
+     * @return object
      */
     public static function list()
     {
-        # send request
-        $response = self::withdrawalRequest('get');
+        $response = self::request('get');
 
 
         if ($response->status() != 200)
-            dd(json_decode($response)->errors ?? json_decode($response)->error);
-
-        $response = json_decode($response);
+            dd($response->object()->errors ?? $response->object()->error);
 
 
-        # return $response;
-        dd($response);
+        # return $response->object();
+        dd($response->object());
     }
 
 
@@ -76,21 +69,17 @@ class VandarWithdrawalController extends Controller
      *
      * @param string $withdrawal_id
      * 
-     * @return object $response
+     * @return object
      */
     public static function show($withdrawal_id)
     {
-        # send request
-        $response = self::withdrawalRequest('get', "/$withdrawal_id");
+        $response = self::request('get', $withdrawal_id);
 
         if ($response->status() != 200)
-            dd(json_decode($response)->errors ?? json_decode($response)->error);
+            dd($response->object()->errors ?? $response->object()->error);
 
-        $response = json_decode($response);
-
-        
-        # return $response;
-        dd($response);
+        # return $response->object()->result->withdrawal;
+        dd($response->object()->result->withdrawal);
     }
 
 
@@ -100,26 +89,23 @@ class VandarWithdrawalController extends Controller
      *
      * @param string $withdrawal_id
      * 
-     * @return object $response
+     * @return object
      */
     public static function cancel($withdrawal_id)
     {
-        $access_token = VandarAuth::token();
-
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$access_token}",
-            'Accept' => 'application/json',
-        ])->put(self::WITHDRAWAL_BASE_URL("/$withdrawal_id"));
+        $response = self::request('put', $withdrawal_id);
 
 
-        # return OBJECT for errors
         if ($response->status() != 200)
-            dd(json_decode($response)->errors ?? json_decode($response)->error);
+            dd($response->object()->errors ?? $response->object()->error);
 
-        $response = json_decode($response);
+
+        VandarWithdrawal::where('withdrawal_id', $withdrawal_id)
+            ->update(['status' => 'CANCELED']);
+
 
         # return $response;
-        dd($response);
+        dd($response->object());
     }
 
 
@@ -132,14 +118,14 @@ class VandarWithdrawalController extends Controller
      * @param string|null $url_param
      * @param string|null $params
      */
-    private static function withdrawalRequest($method, $url_param = null, $params = null)
+    private static function request($method, $url_param = null, $params = null)
     {
         $access_token = VandarAuth::token();
 
         $response = Http::withHeaders([
             'Authorization' => "Bearer {$access_token}",
             'Accept' => 'application/json',
-        ])->$method(self::WITHDRAWAL_BASE_URL($url_param));
+        ])->$method(self::WITHDRAWAL_BASE_URL($url_param), $params);
 
         return $response;
     }
@@ -155,7 +141,6 @@ class VandarWithdrawalController extends Controller
      */
     private static function WITHDRAWAL_BASE_URL(string $param = null)
     {
-        $url = "https://api.vandar.io/v2/business/$_ENV[VANDAR_BUSINESS_NAME]/subscription/withdrawal$param";
-        return $url;
+        return "https://api.vandar.io/v2/business/$_ENV[VANDAR_BUSINESS_NAME]/subscription/withdrawal/$param";
     }
 }

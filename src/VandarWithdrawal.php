@@ -15,18 +15,18 @@ class VandarWithdrawal
 
     public static function list()
     {
-        VandarWithdrawalController::store();
+        VandarWithdrawalController::list();
     }
 
 
-    public static function show()
+    public static function show($params)
     {
-        VandarWithdrawalController::store();
+        VandarWithdrawalController::show($params);
     }
 
 
-    public static function cancel()
+    public static function cancel($params)
     {
-        VandarWithdrawalController::store();
+        VandarWithdrawalController::cancel($params);
     }
 }
