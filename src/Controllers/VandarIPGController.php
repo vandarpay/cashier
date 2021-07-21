@@ -3,6 +3,7 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Vandar\VandarCashier\Models\VandarPayment;
 

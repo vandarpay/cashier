@@ -12,14 +12,14 @@ class VandarBusiness
     }
 
     
-    public static function info($business = null)
+    public static function info()
     {
-        VandarBusinessController::info($business);
+        VandarBusinessController::info();
     }
 
 
-    public static function users($business = null)
+    public static function users()
     {
-        VandarBusinessController::users($business);
+        VandarBusinessController::users();
     }
 }
