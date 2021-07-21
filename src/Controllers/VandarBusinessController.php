@@ -3,13 +3,12 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
-use Vandar\VandarCashier\VandarAuth;
 
 class VandarBusinessController extends Controller
-
 {
+    use \Vandar\VandarCashier\Utilities\Request;
+
     const BUSINESS_BASE_URL = 'https://api.vandar.io/v2/business/';
 
     /**
@@ -19,7 +18,7 @@ class VandarBusinessController extends Controller
      */
     public static function list()
     {
-        $response = self::request();
+        $response = self::request('get', self::BUSINESS_URL(), true);
 
         if ($response->status() != 200)
             dd($response->object()->error);
@@ -38,12 +37,9 @@ class VandarBusinessController extends Controller
      * 
      * @return object $business_info
      */
-    public static function info($business = null)
+    public static function info()
     {
-        $business = $business ?? $_ENV['VANDAR_BUSINESS_NAME'];
-
-        $response = self::request($business);
-
+        $response = self::request('get', self::BUSINESS_URL($_ENV['VANDAR_BUSINESS_NAME']), true);
 
         if ($response->status() != 200)
             dd($response->object()->error);
@@ -62,12 +58,9 @@ class VandarBusinessController extends Controller
      * 
      * @return object 
      */
-    public static function users($business = null)
+    public static function users()
     {
-        $business = $business ?? $_ENV['VANDAR_BUSINESS_NAME'];
-
-        $response = self::request($business, '/iam');
-
+        $response = self::request('get', self::BUSINESS_URL($_ENV['VANDAR_BUSINESS_NAME'], '/iam'), true);
 
         if ($response->status() != 200)
             dd($response->object()->error);
@@ -79,28 +72,8 @@ class VandarBusinessController extends Controller
     }
 
 
-
     /**
-     * Send Request for Business
-     *
-     * @param string|null $business
-     * @param string|null $url_param
-     */
-    public static function request($business = null, $url_param = null)
-    {
-        $access_token = VandarAuth::token();
-
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$access_token}",
-        ])->get(self::BUSINESS_URL($business, $url_param));
-
-        return $response;
-    }
-
-
-
-    /**
-     * Prepare Business Url for sending request
+     * Business URL
      *
      * @param string|null $business
      * @param string|null $param

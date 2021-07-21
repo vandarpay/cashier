@@ -3,13 +3,14 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Http;
 use Vandar\VandarCashier\Models\VandarPayment;
 
 class VandarIPGController extends Controller
 {
+    use \Vandar\VandarCashier\Utilities\Request;
+    
+
     const IPG_BASE_URL = "https://ipg.vandar.io/api/v3/";
     const IPG_REDIRECT_URL = "https://ipg.vandar.io/v3/";
 
@@ -25,7 +26,7 @@ class VandarIPGController extends Controller
         $params['callback_url'] = $params['callback_url'] ?? ($_ENV['VANDAR_CALLBACK_URL']);
         $params['api_key'] = $_ENV['VANDAR_API_KEY'];
         
-        $response = self::request('post', 'send', $params);
+        $response = self::request('post', self::IPG_URL('send'), false, $params);
 
         if ($response->status() != 200)
             dd($response->object()->errors);
@@ -61,7 +62,7 @@ class VandarIPGController extends Controller
     {
         $params = ['api_key' => $_ENV['VANDAR_API_KEY'], 'token' => $payment_token];
 
-        $response = self::request('post', 'verify', $params);
+        $response = self::request('post', self::IPG_URL('verify'), false, $params);
 
         if ($response->status() != 200) {
             VandarPayment::where('token', $payment_token)
@@ -111,21 +112,6 @@ class VandarIPGController extends Controller
         }
 
         return self::verifyTransaction($response['token']);
-    }
-
-
-
-
-    /**
-     * Send Request for IPG(payment)
-     *
-     * @param string $method
-     * @param string $url_param
-     * @param string $params
-     */
-    private static function request($method, $url_param, $params)
-    {
-        return Http::$method(self::IPG_URL($url_param), $params);
     }
 
 

@@ -4,12 +4,12 @@ namespace Vandar\VandarCashier\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Vandar\VandarCashier\VandarAuth;
-use Illuminate\Support\Facades\Http;
 use Vandar\VandarCashier\Models\VandarMandate;
 
 class VandarMandateController extends Controller
 {
+    use \Vandar\VandarCashier\Utilities\Request;
+
     const MANDATE_REDIRECT_URL = 'https://subscription.vandar.io/authorizations/';
 
 
@@ -20,7 +20,7 @@ class VandarMandateController extends Controller
      */
     public static function list()
     {
-        $response = self::request('get');
+        $response = self::request('get', self::MANDATE_URL(), true);
 
         if ($response->status() != 200)
             dd($response->object()->errors ?? $response->object()->error);
@@ -41,7 +41,7 @@ class VandarMandateController extends Controller
         $params['expiration_date'] = $params['expiration_date'] ?? date('Y-m-d', strtotime(date('Y-m-d') . ' + 3 years'));
         $params['callback_url'] = $params['callback_url'] ?? $_ENV['VANDAR_CALLBACK_URL'];
 
-        $response = self::request('post', $params, 'store');
+        $response = self::request('post', self::MANDATE_URL('store'), true, $params);
 
 
         if ($response->status() != 200)
@@ -70,7 +70,7 @@ class VandarMandateController extends Controller
      */
     public static function show($authorization_id)
     {
-        $response = self::request('get', '', $authorization_id);
+        $response = self::request('get', self::MANDATE_URL($authorization_id), true);
 
         if ($response->status() != 200)
             dd($response->object()->errors ?? $response->object()->error);
@@ -90,8 +90,7 @@ class VandarMandateController extends Controller
      */
     public static function revoke($authorization_id)
     {
-        $response = self::request('delete', '', $authorization_id);
-
+        $response = self::request('delete', self::MANDATE_URL($authorization_id), true);
 
         if ($response->status() != 200)
             dd($response->object()->errors ?? $response->object()->error ?? $response->object()->message);
@@ -137,27 +136,7 @@ class VandarMandateController extends Controller
         dd($response);
     }
 
-
-
-
-    /**
-     * Send Request for Settlement
-     *
-     * @param string $url_param
-     * @param array $params 
-     */
-    private static function request($method, $params = null, $url_param = null)
-    {
-        $access_token = VandarAuth::token();
-
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$access_token}",
-        ])->$method(self::MANDATE_BASE_URL($url_param), $params);
-
-        return $response;
-    }
-
-
+    
     /**
      * Prepare Mandate Url for sending requests
      *
@@ -165,7 +144,7 @@ class VandarMandateController extends Controller
      * 
      * @return string $url
      */
-    private static function MANDATE_BASE_URL(string $param = null)
+    private static function MANDATE_URL(string $param = null)
     {
         return "https://api.vandar.io/v2/business/$_ENV[VANDAR_BUSINESS_NAME]/subscription/authorization/$param";
     }

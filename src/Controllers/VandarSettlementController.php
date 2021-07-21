@@ -4,13 +4,12 @@ namespace Vandar\VandarCashier\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Http;
 use SebastianBergmann\CodeCoverage\Report\PHP;
 use Vandar\VandarCashier\Models\VandarSettlement;
-use Vandar\VandarCashier\VandarAuth;
 
 class VandarSettlementController extends Controller
 {
+    use \Vandar\VandarCashier\Utilities\Request;
 
     /**
      * Store a new settlement
@@ -26,7 +25,7 @@ class VandarSettlementController extends Controller
         $params['track_id'] = VandarSettlement::get('track_id')->last()['track_id'];
         $params['amount'] /= 10; // convert RIAL to TOMAN (for sending request)
 
-        $response = self::request('post', $params, 'store', 'v3');
+        $response = self::request('post', self::SETTLEMENT_URL('store', 'v3'), true, $params);
 
         if ($response->status() != 200)
             dd($response->object());
@@ -60,8 +59,7 @@ class VandarSettlementController extends Controller
      */
     public static function show($settlement_id)
     {
-        $response = self::request('get', '', $settlement_id);
-
+        $response = self::request('get', self::SETTLEMENT_URL($settlement_id), true);
 
         if ($response->status() != 200)
             dd($response->object());
@@ -83,7 +81,7 @@ class VandarSettlementController extends Controller
      */
     public static function list($params = null)
     {
-        $response = self::request('get', $params);
+        $response = self::request('get', self::SETTLEMENT_URL(), true, $params);
 
         if ($response->status() != 200)
             dd($response->object());
@@ -104,7 +102,7 @@ class VandarSettlementController extends Controller
      */
     public static function cancel($transaction_id)
     {
-        $response = self::request('delete', '', $transaction_id);
+        $response = self::request('delete', self::SETTLEMENT_URL($transaction_id), true);
 
         if ($response->status() != 200) {
             VandarSettlement::where('transaction_id', $transaction_id)
@@ -122,27 +120,6 @@ class VandarSettlementController extends Controller
 
         dd($response->object()->message);
     }
-
-
-
-
-    /**
-     * Send Request for Settlement
-     *
-     * @param string $url_param
-     * @param array $params 
-     */
-    private static function request($method, $params = null, $url_param = null, $version = null)
-    {
-        $access_token = VandarAuth::token();
-
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$access_token}",
-        ])->$method(self::SETTLEMENT_URL($url_param), $params);
-
-        return $response;
-    }
-
 
 
 

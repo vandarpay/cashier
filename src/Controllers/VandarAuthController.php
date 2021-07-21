@@ -2,14 +2,13 @@
 
 namespace Vandar\VandarCashier\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Http;
 use SebastianBergmann\CodeCoverage\Report\PHP;
 use Vandar\VandarCashier\Models\VandarAuthList;
 
 class VandarAuthController extends Controller
 {
+    use \Vandar\VandarCashier\Utilities\Request;
 
     const LOGIN_BASE_URL = 'https://api.vandar.io/v3/';
 
@@ -40,11 +39,9 @@ class VandarAuthController extends Controller
      */
     public static function login()
     {
-        $response = Http::post(self::LOGIN_URL('login'), [
-            'mobile' => $_ENV['VANDAR_USERNAME'],
-            'password' => $_ENV['VANDAR_PASSWORD']
-        ]);
+        $params = ['mobile' => $_ENV['VANDAR_USERNAME'], 'password' => $_ENV['VANDAR_PASSWORD']];
 
+        $response = self::request('post', self::LOGIN_URL('login'), false, $params);
 
         if ($response->status() != 200)
             dd($response->getReasonPhrase());
@@ -70,9 +67,9 @@ class VandarAuthController extends Controller
 
         $refresh_token = $refresh_token ?? (VandarAuthList::get('refresh_token')->last())->refresh_token;
 
-        $response = Http::asForm()->post(self::LOGIN_URL('refreshtoken'), [
-            'refreshtoken' => $refresh_token,
-        ]);
+        $params = ['refreshtoken' => $refresh_token];
+        $response = self::request('post', self::LOGIN_URL('refreshtoken'), false, $params);
+
 
         if ($response->status() != 200)
             dd($response->getReasonPhrase());
@@ -121,7 +118,7 @@ class VandarAuthController extends Controller
 
 
     /**
-     * Prepare Login Url for sending requests
+     * Login URL
      *
      * @param string|null $param
      * 

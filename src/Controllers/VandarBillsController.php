@@ -4,11 +4,11 @@ namespace Vandar\VandarCashier\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Vandar\VandarCashier\VandarAuth;
 
 class VandarBillsController extends Controller
 {
+    use \Vandar\VandarCashier\Utilities\Request;
+
     const BASE_BILLING_URL = 'https://api.vandar.io/v2/business/';
 
     /**
@@ -18,7 +18,7 @@ class VandarBillsController extends Controller
      */
     public static function balance()
     {
-        $response = self::request('balance');
+        $response = self::request('get', self::BILLING_URL('balance'), true);
 
         if ($response->status() != 200)
             dd($response->object()->error);
@@ -37,7 +37,7 @@ class VandarBillsController extends Controller
      */
     public static function list($params)
     {
-        $response = self::request('transaction', $params);
+        $response = self::request('get', self::BILLING_URL('transaction'), true, $params);
 
         if ($response->status() != 200)
             dd($response->object()->error);
@@ -49,26 +49,7 @@ class VandarBillsController extends Controller
 
 
     /**
-     * Send Request for Billing
-     *
-     * @param string $url_param
-     * @param array $params 
-     */
-    private static function request($url_param, $params = null)
-    {
-        $access_token = VandarAuth::token();
-
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$access_token}",
-        ])->get(self::BILLING_URL($url_param), $params);
-
-        return $response;
-    }
-
-
-
-    /**
-     * Set Billing Url
+     * Billing URL
      *
      * @param string $param
      * 
