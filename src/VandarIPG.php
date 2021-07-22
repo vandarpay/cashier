@@ -19,13 +19,5 @@ class VandarIPG
     {
         VandarIPGController::pay($params, $morphs);
     }
-
-
-    /**
-     * Check the payment status at the {CallBack Page}
-     */
-    public static function verifyPayment()
-    {
-        VandarIPGController::verifyPayment();
-    }
+    
 }

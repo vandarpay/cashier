@@ -8,6 +8,19 @@ use Vandar\VandarCashier\Controllers\VandarMandateController;
 class VandarMandate
 {
     /**
+     * Show the list of subscriptions
+     *
+     * @return array 
+     */
+    public static function list()
+    {
+        VandarMandateController::list();
+    }
+
+
+    
+
+    /**
      * Store new subscription
      *
      * @param array $params
@@ -18,16 +31,6 @@ class VandarMandate
         VandarMandateController::store($params);
     }
 
-
-    /**
-     * Show the list of subscriptions
-     *
-     * @return array 
-     */
-    public static function list()
-    {
-        VandarMandateController::list();
-    }
 
 
 
@@ -55,19 +58,6 @@ class VandarMandate
     public static function revoke($subscription_code)
     {
         VandarMandateController::revoke($subscription_code);
-    }
-
-    /**
-     * check and verify the subscription
-     */
-    public static function verifyMandate()
-    {
-        VandarMandateController::verifyMandate();
-    }
-
-    public function __call($name, $arguments)
-    {
-        dd($name . " " . $arguments);
     }
 
 }

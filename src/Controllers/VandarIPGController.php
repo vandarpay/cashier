@@ -89,34 +89,6 @@ class VandarIPGController extends Controller
 
 
 
-
-    /**
-     * Check the payment status at the {CallBack Page}
-     *
-     * @return method verifyTransaction()
-     */
-    public static function verifyPayment()
-    {
-        $response = (\Request::query());
-
-        if ($response['payment_status'] != 'OK') {
-
-            VandarPayment::where('token', $response['token'])
-                ->update([
-                    'errors' => json_encode('failed payment'),
-                    'status' => 'FAILED'
-                ]);
-
-
-            echo 'فرایند پرداخت با خطا مواجه شد <br> لطفا مجدداً تلاش کنید';
-            return;
-        }
-
-        return self::verifyTransaction($response['token']);
-    }
-
-
-
     /**
      * Make proper IPG Url for sending requests
      *

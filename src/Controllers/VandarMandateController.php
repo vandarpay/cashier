@@ -104,39 +104,6 @@ class VandarMandateController extends Controller
     }
 
 
-
-    /**
-     * Check the Mandate status at the CallBack Page
-     * 
-     * @return array $response
-     */
-    public static function verifyMandate()
-    {
-        $response = (\Request::query());
-
-        if ($response['status'] != 'SUCCEED') {
-            VandarMandate::where('token', $response['token'])
-                ->update([
-                    'errors' => json_encode('Failed To Access'),
-                    'status' => 'FAILED'
-                ]);
-
-            # return 
-            dd($response);
-        }
-
-        VandarMandate::where('token', $response['token'])
-            ->update([
-                'status' => 'SUCCEED',
-                'is_active' => true,
-                'authorization_id' => $response['authorization_id']
-            ]);
-
-        # return $response;
-        dd($response);
-    }
-
-    
     /**
      * Prepare Mandate Url for sending requests
      *
