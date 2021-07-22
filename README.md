@@ -122,7 +122,7 @@ use Vandar\VandarCashier\Traits\VandarVerify;
 
 use VandarVerify;
 
-self::verify(); // Call verify method
+self::VandarVerify(); // Call verify method
 ```
 in your the {callback page} that you added its URL(callback_url) in your Vandar Account to verify and continue the transaction process. 
 

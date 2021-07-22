@@ -30,7 +30,7 @@ class CreateVandarSettlementsTable extends Migration
             $table->boolean('is_instant')->default(false);
             $table->date('settlement_date')->nullable();
             $table->time('settlement_time')->nullable();
-            $table->date('settlement_date_jalali')->nullable();
+            $table->string('settlement_date_jalali')->nullable();
             $table->json('prediction')->nullable();
             $table->string('notify_url')->nullable();
             $table->string('errors')->nullable();

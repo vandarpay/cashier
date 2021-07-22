@@ -20,11 +20,7 @@ class VandarBillsController extends Controller
     {
         $response = self::request('get', self::BILLING_URL('balance'), true);
 
-        if ($response->status() != 200)
-            dd($response->object()->error);
-
-        # return $response->object();
-        dd($response->object()->data);
+        return $response->json()['data'];
     }
 
 
@@ -39,11 +35,7 @@ class VandarBillsController extends Controller
     {
         $response = self::request('get', self::BILLING_URL('transaction'), true, $params);
 
-        if ($response->status() != 200)
-            dd($response->object()->error);
-
-        # return $response->object()->data;
-        dd($response->object()->data);
+        return $response->json()['data'];
     }
 
 

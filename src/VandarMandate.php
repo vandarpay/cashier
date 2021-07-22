@@ -14,7 +14,7 @@ class VandarMandate
      */
     public static function list()
     {
-        VandarMandateController::list();
+        return VandarMandateController::list();
     }
 
 
@@ -28,7 +28,7 @@ class VandarMandate
      */
     public static function store($params)
     {
-        VandarMandateController::store($params);
+        return VandarMandateController::store($params);
     }
 
 
@@ -43,7 +43,7 @@ class VandarMandate
      */
     public static function show($subscription_code)
     {
-        VandarMandateController::show($subscription_code);
+        return VandarMandateController::show($subscription_code);
     }
 
 
@@ -57,7 +57,7 @@ class VandarMandate
      */
     public static function revoke($subscription_code)
     {
-        VandarMandateController::revoke($subscription_code);
+        return VandarMandateController::revoke($subscription_code);
     }
 
 }

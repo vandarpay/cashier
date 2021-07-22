@@ -17,7 +17,7 @@ class VandarIPG
      */
     public  static function pay($params, $morphs)
     {
-        VandarIPGController::pay($params, $morphs);
+        return VandarIPGController::pay($params, $morphs);
     }
     
 }

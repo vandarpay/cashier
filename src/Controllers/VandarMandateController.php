@@ -4,6 +4,7 @@ namespace Vandar\VandarCashier\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Redirect;
 use Vandar\VandarCashier\Models\VandarMandate;
 
 class VandarMandateController extends Controller
@@ -22,11 +23,7 @@ class VandarMandateController extends Controller
     {
         $response = self::request('get', self::MANDATE_URL(), true);
 
-        if ($response->status() != 200)
-            dd($response->object()->errors ?? $response->object()->error);
-
-        # return $response->object();
-        dd($response->object());
+        return $response->json();
     }
 
 
@@ -43,20 +40,13 @@ class VandarMandateController extends Controller
 
         $response = self::request('post', self::MANDATE_URL('store'), true, $params);
 
-
-        if ($response->status() != 200)
-            dd($response->object()->errors ?? $response->object()->error);
-
-
-        $params['token'] = $response->object()->result->authorization->token;
+        $params['token'] = $response->json()['result']['authorization']['token'];
 
 
         VandarMandate::create($params);
 
 
-        dd(self::MANDATE_REDIRECT_URL . $params['token']);
-        // return redirect()->away(self::MANDATE_REDIRECT_URL . $token);
-        // return redirect(self::MANDATE_REDIRECT_URL . $token);
+        return Redirect::away(self::MANDATE_REDIRECT_URL . $params['token']);
     }
 
 
@@ -72,12 +62,7 @@ class VandarMandateController extends Controller
     {
         $response = self::request('get', self::MANDATE_URL($authorization_id), true);
 
-        if ($response->status() != 200)
-            dd($response->object()->errors ?? $response->object()->error);
-
-
-        # return $response->object();
-        dd($response->object());
+        return $response->json();
     }
 
 
@@ -92,15 +77,10 @@ class VandarMandateController extends Controller
     {
         $response = self::request('delete', self::MANDATE_URL($authorization_id), true);
 
-        if ($response->status() != 200)
-            dd($response->object()->errors ?? $response->object()->error ?? $response->object()->message);
-
-
         VandarMandate::where('authorization_id', $authorization_id)
             ->update(['is_active' => false]);
 
-        # return $response->object();
-        dd($response->object());
+        return $response->json();
     }
 
 

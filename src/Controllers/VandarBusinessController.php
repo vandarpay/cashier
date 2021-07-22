@@ -20,12 +20,7 @@ class VandarBusinessController extends Controller
     {
         $response = self::request('get', self::BUSINESS_URL(), true);
 
-        if ($response->status() != 200)
-            dd($response->object()->error);
-
-
-        # return $response->data;
-        dd($response->object()->data);
+        return $response->json()['data'];
     }
 
 
@@ -41,12 +36,7 @@ class VandarBusinessController extends Controller
     {
         $response = self::request('get', self::BUSINESS_URL($_ENV['VANDAR_BUSINESS_NAME']), true);
 
-        if ($response->status() != 200)
-            dd($response->object()->error);
-
-
-        # return $response->object()->data;
-        dd($response->object()->data);
+        return $response->json()['data'];
     }
 
 
@@ -58,17 +48,11 @@ class VandarBusinessController extends Controller
      * 
      * @return object 
      */
-    public static function users()
+    public static function users($params = null)
     {
-        $response = self::request('get', self::BUSINESS_URL($_ENV['VANDAR_BUSINESS_NAME'], '/iam'), true);
+        $response = self::request('get', self::BUSINESS_URL($_ENV['VANDAR_BUSINESS_NAME'], '/iam'), true, $params);
 
-        if ($response->status() != 200)
-            dd($response->object()->error);
-
-
-
-        # return $response->object()->data;
-        dd($response->object()->data);
+        return $response->json()['data'];
     }
 
 

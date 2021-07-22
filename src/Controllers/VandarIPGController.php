@@ -5,12 +5,13 @@ namespace Vandar\VandarCashier\Controllers;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Redirect;
 use Vandar\VandarCashier\Models\VandarPayment;
 
 class VandarIPGController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
-    
+
 
     const IPG_BASE_URL = "https://ipg.vandar.io/api/v3/";
     const IPG_REDIRECT_URL = "https://ipg.vandar.io/v3/";
@@ -26,12 +27,8 @@ class VandarIPGController extends Controller
     {
         $params['callback_url'] = $params['callback_url'] ?? ($_ENV['VANDAR_CALLBACK_URL']);
         $params['api_key'] = $_ENV['VANDAR_API_KEY'];
-        
+
         $response = self::request('post', self::IPG_URL('send'), false, $params);
-
-        if ($response->status() != 200)
-            dd($response->object()->errors);
-
 
         # compatible morphs with db structure
         foreach ($morphs as $key => $value) {
@@ -40,16 +37,14 @@ class VandarIPGController extends Controller
         }
 
         # Add {payment_token} into $params
-        $params['token'] = $response->object()->token;
+        $params['token'] = $response->json()['token'];
         $params = array_merge($params, $morphs);
 
 
         VandarPayment::create($params);
 
 
-        // return redirect()->away(self::IPG_REDIRECT_URL . $response->object()->token);
-        // return redirect(self::IPG_REDIRECT_URL . $response->object()->token);
-        dd(self::IPG_REDIRECT_URL . $response->object()->token);
+        return Redirect::away(self::IPG_REDIRECT_URL . $response->json()['token']);
     }
 
 
@@ -68,10 +63,10 @@ class VandarIPGController extends Controller
         if ($response->status() != 200) {
             VandarPayment::where('token', $payment_token)
                 ->update([
-                    'errors' => json_encode($response->object()->errors),
+                    'errors' => json_encode($response->json()['errors']),
                     'status' => 'FAILED'
                 ]);
-            dd($response->object()->errors);
+            return $response->json()['errors'];
         }
 
 
@@ -83,8 +78,7 @@ class VandarIPGController extends Controller
         VandarPayment::where('token', $payment_token)
             ->update($response);
 
-        # return $response;
-        dd($response);
+        return $response;
     }
 
 
@@ -108,7 +102,7 @@ class VandarIPGController extends Controller
     {
         $keys = array_keys($params);
         foreach ($keys as $key) {
-            $keys[array_search($key, $keys)] = Str::of($key)->snake();
+            $keys[array_search($key, $keys)] = Str::snake($key);
             $params = array_combine($keys, $params);
         }
 

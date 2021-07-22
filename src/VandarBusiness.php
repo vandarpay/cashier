@@ -8,18 +8,18 @@ class VandarBusiness
 {
     public static function list()
     {
-        VandarBusinessController::list();
+        return VandarBusinessController::list();
     }
 
-    
+
     public static function info()
     {
-        VandarBusinessController::info();
+        return VandarBusinessController::info();
     }
 
 
-    public static function users()
+    public static function users($params = null)
     {
-        VandarBusinessController::users();
+        return VandarBusinessController::users($params);
     }
 }

@@ -21,14 +21,14 @@ class VandarAuthController extends Controller
     public static function getToken()
     {
         if (!(VandarAuthList::count()))
-            return (self::login()->access_token);
+            return (self::login()['access_token']);
 
         $authData = VandarAuthList::get()->last();
 
-        if (!self::isTokenValid($authData->expires_in))
-            return self::refreshToken($authData->refresh_token)->access_token;
+        if (!self::isTokenValid($authData['expires_in']))
+            return self::refreshToken($authData['refresh_token'])['access_token'];
 
-        return $authData->access_token;
+        return $authData['access_token'];
     }
 
 
@@ -43,13 +43,9 @@ class VandarAuthController extends Controller
 
         $response = self::request('post', self::LOGIN_URL('login'), false, $params);
 
-        if ($response->status() != 200)
-            dd($response->getReasonPhrase());
-
         self::addAuthData($response->json());
 
-
-        return $response->object();
+        return $response->json();
     }
 
 
@@ -70,13 +66,9 @@ class VandarAuthController extends Controller
         $params = ['refreshtoken' => $refresh_token];
         $response = self::request('post', self::LOGIN_URL('refreshtoken'), false, $params);
 
-
-        if ($response->status() != 200)
-            dd($response->getReasonPhrase());
-
         self::addAuthData($response->json());
 
-        return $response->object();
+        return $response->json();
     }
 
 

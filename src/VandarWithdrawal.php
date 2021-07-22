@@ -9,24 +9,24 @@ class VandarWithdrawal
 
     public static function store($params)
     {
-        VandarWithdrawalController::store($params);
+        return VandarWithdrawalController::store($params);
     }
 
 
     public static function list()
     {
-        VandarWithdrawalController::list();
+        return VandarWithdrawalController::list();
     }
 
 
     public static function show($params)
     {
-        VandarWithdrawalController::show($params);
+        return VandarWithdrawalController::show($params);
     }
 
 
     public static function cancel($params)
     {
-        VandarWithdrawalController::cancel($params);
+        return VandarWithdrawalController::cancel($params);
     }
 }

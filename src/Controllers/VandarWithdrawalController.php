@@ -23,21 +23,17 @@ class VandarWithdrawalController extends Controller
 
         $response = self::request('post', self::WITHDRAWAL_URL('store'), true, $params);
 
-        if ($response->status() != 200)
-            dd($response->object()->errors ?? $response->object()->error);
-
         # prepare data for DB structure
-        $data = $response->object()->result->withdrawal;
+        $data = $response->json()['result']['withdrawal'];
 
-        $data->withdrawal_id = $data->id;
-        unset($data->id);
+        $data['withdrawal_id'] = $data['id'];
+        unset($data['id']);
 
 
         VandarWithdrawal::create((array)$data);
 
 
-        # return $data;
-        dd($data);
+        return $data;
     }
 
 
@@ -51,12 +47,7 @@ class VandarWithdrawalController extends Controller
     {
         $response = self::request('get', self::WITHDRAWAL_URL(), true);
 
-        if ($response->status() != 200)
-            dd($response->object()->errors ?? $response->object()->error);
-
-
-        # return $response->object();
-        dd($response->object());
+        return $response->json();
     }
 
 
@@ -72,11 +63,7 @@ class VandarWithdrawalController extends Controller
     {
         $response = self::request('get', self::WITHDRAWAL_URL($withdrawal_id), true);
 
-        if ($response->status() != 200)
-            dd($response->object()->errors ?? $response->object()->error);
-
-        # return $response->object()->result->withdrawal;
-        dd($response->object()->result->withdrawal);
+        return $response->json()['result']['withdrawal'];
     }
 
 
@@ -92,16 +79,11 @@ class VandarWithdrawalController extends Controller
     {
         $response = self::request('put', self::WITHDRAWAL_URL($withdrawal_id), true);
 
-        if ($response->status() != 200)
-            dd($response->object()->errors ?? $response->object()->error);
-
-
         VandarWithdrawal::where('withdrawal_id', $withdrawal_id)
             ->update(['status' => 'CANCELED']);
 
 
-        # return $response;
-        dd($response->object());
+        return $response->json();
     }
 
 

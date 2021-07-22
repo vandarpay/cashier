@@ -20,7 +20,7 @@ trait Request
     {
         # Send Headers without header
         if (!$header)
-            return Http::$method($url, $params);
+            return self::verifyResponse(Http::$method($url, $params));
 
 
 
@@ -30,6 +30,19 @@ trait Request
             'Authorization' => "Bearer {$access_token}",
             'Accept' => 'application/json'
         ];
-        return Http::withHeaders($headers)->$method($url, $params);
+        return self::verifyResponse(Http::withHeaders($headers)->$method($url, $params));
+    }
+
+
+    /**
+     * Verify Requests Response by status code
+     */
+    public static function verifyResponse($response)
+    {
+        if ($response->status() != 200)
+            return $response->throw();
+
+
+        return $response;
     }
 }

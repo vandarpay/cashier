@@ -11,22 +11,24 @@ class VandarSettlement
 
     public static function store($params)
     {
-        VandarSettlementController::store($params);
+        return VandarSettlementController::store($params);
     }
+
 
     public static function show($params)
     {
-        VandarSettlementController::show($params);
+        return VandarSettlementController::show($params);
     }
+
 
     public static function list($params = null)
     {
-        VandarSettlementController::list($params);
+        return VandarSettlementController::list($params);
     }
+
 
     public static function cancel($params)
     {
-        VandarSettlementController::cancel($params);
+        return VandarSettlementController::cancel($params);
     }
-
 }

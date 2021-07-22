@@ -8,8 +8,8 @@ trait VandarVerify
 {
     use \Vandar\VandarCashier\Utilities\Verify;
 
-    public static function vandar_verify()
+    public static function vandarVerify()
     {
-        self::verify((\Request::query()));
+        return self::verify((\Request::query()));
     }
 }

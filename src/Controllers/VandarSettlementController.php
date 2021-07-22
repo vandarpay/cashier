@@ -27,24 +27,19 @@ class VandarSettlementController extends Controller
 
         $response = self::request('post', self::SETTLEMENT_URL('store', 'v3'), true, $params);
 
-        if ($response->status() != 200)
-            dd($response->object());
-
-
         # convert id to settlement_id for database compatible
-        $data = $response->object()->data->settlement[0];
+        $data = $response->json()['data']['settlement'][0];
 
 
-        $data->settlement_id = $data->id;
-        $data->prediction = json_encode($data->prediction);
-        unset($data->id);
+        $data['settlement_id'] = $data['id'];
+        $data['prediction'] = json_encode($data['prediction']);
+        unset($data['id']);
 
 
         VandarSettlement::where('track_id', $params['track_id'])
             ->update((array)$data);
 
-        dd($response->object()->data->settlement[0]);
-        # return $response;
+        return $response->json()['data']['settlement'];
     }
 
 
@@ -61,12 +56,7 @@ class VandarSettlementController extends Controller
     {
         $response = self::request('get', self::SETTLEMENT_URL($settlement_id), true);
 
-        if ($response->status() != 200)
-            dd($response->object());
-
-
-        # return $response->object()->data->settlement;
-        dd($response->object()->data->settlement);
+        return $response->json()['data']['settlement'];
     }
 
 
@@ -83,11 +73,7 @@ class VandarSettlementController extends Controller
     {
         $response = self::request('get', self::SETTLEMENT_URL(), true, $params);
 
-        if ($response->status() != 200)
-            dd($response->object());
-
-        # return $response->object();
-        dd($response->object()->data);
+        return $response->json()['data'];
     }
 
 
@@ -109,7 +95,7 @@ class VandarSettlementController extends Controller
                 ->update([
                     'errors' => $response->object()->error
                 ]);
-            dd($response->object());
+            return $response->json();
         }
 
         VandarSettlement::where('transaction_id', $transaction_id)
@@ -118,7 +104,7 @@ class VandarSettlementController extends Controller
             ]);
 
 
-        dd($response->object()->message);
+        return $response->json()['message'];
     }
 
 

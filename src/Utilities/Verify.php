@@ -5,6 +5,7 @@ namespace Vandar\VandarCashier\Utilities;
 use Vandar\VandarCashier\Controllers\VandarIPGController;
 use Vandar\VandarCashier\Models\VandarMandate;
 use Vandar\VandarCashier\Models\VandarPayment;
+use Illuminate\Support\Str;
 
 trait Verify
 {
@@ -15,7 +16,7 @@ trait Verify
      */
     public static function verify($request_query)
     {
-        $method_name = 'verify_' . array_key_last($request_query);
+        $method_name = Str::camel('verify_' . array_key_last($request_query));
         return self::$method_name($request_query);
     }
 
@@ -26,7 +27,7 @@ trait Verify
      * 
      * @param array $request_query
      */
-    private static function verify_payment_status($request_query)
+    private static function verifyPaymentStatus($request_query)
     {
         if ($request_query['payment_status'] != 'OK') {
 
@@ -36,9 +37,7 @@ trait Verify
                     'status' => 'FAILED'
                 ]);
 
-
-            echo 'فرایند پرداخت با خطا مواجه شد <br> لطفا مجدداً تلاش کنید';
-            return;
+            return $request_query;
         }
 
         return VandarIPGController::verifyTransaction($request_query['token']);
@@ -51,7 +50,7 @@ trait Verify
      * 
      * @param array $request_query
      */
-    private static function verify_status($request_query)
+    private static function verifyStatus($request_query)
     {
         if ($request_query['status'] != 'SUCCEED') {
             VandarMandate::where('token', $request_query['token'])
@@ -60,8 +59,7 @@ trait Verify
                     'status' => 'FAILED'
                 ]);
 
-            # return 
-            dd($request_query);
+            return $request_query;
         }
 
         VandarMandate::where('token', $request_query['token'])
@@ -71,7 +69,6 @@ trait Verify
                 'authorization_id' => $request_query['authorization_id']
             ]);
 
-        # return $response;
-        dd($request_query);
+        return $request_query;
     }
 }
