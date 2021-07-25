@@ -17,11 +17,11 @@ class VandarWithdrawalController extends Controller
      * 
      * @return object $data
      */
-    public static function store($params)
+    public function store($params)
     {
         $params['notify_url'] = $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL'];
 
-        $response = self::request('post', self::WITHDRAWAL_URL('store'), true, $params);
+        $response = $this->request('post', $this->WITHDRAWAL_URL('store'), true, $params);
 
         # prepare data for DB structure
         $data = $response->json()['result']['withdrawal'];
@@ -43,9 +43,9 @@ class VandarWithdrawalController extends Controller
      *
      * @return object
      */
-    public static function list()
+    public function list()
     {
-        $response = self::request('get', self::WITHDRAWAL_URL(), true);
+        $response = $this->request('get', $this->WITHDRAWAL_URL(), true);
 
         return $response->json();
     }
@@ -59,9 +59,9 @@ class VandarWithdrawalController extends Controller
      * 
      * @return object
      */
-    public static function show($withdrawal_id)
+    public function show($withdrawal_id)
     {
-        $response = self::request('get', self::WITHDRAWAL_URL($withdrawal_id), true);
+        $response = $this->request('get', $this->WITHDRAWAL_URL($withdrawal_id), true);
 
         return $response->json()['result']['withdrawal'];
     }
@@ -75,9 +75,9 @@ class VandarWithdrawalController extends Controller
      * 
      * @return object
      */
-    public static function cancel($withdrawal_id)
+    public function cancel($withdrawal_id)
     {
-        $response = self::request('put', self::WITHDRAWAL_URL($withdrawal_id), true);
+        $response = $this->request('put', $this->WITHDRAWAL_URL($withdrawal_id), true);
 
         VandarWithdrawal::where('withdrawal_id', $withdrawal_id)
             ->update(['status' => 'CANCELED']);
@@ -94,7 +94,7 @@ class VandarWithdrawalController extends Controller
      * 
      * @return string $url
      */
-    private static function WITHDRAWAL_URL(string $param = null)
+    private function WITHDRAWAL_URL(string $param = null)
     {
         return "https://api.vandar.io/v2/business/$_ENV[VANDAR_BUSINESS_NAME]/subscription/withdrawal/$param";
     }

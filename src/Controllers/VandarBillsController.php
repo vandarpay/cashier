@@ -16,9 +16,9 @@ class VandarBillsController extends Controller
      *
      * @return array $data
      */
-    public static function balance()
+    public function balance()
     {
-        $response = self::request('get', self::BILLING_URL('balance'), true);
+        $response = $this->request('get', $this->BILLING_URL('balance'), true);
 
         return $response->json()['data'];
     }
@@ -31,9 +31,9 @@ class VandarBillsController extends Controller
      *
      * @return array $data
      */
-    public static function list($params)
+    public function list($params)
     {
-        $response = self::request('get', self::BILLING_URL('transaction'), true, $params);
+        $response = $this->request('get', $this->BILLING_URL('transaction'), true, $params);
 
         return $response->json()['data'];
     }
@@ -47,7 +47,7 @@ class VandarBillsController extends Controller
      * 
      * @return string  
      */
-    private static function BILLING_URL(string $param)
+    private function BILLING_URL(string $param)
     {
         return self::BASE_BILLING_URL . $_ENV['VANDAR_BUSINESS_NAME'] . "/$param";
     }

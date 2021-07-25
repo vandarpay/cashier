@@ -85,20 +85,20 @@ use Paymentable;
 
 
 #### #**USAGE**
-
+For Using all the package method, you just need to use main Vandar file namespace in your files that you use it:
+```php
+use Vandar\VandarCashier\Vandar;
+```
 
 #### #Authentication
 ```php
-use Vandar\VandarCashier\VandarAuth;
+Vandar::Auth()->token(); // Get token
 
+Vandar::Auth()->login(); // Login to Vandar account and get token
 
-VandarAuth::token(); // Get token
+Vandar::Auth()->isTokenValid(); // Check the token validation (expired or no?)
 
-VandarAuth::login(); // Login to Vandar account and get token
-
-VandarAuth::isTokenValid(); // Check the token validation (expired or no?)
-
-VandarAuth::refreshToken(); // Refresh the token and get new one
+Vandar::Auth()->refreshToken(); // Refresh the token and get new one
 
 ```
 
@@ -106,23 +106,12 @@ VandarAuth::refreshToken(); // Refresh the token and get new one
 
 #### #IPG
 ```php
-use Vandar\VandarCashier\VandarIPG;
-
-
-VandarIPG::pay($params); // pass **$payment** parameter that mentioned in the Vandar Document to do the all payment process.
+Vandar::IPG()->pay($params); // pass **$payment** parameter that mentioned in the Vandar Document to do the all payment process.
 ```
-+ **NOTE!**: To Verify the payment after return from payment page, you must:
-
-1. use `VandarVerify` trait
-
-2. call `verify method` as static
++ **NOTE!**: To Verify the payment after return from payment page, you must just add
 
 ```php
-use Vandar\VandarCashier\Traits\VandarVerify;
-
-use VandarVerify;
-
-self::VandarVerify(); // Call verify method
+Vandar::Verify();
 ```
 in your the {callback page} that you added its URL(callback_url) in your Vandar Account to verify and continue the transaction process. 
 
@@ -131,90 +120,64 @@ in your the {callback page} that you added its URL(callback_url) in your Vandar 
 
 #### #Settlement
 ```php
-use Vandar\VandarCashier\VandarSettlement;
+Vandar::Settlement()->list(); // Get the list of settlements
 
+Vandar::Settlement()->store(); // Store new settlement
 
-VandarSettlement::list(); // Get the list of settlements
+Vandar::Settlement()->show(); // Get more details about a specific settlement
 
-VandarSettlement::store(); // Store new settlement
-
-VandarSettlement::show(); // Get more details about a specific settlement
-
-VandarSettlement::cancel(); // Cancel the specific settlement
+Vandar::Settlement()->cancel(); // Cancel the specific settlement
 ```
 
 
 
 #### #Billing
 ```php
-use Vandar\VandarCashier\VandarBills;
+Vandar::Bills()->balance(); // Get the current balance of your business
 
-
-VandarBills::balance(); // Get the current balance of your business
-
-VandarBills::list(); // Get the list of billing of your business
+Vandar::Bills()->list(); // Get the list of billing of your business
 ```
 
 
 
 #### #Business
 ```php
-use Vandar\VandarCashier\VandarBusiness;
+Vandar::Business()->list(); // Get the list of your businesses of your Vandar account
 
+Vandar::Business()->info(); // Show the informations about the specific business
 
-VandarBusiness::list(); // Get the list of your businesses of your Vandar account
-
-VandarBusiness::info(); // Show the informations about the specific business
-
-VandarBusiness::users(); // Get the list of busniess users with their informations
-
+Vandar::Business()->users(); // Get the list of busniess users with their informations
 ```
 
 
 
 #### #Mandate
 ```php
-use Vandar\VandarCashier\VandarMandate;
+Vandar::Mandate()->list(); // Get the list of confirmed Mandates
 
+Vandar::Mandate()->store(); // Store new Mandate
 
-VandarMandate::list(); // Get the list of confirmed Mandates
+Vandar::Mandate()->show(); // Show the informations of specific mandate
 
-VandarMandate::store(); // Store new Mandate
-
-VandarMandate::show(); // Show the informations of specific mandate
-
-VandarMandate::revoke(); // Revoke specific mandate
-
+Vandar::Mandate()->revoke(); // Revoke specific mandate
 ```
-+ **NOTE!**: To Verify the Mandate after return from bank page, you must:
-
-1. use `VandarVerify` trait
-
-2. call `verify method` as static
++ **NOTE!**: To Verify the payment after return from payment page, you must just add
 
 ```php
-use Vandar\VandarCashier\Traits\VandarVerify;
-
-use VandarVerify;
-
-self::verify(); // Call verify method
+Vandar::Verify();
 ```
-in your the {callback page} that you added its URL(callback_url) in your Vandar Account to verify and continue the process.
+in your the {callback page} that you added its URL(callback_url) in your Vandar Account to verify and continue the transaction process. 
 
 
 #### #Withdrawal
 ```php
-use Vandar\VandarCashier\VandarWithdrawal;
+Vandar::Withdrawal()->list(); // Get the list of Withdrawals
 
+Vandar::Withdrawal()->store(); // Store new withdrawal
 
-VandarWithdrawal::list(); // Get the list of Withdrawals
+Vandar::Withdrawal()->show(); // Show details about specific withdrawal
 
-VandarWithdrawal::store(); // Store new withdrawal
-
-VandarWithdrawal::show(); // Show details about specific withdrawal
-
-VandarWithdrawal::cancel(); // Cancel the specific withdrawal
-
+Vandar::Withdrawal()->cancel(); // Cancel the specific withdrawal
 ```
 
 

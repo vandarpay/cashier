@@ -3,6 +3,7 @@
 namespace Vandar\VandarCashier\Utilities;
 
 use Illuminate\Support\Facades\Http;
+use Vandar\VandarCashier\Vandar;
 use Vandar\VandarCashier\VandarAuth;
 
 trait Request
@@ -16,28 +17,28 @@ trait Request
      * @param string $params list of parameters for the request
      * @param boolean $header Determines that request has HEADER or no!
      */
-    public static function request($method, $url, $header, $params = null)
+    public function request($method, $url, $header, $params = null)
     {
         # Send Headers without header
         if (!$header)
-            return self::verifyResponse(Http::$method($url, $params));
+            return $this->verifyResponse(Http::$method($url, $params));
 
 
 
         # Send Headers with headers (Authorization, Accept, ...)
-        $access_token = VandarAuth::token();
+        $access_token = Vandar::Auth()->token();
         $headers = [
             'Authorization' => "Bearer {$access_token}",
             'Accept' => 'application/json'
         ];
-        return self::verifyResponse(Http::withHeaders($headers)->$method($url, $params));
+        return $this->verifyResponse(Http::withHeaders($headers)->$method($url, $params));
     }
 
 
     /**
      * Verify Requests Response by status code
      */
-    public static function verifyResponse($response)
+    public function verifyResponse($response)
     {
         if ($response->status() != 200)
             return $response->throw();

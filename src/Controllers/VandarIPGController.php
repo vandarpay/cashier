@@ -23,12 +23,12 @@ class VandarIPGController extends Controller
      * @param array $params
      * @param array $morphs
      */
-    public static function pay(array $params = null, $morphs = null)
+    public function pay(array $params = null, $morphs = null)
     {
         $params['callback_url'] = $params['callback_url'] ?? ($_ENV['VANDAR_CALLBACK_URL']);
         $params['api_key'] = $_ENV['VANDAR_API_KEY'];
 
-        $response = self::request('post', self::IPG_URL('send'), false, $params);
+        $response = $this->request('post', $this->IPG_URL('send'), false, $params);
 
         # compatible morphs with db structure
         foreach ($morphs as $key => $value) {
@@ -54,11 +54,11 @@ class VandarIPGController extends Controller
      *
      * @return bool 1:SUCCEED
      */
-    public static function verifyTransaction($payment_token)
+    public function verifyTransaction($payment_token)
     {
         $params = ['api_key' => $_ENV['VANDAR_API_KEY'], 'token' => $payment_token];
 
-        $response = self::request('post', self::IPG_URL('verify'), false, $params);
+        $response = $this->request('post', $this->IPG_URL('verify'), false, $params);
 
         if ($response->status() != 200) {
             VandarPayment::where('token', $payment_token)
@@ -71,7 +71,7 @@ class VandarIPGController extends Controller
 
 
         # prepare response for making compatible with DB
-        $response = self::prepareResponseFormat($response->json());
+        $response = $this->prepareResponseFormat($response->json());
 
         $response['status'] = 'SUCCEED';
 
@@ -90,7 +90,7 @@ class VandarIPGController extends Controller
      * 
      * @return string 
      */
-    private static function IPG_URL(string $url_param)
+    private function IPG_URL(string $url_param)
     {
         return self::IPG_BASE_URL . $url_param;
     }
@@ -98,7 +98,7 @@ class VandarIPGController extends Controller
 
 
 
-    private static function prepareResponseFormat($params)
+    private function prepareResponseFormat($params)
     {
         $keys = array_keys($params);
         foreach ($keys as $key) {

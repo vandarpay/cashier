@@ -18,14 +18,14 @@ class VandarSettlementController extends Controller
      * 
      * @return array 
      */
-    public static function store($params)
+    public function store($params)
     {
         $params['notify_url'] = $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL'];
         VandarSettlement::create($params);
         $params['track_id'] = VandarSettlement::get('track_id')->last()['track_id'];
         $params['amount'] /= 10; // convert RIAL to TOMAN (for sending request)
 
-        $response = self::request('post', self::SETTLEMENT_URL('store', 'v3'), true, $params);
+        $response = $this->request('post', $this->SETTLEMENT_URL('store', 'v3'), true, $params);
 
         # convert id to settlement_id for database compatible
         $data = $response->json()['data']['settlement'][0];
@@ -52,9 +52,9 @@ class VandarSettlementController extends Controller
      * 
      * @return array
      */
-    public static function show($settlement_id)
+    public function show($settlement_id)
     {
-        $response = self::request('get', self::SETTLEMENT_URL($settlement_id), true);
+        $response = $this->request('get', $this->SETTLEMENT_URL($settlement_id), true);
 
         return $response->json()['data']['settlement'];
     }
@@ -69,9 +69,9 @@ class VandarSettlementController extends Controller
      *
      * @return array
      */
-    public static function list($params = null)
+    public function list($params = null)
     {
-        $response = self::request('get', self::SETTLEMENT_URL(), true, $params);
+        $response = $this->request('get', $this->SETTLEMENT_URL(), true, $params);
 
         return $response->json()['data'];
     }
@@ -86,9 +86,9 @@ class VandarSettlementController extends Controller
      * 
      * @return string
      */
-    public static function cancel($transaction_id)
+    public function cancel($transaction_id)
     {
-        $response = self::request('delete', self::SETTLEMENT_URL($transaction_id), true);
+        $response = $this->request('delete', $this->SETTLEMENT_URL($transaction_id), true);
 
         if ($response->status() != 200) {
             VandarSettlement::where('transaction_id', $transaction_id)
@@ -117,7 +117,7 @@ class VandarSettlementController extends Controller
      * 
      * @return string 
      */
-    private static function SETTLEMENT_URL($param = null, $version = 'v2.1')
+    private function SETTLEMENT_URL($param = null, $version = 'v2.1')
     {
         return "https://api.vandar.io/$version/business/{$_ENV['VANDAR_BUSINESS_NAME']}/settlement/$param";
     }

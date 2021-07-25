@@ -14,7 +14,7 @@ trait Verify
      *
      * @param array $request_query
      */
-    public static function verify($request_query)
+    public static function verifyTrait($request_query)
     {
         $method_name = Str::camel('verify_' . array_key_last($request_query));
         return self::$method_name($request_query);
@@ -40,7 +40,7 @@ trait Verify
             return $request_query;
         }
 
-        return VandarIPGController::verifyTransaction($request_query['token']);
+        return (new VandarIPGController)->verifyTransaction($request_query['token']);
     }
 
 

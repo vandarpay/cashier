@@ -16,9 +16,9 @@ class VandarBusinessController extends Controller
      *
      * @return array
      */
-    public static function list()
+    public function list()
     {
-        $response = self::request('get', self::BUSINESS_URL(), true);
+        $response = $this->request('get', $this->BUSINESS_URL(), true);
 
         return $response->json()['data'];
     }
@@ -32,9 +32,9 @@ class VandarBusinessController extends Controller
      * 
      * @return object $business_info
      */
-    public static function info()
+    public function info()
     {
-        $response = self::request('get', self::BUSINESS_URL($_ENV['VANDAR_BUSINESS_NAME']), true);
+        $response = $this->request('get', $this->BUSINESS_URL($_ENV['VANDAR_BUSINESS_NAME']), true);
 
         return $response->json()['data'];
     }
@@ -48,9 +48,9 @@ class VandarBusinessController extends Controller
      * 
      * @return object 
      */
-    public static function users($params = null)
+    public function users($params = null)
     {
-        $response = self::request('get', self::BUSINESS_URL($_ENV['VANDAR_BUSINESS_NAME'], '/iam'), true, $params);
+        $response = $this->request('get', $this->BUSINESS_URL($_ENV['VANDAR_BUSINESS_NAME'], '/iam'), true, $params);
 
         return $response->json()['data'];
     }
@@ -64,7 +64,7 @@ class VandarBusinessController extends Controller
      * 
      * @return string
      */
-    private static function BUSINESS_URL(string $business = null, string $param = null)
+    private function BUSINESS_URL(string $business = null, string $param = null)
     {
         return self::BUSINESS_BASE_URL . $business . $param;
     }

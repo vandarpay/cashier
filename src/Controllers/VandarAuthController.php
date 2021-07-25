@@ -18,15 +18,15 @@ class VandarAuthController extends Controller
      *
      * @return string
      */
-    public static function getToken()
+    public function token()
     {
         if (!(VandarAuthList::count()))
-            return (self::login()['access_token']);
+            return ($this->login()['access_token']);
 
         $authData = VandarAuthList::get()->last();
 
-        if (!self::isTokenValid($authData['expires_in']))
-            return self::refreshToken($authData['refresh_token'])['access_token'];
+        if (!$this->isTokenValid($authData['expires_in']))
+            return $this->refreshToken($authData['refresh_token'])['access_token'];
 
         return $authData['access_token'];
     }
@@ -37,13 +37,13 @@ class VandarAuthController extends Controller
      *
      * @return object 
      */
-    public static function login()
+    public function login()
     {
         $params = ['mobile' => $_ENV['VANDAR_USERNAME'], 'password' => $_ENV['VANDAR_PASSWORD']];
 
-        $response = self::request('post', self::LOGIN_URL('login'), false, $params);
+        $response = $this->request('post', $this->LOGIN_URL('login'), false, $params);
 
-        self::addAuthData($response->json());
+        $this->addAuthData($response->json());
 
         return $response->json();
     }
@@ -58,15 +58,15 @@ class VandarAuthController extends Controller
      * 
      * @return object
      */
-    public static function refreshToken($refresh_token = null)
+    public function refreshToken($refresh_token = null)
     {
 
         $refresh_token = $refresh_token ?? (VandarAuthList::get('refresh_token')->last())->refresh_token;
 
         $params = ['refreshtoken' => $refresh_token];
-        $response = self::request('post', self::LOGIN_URL('refreshtoken'), false, $params);
+        $response = $this->request('post', $this->LOGIN_URL('refreshtoken'), false, $params);
 
-        self::addAuthData($response->json());
+        $this->addAuthData($response->json());
 
         return $response->json();
     }
@@ -81,7 +81,7 @@ class VandarAuthController extends Controller
      * 
      * @return boolean
      */
-    public static function isTokenValid($expirationTime = null)
+    public function isTokenValid($expirationTime = null)
     {
         ($expirationTime) ?? $expirationTime = VandarAuthList::get('expires_in')->last();
 
@@ -95,7 +95,7 @@ class VandarAuthController extends Controller
      *
      * @param array $response
      */
-    private static function addAuthData($response)
+    private function addAuthData($response)
     {
         $auth_id = (VandarAuthList::get('id')->last())['id'] ?? 1;
 
@@ -116,7 +116,7 @@ class VandarAuthController extends Controller
      * 
      * @return string 
      */
-    private static function LOGIN_URL(string $param = null)
+    private function LOGIN_URL(string $param = null)
     {
         return self::LOGIN_BASE_URL . $param;
     }

@@ -19,9 +19,9 @@ class VandarMandateController extends Controller
      *
      * @return object
      */
-    public static function list()
+    public function list()
     {
-        $response = self::request('get', self::MANDATE_URL(), true);
+        $response = $this->request('get', $this->MANDATE_URL(), true);
 
         return $response->json();
     }
@@ -33,12 +33,12 @@ class VandarMandateController extends Controller
      *
      * @param array $params
      */
-    public static function store($params)
+    public function store($params)
     {
         $params['expiration_date'] = $params['expiration_date'] ?? date('Y-m-d', strtotime(date('Y-m-d') . ' + 3 years'));
         $params['callback_url'] = $params['callback_url'] ?? $_ENV['VANDAR_CALLBACK_URL'];
 
-        $response = self::request('post', self::MANDATE_URL('store'), true, $params);
+        $response = $this->request('post', $this->MANDATE_URL('store'), true, $params);
 
         $params['token'] = $response->json()['result']['authorization']['token'];
 
@@ -58,9 +58,9 @@ class VandarMandateController extends Controller
      * 
      * @return array
      */
-    public static function show($authorization_id)
+    public function show($authorization_id)
     {
-        $response = self::request('get', self::MANDATE_URL($authorization_id), true);
+        $response = $this->request('get', $this->MANDATE_URL($authorization_id), true);
 
         return $response->json();
     }
@@ -73,9 +73,9 @@ class VandarMandateController extends Controller
      * 
      * @return array
      */
-    public static function revoke($authorization_id)
+    public function revoke($authorization_id)
     {
-        $response = self::request('delete', self::MANDATE_URL($authorization_id), true);
+        $response = $this->request('delete', $this->MANDATE_URL($authorization_id), true);
 
         VandarMandate::where('authorization_id', $authorization_id)
             ->update(['is_active' => false]);
@@ -91,7 +91,7 @@ class VandarMandateController extends Controller
      * 
      * @return string $url
      */
-    private static function MANDATE_URL(string $param = null)
+    private function MANDATE_URL(string $param = null)
     {
         return "https://api.vandar.io/v2/business/$_ENV[VANDAR_BUSINESS_NAME]/subscription/authorization/$param";
     }
