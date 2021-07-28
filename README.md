@@ -19,9 +19,7 @@ First, install the Cacshier package for Vandar, using the composer package manag
 
 Vandar Cashier package registers its own database migration directory, so remember to migrate your database after installing the package.
 
-The Vandar Cashier migrations will add 2 tables into your database to save:
-1. Your authentication data (for easy access to authentication data)
-2. All transaction data that you get from Vandar response (For a detailed review of all transactions)
+The Vandar Cashier migrations will add some tables into your database to store `Authentications`, `Payments`, `Settlements`, `Mandates` and `Withdrawals`.
 
 
 

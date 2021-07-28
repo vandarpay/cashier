@@ -3,7 +3,6 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use App\Http\Controllers\Controller;
-use SebastianBergmann\CodeCoverage\Report\PHP;
 use Vandar\VandarCashier\Models\VandarAuthList;
 
 class VandarAuthController extends Controller

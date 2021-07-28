@@ -8,17 +8,19 @@
         "email": "info@vandar.io"
     }],
     "minimum-stability": "dev",
-
     "require": {
-        "guzzlehttp/guzzle": "7.4.x-dev"
+        "guzzlehttp/guzzle": "^7.3.0"
     },
-
     "autoload": {
         "psr-4": {
             "Vandar\\VandarCashier\\": "src/"
         }
     },
-
+    "autoload-dev": {
+        "psr-4": {
+            "Vandar\\VandarCashier\\Tests\\": "tests/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
