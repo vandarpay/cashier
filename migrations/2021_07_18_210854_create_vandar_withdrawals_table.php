@@ -24,7 +24,7 @@ class CreateVandarWithdrawalsTable extends Migration
             $table->integer('max_retry_count')->default(1);
             $table->string('gateway_transaction_id')->nullable();
             $table->string('payment_number')->nullable();
-            $table->enum('status', ['INIT', 'PENDING', 'DONE', 'CANCELED', 'FAILED']);
+            $table->string('status')->default('INIT');
             $table->string('description')->nullable();
             $table->date('withdrawal_date');
             $table->integer('error_code')->nullable();

@@ -19,8 +19,7 @@ class CreateVandarAuthListTable extends Migration
             $table->bigInteger('expires_in');
             $table->longText('access_token');
             $table->longText('refresh_token');
-            $table->dateTime('created_at')->useCurrent = true;
-            $table->dateTime('updated_at')->useCurrent = true;
+            $table->timestamps();
         });
     }
 

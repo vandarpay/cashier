@@ -25,7 +25,7 @@ class CreateVandarSettlementsTable extends Migration
             $table->string('payment_number')->nullable();
             $table->string('transaction_id')->nullable();
             $table->string('gateway_transaction_id')->nullable();
-            $table->enum('status', ['INIT', 'PENDING', 'DONE', 'FAILED', 'CANCELED']);
+            $table->string('status')->default('INIT');
             $table->decimal('wallet', 20, 0)->nullable()->comment('Cuurency : RIAL');
             $table->boolean('is_instant')->default(false);
             $table->date('settlement_date')->nullable();

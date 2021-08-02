@@ -21,7 +21,7 @@ class CreateVandarPaymentsTable extends Migration
             $table->decimal('amount', 20, 0)->comment('Cuurency : RIAL');
             $table->decimal('real_amount', 20, 0)->nullable()->comment('Cuurency : RIAL');
             $table->decimal('wage', 20, 0)->nullable();
-            $table->enum('status', ['INIT', 'SUCCEED', 'FAILED'])->comment('0:INIT 1:SUCCEED 2:FAILED');
+            $table->string('status')->default('INIT');
             $table->string('mobile_number')->nullable();
             $table->string('trans_id')->nullable();
             $table->string('ref_number')->nullable();
