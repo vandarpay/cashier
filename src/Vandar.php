@@ -12,6 +12,10 @@ use Vandar\VandarCashier\Controllers\VandarWithdrawalController;
 
 class Vandar
 {
+
+    use \Vandar\VandarCashier\Utilities\Verify;
+
+
     /**
      * Authentication
      */
@@ -76,9 +80,10 @@ class Vandar
 
 
 
-    
-    
-    use \Vandar\VandarCashier\Traits\VandarVerify;
+
+    /**
+     * Verify
+     */
     public static function Verify()
     {
         return self::verifyTrait((\Request::query()));
