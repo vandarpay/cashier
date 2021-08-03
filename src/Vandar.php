@@ -12,8 +12,7 @@ use Vandar\VandarCashier\Controllers\VandarWithdrawalController;
 
 class Vandar
 {
-
-    use \Vandar\VandarCashier\Utilities\Verify;
+    use \Vandar\VandarCashier\Utilities\CheckStatus;
 
 
     /**
@@ -82,10 +81,10 @@ class Vandar
 
 
     /**
-     * Verify
+     * Check Status (Payment, Mandate)
      */
-    public static function Verify()
+    public static function CheckStatus()
     {
-        return self::verifyTrait((\Request::query()));
+        return self::checkerIndex((\Request::query()));
     }
 }

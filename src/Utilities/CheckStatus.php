@@ -7,27 +7,27 @@ use Vandar\VandarCashier\Models\VandarMandate;
 use Vandar\VandarCashier\Models\VandarPayment;
 use Illuminate\Support\Str;
 
-trait Verify
+trait CheckStatus
 {
     /**
      * Verify Methods Handler
      *
      * @param array $request_query
      */
-    public static function verifyTrait($request_query)
+    public static function checkerIndex($request_query)
     {
-        $method_name = Str::camel('verify_' . array_key_last($request_query));
+        $method_name = Str::camel('check_' . array_key_last($request_query));
         return self::$method_name($request_query);
     }
 
 
 
     /**
-     * Verify Payment Status
+     * check Payment Status
      * 
      * @param array $request_query
      */
-    private static function verifyPaymentStatus($request_query)
+    private static function checkPaymentStatus($request_query)
     {
         if ($request_query['payment_status'] != 'OK') {
 
@@ -46,11 +46,11 @@ trait Verify
 
 
     /**
-     * Verify Mandate Status
+     * check Mandate Status
      * 
      * @param array $request_query
      */
-    private static function verifyStatus($request_query)
+    private static function checkStatus($request_query)
     {
         if ($request_query['status'] != 'SUCCEED') {
             VandarMandate::where('token', $request_query['token'])
