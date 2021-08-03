@@ -106,12 +106,12 @@ Vandar::Auth()->refreshToken(); // Refresh the token and get new one
 ```php
 Vandar::IPG()->pay($params); // pass **$payment** parameter that mentioned in the Vandar Document to do the all payment process.
 ```
-+ **NOTE!**: To Verify the payment after return from payment page, you must just add
++ **NOTE!**: To check thr payment status after return from payment page, you must just add
 
 ```php
-Vandar::Verify();
+Vandar::CheckStatus();
 ```
-in your the {callback page} that you added its URL(callback_url) in your Vandar Account to verify and continue the transaction process. 
+in your the {callback page} that you added its URL(callback_url) in your Vandar Account to check status and continue the transaction process. 
 
 
 
@@ -159,12 +159,12 @@ Vandar::Mandate()->show(); // Show the informations of specific mandate
 
 Vandar::Mandate()->revoke(); // Revoke specific mandate
 ```
-+ **NOTE!**: To Verify the payment after return from payment page, you must just add
++ **NOTE!**: To Check the Mandate Status after return from bank page, you must just add
 
 ```php
-Vandar::Verify();
+Vandar::CheckStatus();
 ```
-in your the {callback page} that you added its URL(callback_url) in your Vandar Account to verify and continue the transaction process. 
+in your the {callback page} that you added its URL(callback_url) in your Vandar Account to check status and continue the transaction process. 
 
 
 #### #Withdrawal
