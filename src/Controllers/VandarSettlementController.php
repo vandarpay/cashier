@@ -2,14 +2,27 @@
 
 namespace Vandar\VandarCashier\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use SebastianBergmann\CodeCoverage\Report\PHP;
+use Illuminate\Support\Facades\Validator;
 use Vandar\VandarCashier\Models\VandarSettlement;
+use Vandar\VandarCashier\Utilities\VandarValidationRules;
 
 class VandarSettlementController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
+
+    private $settlement_validation_rules;
+
+
+
+    /**
+     * Set related validation rules
+     */
+    public function __construct()
+    {
+        $this->settlement_validation_rules = VandarValidationRules::settlement();
+    }
+
 
     /**
      * Store a new settlement
@@ -21,9 +34,20 @@ class VandarSettlementController extends Controller
     public function store($params)
     {
         $params['notify_url'] = $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL'];
+
+
+        # Validate {params} by their rules
+        $validator = Validator::make($params, $this->settlement_validation_rules['store']);
+
+        # Show {error message} if there is any incompatibility with rules 
+        if ($validator->fails())
+            return $validator->errors()->messages();
+
+
         VandarSettlement::create($params);
         $params['track_id'] = VandarSettlement::get('track_id')->last()['track_id'];
         $params['amount'] /= 10; // convert RIAL to TOMAN (for sending request)
+
 
         $response = $this->request('post', $this->SETTLEMENT_URL('store', 'v3'), true, $params);
 
@@ -52,7 +76,7 @@ class VandarSettlementController extends Controller
      * 
      * @return array
      */
-    public function show($settlement_id)
+    public function show(string $settlement_id)
     {
         $response = $this->request('get', $this->SETTLEMENT_URL($settlement_id), true);
 
@@ -71,6 +95,14 @@ class VandarSettlementController extends Controller
      */
     public function list($params = null)
     {
+        # Validate {params} by their rules
+        $validator = Validator::make($params, $this->settlement_validation_rules['list']);
+
+        # Show {error message} if there is any incompatibility with rules 
+        if ($validator->fails())
+            return $validator->errors()->messages();
+
+
         $response = $this->request('get', $this->SETTLEMENT_URL(), true, $params);
 
         return $response->json()['data'];
@@ -86,7 +118,7 @@ class VandarSettlementController extends Controller
      * 
      * @return string
      */
-    public function cancel($transaction_id)
+    public function cancel(int $transaction_id)
     {
         $response = $this->request('delete', $this->SETTLEMENT_URL($transaction_id), true);
 

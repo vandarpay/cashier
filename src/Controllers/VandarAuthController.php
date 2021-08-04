@@ -3,13 +3,27 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Vandar\VandarCashier\Models\VandarAuthList;
+use Vandar\VandarCashier\Utilities\VandarValidationRules;
 
 class VandarAuthController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
 
+    private $auth_validation_rules;
+
     const LOGIN_BASE_URL = 'https://api.vandar.io/v3/';
+
+
+
+    /**
+     * Set related validation rules
+     */
+    public function __construct()
+    {
+        $this->auth_validation_rules = VandarValidationRules::auth();
+    }
 
 
     /**
@@ -40,6 +54,15 @@ class VandarAuthController extends Controller
     {
         $params = ['mobile' => $_ENV['VANDAR_USERNAME'], 'password' => $_ENV['VANDAR_PASSWORD']];
 
+
+        # Validate {params} and {morphs} by their rules
+        $validator = Validator::make($params, $this->auth_validation_rules['login']);
+
+        # Show {error message} if there is any incompatibility with rules 
+        if ($validator->fails())
+            return $validator->errors()->messages();
+
+
         $response = $this->request('post', $this->LOGIN_URL('login'), false, $params);
 
         $this->addAuthData($response->json());
@@ -57,9 +80,8 @@ class VandarAuthController extends Controller
      * 
      * @return object
      */
-    public function refreshToken($refresh_token = null)
+    public function refreshToken(string $refresh_token = null)
     {
-
         $refresh_token = $refresh_token ?? (VandarAuthList::get('refresh_token')->last())->refresh_token;
 
         $params = ['refreshtoken' => $refresh_token];
@@ -97,8 +119,6 @@ class VandarAuthController extends Controller
     private function addAuthData($response)
     {
         $auth_id = (VandarAuthList::get('id')->last())['id'] ?? 1;
-
-        // $response = (array)$response;
 
         $response['expires_in'] += time();
 

@@ -2,13 +2,28 @@
 
 namespace Vandar\VandarCashier\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Vandar\VandarCashier\Models\VandarWithdrawal;
+use Vandar\VandarCashier\Utilities\VandarValidationRules;
 
 class VandarWithdrawalController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
+
+    private $withdrawal_validation_rules;
+
+
+    /**
+     * Set related validation rules
+     */
+
+    public function __construct()
+    {
+        $this->withdrawal_validation_rules = VandarValidationRules::withdrawal();
+    }
+
+
 
     /**
      * Store new withdrawal
@@ -20,6 +35,15 @@ class VandarWithdrawalController extends Controller
     public function store($params)
     {
         $params['notify_url'] = $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL'];
+
+
+        # Validate {params} by their rules
+        $validator = Validator::make($params, $this->withdrawal_validation_rules['store']);
+
+        # Show {error message} if there is any incompatibility with rules 
+        if ($validator->fails())
+            return $validator->errors()->messages();
+
 
         $response = $this->request('post', $this->WITHDRAWAL_URL('store'), true, $params);
 
@@ -59,7 +83,7 @@ class VandarWithdrawalController extends Controller
      * 
      * @return object
      */
-    public function show($withdrawal_id)
+    public function show(string $withdrawal_id)
     {
         $response = $this->request('get', $this->WITHDRAWAL_URL($withdrawal_id), true);
 
@@ -75,7 +99,7 @@ class VandarWithdrawalController extends Controller
      * 
      * @return object
      */
-    public function cancel($withdrawal_id)
+    public function cancel(string $withdrawal_id)
     {
         $response = $this->request('put', $this->WITHDRAWAL_URL($withdrawal_id), true);
 

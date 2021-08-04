@@ -2,16 +2,31 @@
 
 namespace Vandar\VandarCashier\Controllers;
 
-use Illuminate\Http\Request;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 use Vandar\VandarCashier\Models\VandarMandate;
+use Vandar\VandarCashier\Utilities\VandarValidationRules;
 
 class VandarMandateController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
 
+    private $mandate_validation_rules;
+
     const MANDATE_REDIRECT_URL = 'https://subscription.vandar.io/authorizations/';
+
+
+    /**
+     * Set related validation rules
+     */
+
+    public function __construct()
+    {
+        $this->mandate_validation_rules = VandarValidationRules::mandate();
+    }
+
 
 
     /**
@@ -38,6 +53,15 @@ class VandarMandateController extends Controller
         $params['expiration_date'] = $params['expiration_date'] ?? date('Y-m-d', strtotime(date('Y-m-d') . ' + 3 years'));
         $params['callback_url'] = $params['callback_url'] ?? $_ENV['VANDAR_CALLBACK_URL'];
 
+
+        # Validate {params} by their rules
+        $validator = Validator::make($params, $this->mandate_validation_rules['store']);
+
+        # Show {error message} if there is any incompatibility with rules 
+        if ($validator->fails())
+            return $validator->errors()->messages();
+
+
         $response = $this->request('post', $this->MANDATE_URL('store'), true, $params);
 
         $params['token'] = $response->json()['result']['authorization']['token'];
@@ -58,7 +82,7 @@ class VandarMandateController extends Controller
      * 
      * @return array
      */
-    public function show($authorization_id)
+    public function show(string $authorization_id)
     {
         $response = $this->request('get', $this->MANDATE_URL($authorization_id), true);
 
@@ -73,7 +97,7 @@ class VandarMandateController extends Controller
      * 
      * @return array
      */
-    public function revoke($authorization_id)
+    public function revoke(string $authorization_id)
     {
         $response = $this->request('delete', $this->MANDATE_URL($authorization_id), true);
 
