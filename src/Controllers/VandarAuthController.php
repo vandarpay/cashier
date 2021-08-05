@@ -25,13 +25,14 @@ class VandarAuthController extends Controller
         $this->auth_validation_rules = VandarValidationRules::auth();
     }
 
+    
 
     /**
      * Get the access token for accessing account
      *
      * @return string
      */
-    public function token()
+    public function token(): string
     {
         if (!(VandarAuthList::count()))
             return ($this->login()['access_token']);
@@ -45,14 +46,15 @@ class VandarAuthController extends Controller
     }
 
 
+
     /**
      * Login into Vandar account
      *
-     * @return object 
+     * @return array 
      */
-    public function login()
+    public function login(): array
     {
-        $params = ['mobile' => $_ENV['VANDAR_USERNAME'], 'password' => $_ENV['VANDAR_PASSWORD']];
+        $params = ['mobile' => env('VANDAR_MOBILE'), 'password' => env('VANDAR_PASSWORD')];
 
 
         # Validate {params} and {morphs} by their rules
@@ -78,9 +80,9 @@ class VandarAuthController extends Controller
      *
      * @param string $refresh_token
      * 
-     * @return object
+     * @return array
      */
-    public function refreshToken(string $refresh_token = null)
+    public function refreshToken(string $refresh_token = null): array
     {
         $refresh_token = $refresh_token ?? (VandarAuthList::get('refresh_token')->last())->refresh_token;
 
@@ -100,9 +102,9 @@ class VandarAuthController extends Controller
      *
      * @param int $expirationTime
      * 
-     * @return boolean
+     * @return bool
      */
-    public function isTokenValid($expirationTime = null)
+    public function isTokenValid(int $expirationTime = null): bool
     {
         ($expirationTime) ?? $expirationTime = VandarAuthList::get('expires_in')->last();
 
@@ -116,7 +118,7 @@ class VandarAuthController extends Controller
      *
      * @param array $response
      */
-    private function addAuthData($response)
+    private function addAuthData(array $response)
     {
         $auth_id = (VandarAuthList::get('id')->last())['id'] ?? 1;
 

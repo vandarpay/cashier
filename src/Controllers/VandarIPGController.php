@@ -25,7 +25,7 @@ class VandarIPGController extends Controller
      */
     public function __construct()
     {
-        $this->IPG_validation_rules = VandarValidationRules::ipg();
+        $this->ipg_validation_rules = VandarValidationRules::ipg();
     }
 
 
@@ -35,25 +35,25 @@ class VandarIPGController extends Controller
      * Send payment parameters to get Payment Token
      * 
      * @param array $params
-     * @param array $morphs
+     * @param array|null $morphs
      */
     public function pay(array $params, array $morphs = null)
     {
-        $params['callback_url'] = $params['callback_url'] ?? ($_ENV['VANDAR_CALLBACK_URL']);
-        $params['api_key'] = $_ENV['VANDAR_API_KEY'];
+        $params['callback_url'] = $params['callback_url'] ?? (env('VANDAR_CALLBACK_URL'));
+        $params['api_key'] = env('VANDAR_API_KEY');
 
 
         # Validate {params} and {morphs} by their rules
+        $morphs_validator = Validator::make($morphs, $this->ipg_validation_rules['morphs']);
         $params_validator = Validator::make($params, $this->ipg_validation_rules['pay']);
-        $morphs_validator = Validator::make($params, $this->ipg_validation_rules['morphs']);
 
         # Show {error message} if there is any incompatibility with rules 
         if ($params_validator->fails() or $morphs_validator->fails())
             return $params_validator->errors()->messages() ?? $morphs_validator->errors()->messages();
 
 
-
         $response = $this->request('post', $this->IPG_URL('send'), false, $params);
+
 
         # Create {morphs} compatibility with db structure
         foreach ($morphs as $key => $value) {
@@ -78,11 +78,11 @@ class VandarIPGController extends Controller
     /**
      * Verify the all transaction by sending {TOKEN & API_KEY} 
      *
-     * @return bool 1:SUCCEED
+     * @return array 
      */
-    public function verifyTransaction(string $payment_token)
+    public function verifyTransaction(string $payment_token): array
     {
-        $params = ['api_key' => $_ENV['VANDAR_API_KEY'], 'token' => $payment_token];
+        $params = ['api_key' => env('VANDAR_API_KEY'), 'token' => $payment_token];
 
         $response = $this->request('post', $this->IPG_URL('verify'), false, $params);
 
@@ -92,7 +92,7 @@ class VandarIPGController extends Controller
                     'errors' => json_encode($response->json()['errors']),
                     'status' => 'FAILED'
                 ]);
-            return $response->json()['errors'];
+            return $response->json();
         }
 
 
@@ -116,7 +116,7 @@ class VandarIPGController extends Controller
      * 
      * @return string 
      */
-    private function IPG_URL(string $url_param)
+    private function IPG_URL(string $url_param): string
     {
         return self::IPG_BASE_URL . $url_param;
     }
@@ -131,7 +131,7 @@ class VandarIPGController extends Controller
      * 
      * @return array $params
      */
-    private function prepareResponseFormat(array $params)
+    private function prepareResponseFormat(array $params): array
     {
         $keys = array_keys($params);
         foreach ($keys as $key) {

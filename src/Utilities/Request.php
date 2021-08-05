@@ -14,14 +14,18 @@ trait Request
      *
      * @param string $method HTTP method ('get', 'post', etc.)
      * @param string $url_param URL for the request
-     * @param string $params list of parameters for the request
      * @param boolean $header Determines that request has HEADER or no!
+     * @param array|null $params list of parameters for the request
      */
-    public function request($method, $url, $header, $params = null)
+    public function request(string $method, string $url, bool $header, array $params = null)
     {
+        if (is_array($params) and array_key_exists('business', $params))
+            unset($params['business']);
+
+
         # Send Headers without header
         if (!$header)
-            return $this->verifyResponse(Http::$method($url, $params));
+            return $this->checkResponse(Http::$method($url, $params));
 
 
 
@@ -31,14 +35,14 @@ trait Request
             'Authorization' => "Bearer {$access_token}",
             'Accept' => 'application/json'
         ];
-        return $this->verifyResponse(Http::withHeaders($headers)->$method($url, $params));
+        return $this->checkResponse(Http::withHeaders($headers)->$method($url, $params));
     }
 
 
     /**
      * Verify Requests Response by status code
      */
-    public function verifyResponse($response)
+    public function checkResponse($response)
     {
         if ($response->status() != 200)
             return $response->throw();

@@ -27,13 +27,13 @@ class VandarSettlementController extends Controller
     /**
      * Store a new settlement
      *
-     * @param  $params
+     * @param  array $params
      * 
      * @return array 
      */
-    public function store($params)
+    public function store(array $params): array
     {
-        $params['notify_url'] = $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL'];
+        $params['notify_url'] = $params['notify_url'] ?? env('VANDAR_NOTIFY_URL');
 
 
         # Validate {params} by their rules
@@ -63,7 +63,7 @@ class VandarSettlementController extends Controller
         VandarSettlement::where('track_id', $params['track_id'])
             ->update((array)$data);
 
-        return $response->json()['data']['settlement'];
+        return $response->json();
     }
 
 
@@ -72,15 +72,15 @@ class VandarSettlementController extends Controller
     /**
      * Get Complete Details about a settlement
      *
-     * @param int $settlement_id
+     * @param string $settlement_id
      * 
      * @return array
      */
-    public function show(string $settlement_id)
+    public function show(string $settlement_id): array
     {
         $response = $this->request('get', $this->SETTLEMENT_URL($settlement_id), true);
 
-        return $response->json()['data']['settlement'];
+        return $response->json();
     }
 
 
@@ -93,7 +93,7 @@ class VandarSettlementController extends Controller
      *
      * @return array
      */
-    public function list($params = null)
+    public function list(array $params = null): array
     {
         # Validate {params} by their rules
         $validator = Validator::make($params, $this->settlement_validation_rules['list']);
@@ -105,7 +105,7 @@ class VandarSettlementController extends Controller
 
         $response = $this->request('get', $this->SETTLEMENT_URL(), true, $params);
 
-        return $response->json()['data'];
+        return $response->json();
     }
 
 
@@ -118,7 +118,7 @@ class VandarSettlementController extends Controller
      * 
      * @return string
      */
-    public function cancel(int $transaction_id)
+    public function cancel(int $transaction_id): array
     {
         $response = $this->request('delete', $this->SETTLEMENT_URL($transaction_id), true);
 
@@ -136,7 +136,7 @@ class VandarSettlementController extends Controller
             ]);
 
 
-        return $response->json()['message'];
+        return $response->json();
     }
 
 
@@ -144,12 +144,12 @@ class VandarSettlementController extends Controller
     /**
      * Prepare Settlement Url for sending request
      *
-     * @param string $param
+     * @param string|null $param
      * @param string $version
      * 
      * @return string 
      */
-    private function SETTLEMENT_URL($param = null, $version = 'v2.1')
+    private function SETTLEMENT_URL($param = null, $version = 'v2.1'): string
     {
         return "https://api.vandar.io/$version/business/{$_ENV['VANDAR_BUSINESS_NAME']}/settlement/$param";
     }

@@ -11,13 +11,14 @@ class VandarBillsController extends Controller
     use \Vandar\VandarCashier\Utilities\Request;
 
     private $bills_validation_rules;
+
     const BASE_BILLING_URL = 'https://api.vandar.io/v2/business/';
 
 
     /**
      * Set related validation rules
      */
-     
+
     public function __construct()
     {
         $this->bills_validation_rules = VandarValidationRules::bills();
@@ -27,13 +28,13 @@ class VandarBillsController extends Controller
     /**
      * Get Wallet Balance
      *
-     * @return array $data
+     * @return array
      */
-    public function balance()
+    public function balance(): array
     {
         $response = $this->request('get', $this->BILLING_URL('balance'), true);
 
-        return $response->json()['data'];
+        return $response->json();
     }
 
 
@@ -42,11 +43,13 @@ class VandarBillsController extends Controller
     /**
      * Get Bills List
      *
-     * @return array $data
+     * @param array $params
+     * 
+     * @return array 
      */
-    public function list($params = null)
+    public function list(array $params = null): array
     {
-        # Validate {params} and {morphs} by their rules
+        # Validate {params} by their rules
         $validator = Validator::make($params, $this->bills_validation_rules['list']);
 
         # Show {error message} if there is any incompatibility with rules 
@@ -56,7 +59,7 @@ class VandarBillsController extends Controller
 
         $response = $this->request('get', $this->BILLING_URL('transaction'), true, $params);
 
-        return $response->json()['data'];
+        return $response->json();
     }
 
 
@@ -68,8 +71,8 @@ class VandarBillsController extends Controller
      * 
      * @return string  
      */
-    private function BILLING_URL(string $param)
+    private function BILLING_URL(string $param): string
     {
-        return self::BASE_BILLING_URL . $_ENV['VANDAR_BUSINESS_NAME'] . "/$param";
+        return self::BASE_BILLING_URL . env('VANDAR_BUSINESS_NAME') . "/$param";
     }
 }

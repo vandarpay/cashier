@@ -13,6 +13,7 @@ class VandarMandateController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
 
+
     private $mandate_validation_rules;
 
     const MANDATE_REDIRECT_URL = 'https://subscription.vandar.io/authorizations/';
@@ -32,9 +33,9 @@ class VandarMandateController extends Controller
     /**
      * Get the list of confirmed Mandates
      *
-     * @return object
+     * @return array
      */
-    public function list()
+    public function list(): array
     {
         $response = $this->request('get', $this->MANDATE_URL(), true);
 
@@ -48,10 +49,10 @@ class VandarMandateController extends Controller
      *
      * @param array $params
      */
-    public function store($params)
+    public function store(array $params)
     {
         $params['expiration_date'] = $params['expiration_date'] ?? date('Y-m-d', strtotime(date('Y-m-d') . ' + 3 years'));
-        $params['callback_url'] = $params['callback_url'] ?? $_ENV['VANDAR_CALLBACK_URL'];
+        $params['callback_url'] = $params['callback_url'] ?? env('VANDAR_CALLBACK_URL');
 
 
         # Validate {params} by their rules
@@ -63,6 +64,7 @@ class VandarMandateController extends Controller
 
 
         $response = $this->request('post', $this->MANDATE_URL('store'), true, $params);
+
 
         $params['token'] = $response->json()['result']['authorization']['token'];
 
@@ -78,11 +80,11 @@ class VandarMandateController extends Controller
     /**
      * Show the mandate details
      *
-     * @param string $subscription_code
+     * @param string $authorization_id
      * 
      * @return array
      */
-    public function show(string $authorization_id)
+    public function show(string $authorization_id): array
     {
         $response = $this->request('get', $this->MANDATE_URL($authorization_id), true);
 
@@ -93,11 +95,11 @@ class VandarMandateController extends Controller
     /**
      * Revoke Confirmed mandates
      *
-     * @param string $subscription_code
+     * @param string $authorization_id
      * 
      * @return array
      */
-    public function revoke(string $authorization_id)
+    public function revoke(string $authorization_id): array
     {
         $response = $this->request('delete', $this->MANDATE_URL($authorization_id), true);
 
@@ -113,10 +115,10 @@ class VandarMandateController extends Controller
      *
      * @param string|null $param
      * 
-     * @return string $url
+     * @return string 
      */
-    private function MANDATE_URL(string $param = null)
+    private function MANDATE_URL(string $param = null): string
     {
-        return "https://api.vandar.io/v2/business/$_ENV[VANDAR_BUSINESS_NAME]/subscription/authorization/$param";
+        return 'https://api.vandar.io/v2/business/' . env('VANDAR_BUSINESS_NAME') . '/subscription/authorization/' . $param;
     }
 }

@@ -45,7 +45,8 @@ class VandarValidationRules
     public static function business()
     {
         return [
-            'users' => [
+           'users' => [
+                'business' => 'nullable|string',
                 'page' => 'nullable|numeric|gte:1',
                 'per_page' => 'nullable|numeric|gte:1'
             ]
@@ -69,17 +70,17 @@ class VandarValidationRules
     public static function mandate()
     {
         return [
-           'store' => [
-               'bank_code' => 'required|string',
-               'mobile' => 'required|string',
-               'callback_url' => 'required|string',
-               'count' => 'required|int',
-               'limit' => 'required|int',
-               'name' => 'nullable|string',
-               'email' => 'nullable|string|email',
-               'expiration_date' => 'required|date_format:Y-m-d',
-               'wage_type' => 'nullable|',
-           ] 
+            'store' => [
+                'bank_code' => 'required|string',
+                'mobile' => 'required|string',
+                'callback_url' => 'required|string',
+                'count' => 'required|int',
+                'limit' => 'required|int',
+                'name' => 'nullable|string',
+                'email' => 'nullable|string|email',
+                'expiration_date' => 'required|date_format:Y-m-d',
+                'wage_type' => 'nullable|',
+            ]
         ];
     }
 
@@ -107,7 +108,7 @@ class VandarValidationRules
     public static function withdrawal()
     {
         return [
-            'store' =>[
+            'store' => [
                 'authorization_id' => 'required|string',
                 'amount' => 'required|string',
                 'withdrawal_date' => 'nullable|string',
