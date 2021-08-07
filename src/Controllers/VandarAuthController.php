@@ -39,7 +39,7 @@ class VandarAuthController extends Controller
      *
      * @return array 
      */
-    public function login(): array
+    protected function login(): array
     {
         $params = ['mobile' => env('VANDAR_MOBILE'), 'password' => env('VANDAR_PASSWORD')];
 
@@ -66,7 +66,7 @@ class VandarAuthController extends Controller
      * 
      * @return array
      */
-    public function refreshToken(string $refresh_token = null): array
+    protected function refreshToken(string $refresh_token = null): array
     {
         $refresh_token = $refresh_token ?? (VandarAuthList::get('refresh_token')->last())->refresh_token;
 
@@ -88,7 +88,7 @@ class VandarAuthController extends Controller
      * 
      * @return bool
      */
-    public function isTokenValid(int $expirationTime = null): bool
+    protected function isTokenValid(int $expirationTime = null): bool
     {
         ($expirationTime) ?? $expirationTime = VandarAuthList::get('expires_in')->last();
 
