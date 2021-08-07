@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 
 trait CheckStatus
 {
+
     /**
      * Verify Methods Handler
      *
@@ -16,10 +17,10 @@ trait CheckStatus
      */
     public static function checkerIndex($request_query)
     {
-        $method_name = Str::camel('check_' . array_key_last($request_query));
+        $status_name = array_key_last($request_query) == 'payment_status' ? 'payment_status' : 'mandate_status';
+        $method_name = Str::camel('check_' . $status_name);
         return self::$method_name($request_query);
     }
-
 
 
     /**
@@ -33,10 +34,12 @@ trait CheckStatus
 
             VandarPayment::where('token', $request_query['token'])
                 ->update([
-                    'errors' => json_encode('failed payment'),
-                    'status' => 'FAILED'
+                    'errors' => json_encode('Failed Payment'),
+                    'status' => $request_query['payment_status']
                 ]);
 
+            $request_query['status'] = $request_query['payment_status'];
+            unset($request_query['payment_status']);
             return $request_query;
         }
 
@@ -50,13 +53,13 @@ trait CheckStatus
      * 
      * @param array $request_query
      */
-    private static function checkStatus($request_query)
+    private static function checkMandateStatus($request_query)
     {
         if ($request_query['status'] != 'SUCCEED') {
             VandarMandate::where('token', $request_query['token'])
                 ->update([
                     'errors' => json_encode('Failed To Access'),
-                    'status' => 'FAILED'
+                    'status' => $request_query['status']
                 ]);
 
             return $request_query;
@@ -64,8 +67,8 @@ trait CheckStatus
 
         VandarMandate::where('token', $request_query['token'])
             ->update([
-                'status' => 'SUCCEED',
                 'is_active' => true,
+                'status' => $request_query['status'],
                 'authorization_id' => $request_query['authorization_id']
             ]);
 

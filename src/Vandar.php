@@ -83,8 +83,8 @@ class Vandar
     /**
      * Check Status (Payment, Mandate)
      */
-    public static function CheckStatus()
+    public static function CheckStatus($request = null)
     {
-        return self::checkerIndex((\Request::query()));
+        return self::checkerIndex($request ?? (\Request::query()));
     }
 }
