@@ -18,7 +18,7 @@ class VandarWithdrawalController extends Controller
      * 
      * @return object $data
      */
-    public function store($params)
+    public function store(array $params)
     {
         $params['notify_url'] = $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL'];
 

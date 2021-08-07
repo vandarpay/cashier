@@ -3,7 +3,7 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use App\Http\Controllers\Controller;
-use Vandar\VandarCashier\RequestsValidation\ListRequestValidation;
+use Vandar\VandarCashier\RequestsValidation\ListBillsRequestValidation;
 
 class VandarBillsController extends Controller
 {
@@ -39,7 +39,7 @@ class VandarBillsController extends Controller
     public function list(array $params = []): array
     {
         # Request Validation
-        $request = new ListRequestValidation($params);
+        $request = new ListBillsRequestValidation($params);
         $request->validate($request->rules());
 
         $response = $this->request('get', $this->BILLING_URL('transaction'), true, $params);

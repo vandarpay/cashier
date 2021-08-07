@@ -252,7 +252,7 @@ Vandar::Bills()->balance(); // Get the current balance of your business
 | status_kind    	 | String        | optional      |
 | status   		     | String        | optional      |
 | channel            | String        | optional      |
-| formId             | String        | optional      |
+| form_id             | String        | optional      |
 | ref_id             | String        | optional      |
 | tracking_code      | String        | optional      |
 | id                 | String        | optional      |
