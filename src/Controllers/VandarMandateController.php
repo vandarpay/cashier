@@ -5,29 +5,14 @@ namespace Vandar\VandarCashier\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Validator;
 use Vandar\VandarCashier\Models\VandarMandate;
-use Vandar\VandarCashier\Utilities\VandarValidationRules;
+use Vandar\VandarCashier\RequestsValidation\MandateRequestValidation;
 
 class VandarMandateController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
 
-
-    private $mandate_validation_rules;
-
     const MANDATE_REDIRECT_URL = 'https://subscription.vandar.io/authorizations/';
-
-
-    /**
-     * Set related validation rules
-     */
-
-    public function __construct()
-    {
-        $this->mandate_validation_rules = VandarValidationRules::mandate();
-    }
-
 
 
     /**
@@ -55,13 +40,10 @@ class VandarMandateController extends Controller
         $params['callback_url'] = $params['callback_url'] ?? env('VANDAR_CALLBACK_URL');
 
 
-        # Validate {params} by their rules
-        $validator = Validator::make($params, $this->mandate_validation_rules['store']);
-
-        # Show {error message} if there is any incompatibility with rules 
-        if ($validator->fails())
-            return $validator->errors()->messages();
-
+        # Request Validation
+        $request = new MandateRequestValidation($params);
+        $request->validate($request->rules());
+        
 
         $response = $this->request('post', $this->MANDATE_URL('store'), true, $params);
 

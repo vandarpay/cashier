@@ -3,27 +3,14 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 use Vandar\VandarCashier\Models\VandarAuthList;
-use Vandar\VandarCashier\Utilities\VandarValidationRules;
+use Vandar\VandarCashier\RequestsValidation\AuthRequestValidation;
 
 class VandarAuthController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
 
-    private $auth_validation_rules;
-
     const LOGIN_BASE_URL = 'https://api.vandar.io/v3/';
-
-
-
-    /**
-     * Set related validation rules
-     */
-    public function __construct()
-    {
-        $this->auth_validation_rules = VandarValidationRules::auth();
-    }
 
     
 
@@ -57,12 +44,9 @@ class VandarAuthController extends Controller
         $params = ['mobile' => env('VANDAR_MOBILE'), 'password' => env('VANDAR_PASSWORD')];
 
 
-        # Validate {params} and {morphs} by their rules
-        $validator = Validator::make($params, $this->auth_validation_rules['login']);
-
-        # Show {error message} if there is any incompatibility with rules 
-        if ($validator->fails())
-            return $validator->errors()->messages();
+        # Validate Login Request
+        $request = new AuthRequestValidation($params);
+        $request->validate($request->rules());
 
 
         $response = $this->request('post', $this->LOGIN_URL('login'), false, $params);

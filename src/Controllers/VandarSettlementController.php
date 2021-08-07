@@ -3,25 +3,13 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 use Vandar\VandarCashier\Models\VandarSettlement;
-use Vandar\VandarCashier\Utilities\VandarValidationRules;
+use Vandar\VandarCashier\RequestsValidation\ListRequestValidation;
+use Vandar\VandarCashier\RequestsValidation\SettlementRequestValidation;
 
 class VandarSettlementController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
-
-    private $settlement_validation_rules;
-
-
-
-    /**
-     * Set related validation rules
-     */
-    public function __construct()
-    {
-        $this->settlement_validation_rules = VandarValidationRules::settlement();
-    }
 
 
     /**
@@ -35,13 +23,9 @@ class VandarSettlementController extends Controller
     {
         $params['notify_url'] = $params['notify_url'] ?? env('VANDAR_NOTIFY_URL');
 
-
-        # Validate {params} by their rules
-        $validator = Validator::make($params, $this->settlement_validation_rules['store']);
-
-        # Show {error message} if there is any incompatibility with rules 
-        if ($validator->fails())
-            return $validator->errors()->messages();
+        # Request Validation
+        $request = new SettlementRequestValidation($params);
+        $request->validate($request->rules());
 
 
         VandarSettlement::create($params);
@@ -93,15 +77,11 @@ class VandarSettlementController extends Controller
      *
      * @return array
      */
-    public function list(array $params = null): array
+    public function list(array $params = []): array
     {
-        # Validate {params} by their rules
-        $validator = Validator::make($params, $this->settlement_validation_rules['list']);
-
-        # Show {error message} if there is any incompatibility with rules 
-        if ($validator->fails())
-            return $validator->errors()->messages();
-
+        # Request Validation
+        $request = new ListRequestValidation($params);
+        $request->validate($request->rules());
 
         $response = $this->request('get', $this->SETTLEMENT_URL(), true, $params);
 

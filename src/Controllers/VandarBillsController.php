@@ -3,8 +3,7 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use Vandar\VandarCashier\Utilities\VandarValidationRules;
+use Vandar\VandarCashier\RequestsValidation\ListRequestValidation;
 
 class VandarBillsController extends Controller
 {
@@ -13,16 +12,6 @@ class VandarBillsController extends Controller
     private $bills_validation_rules;
 
     const BASE_BILLING_URL = 'https://api.vandar.io/v2/business/';
-
-
-    /**
-     * Set related validation rules
-     */
-
-    public function __construct()
-    {
-        $this->bills_validation_rules = VandarValidationRules::bills();
-    }
 
 
     /**
@@ -47,15 +36,11 @@ class VandarBillsController extends Controller
      * 
      * @return array 
      */
-    public function list(array $params = null): array
+    public function list(array $params = []): array
     {
-        # Validate {params} by their rules
-        $validator = Validator::make($params, $this->bills_validation_rules['list']);
-
-        # Show {error message} if there is any incompatibility with rules 
-        if ($validator->fails())
-            return $validator->errors()->messages();
-
+        # Request Validation
+        $request = new ListRequestValidation($params);
+        $request->validate($request->rules());
 
         $response = $this->request('get', $this->BILLING_URL('transaction'), true, $params);
 

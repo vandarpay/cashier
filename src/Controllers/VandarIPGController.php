@@ -6,29 +6,15 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
 use Vandar\VandarCashier\Models\VandarPayment;
-use Illuminate\Support\Facades\Validator;
-use Vandar\VandarCashier\Utilities\VandarValidationRules;
+use Vandar\VandarCashier\RequestsValidation\IPGRequestValidation;
+use Vandar\VandarCashier\RequestsValidation\MorphsRequestValidation;
 
 class VandarIPGController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
 
-    private $ipg_validation_rules;
-
     const IPG_BASE_URL = 'https://ipg.vandar.io/api/v3/';
     const IPG_REDIRECT_URL = 'https://ipg.vandar.io/v3/';
-
-
-
-    /**
-     * Set related validation rules
-     */
-    public function __construct()
-    {
-        $this->ipg_validation_rules = VandarValidationRules::ipg();
-    }
-
-
 
 
     /**
@@ -37,19 +23,19 @@ class VandarIPGController extends Controller
      * @param array $params
      * @param array|null $morphs
      */
-    public function pay(array $params, array $morphs = null)
+    public function pay(array $params, array $morphs = [])
     {
         $params['callback_url'] = $params['callback_url'] ?? (env('VANDAR_CALLBACK_URL'));
         $params['api_key'] = env('VANDAR_API_KEY');
 
 
-        # Validate {params} and {morphs} by their rules
-        $morphs_validator = Validator::make($morphs, $this->ipg_validation_rules['morphs']);
-        $params_validator = Validator::make($params, $this->ipg_validation_rules['pay']);
-
-        # Show {error message} if there is any incompatibility with rules 
-        if ($params_validator->fails() or $morphs_validator->fails())
-            return $params_validator->errors()->messages() ?? $morphs_validator->errors()->messages();
+        # Request Validation 
+        $ipg_request = new IPGRequestValidation($params);
+        $ipg_request->validate($ipg_request->rules());
+        
+        # Request Validation
+        $morphs_request = new MorphsRequestValidation($morphs);
+        $morphs_request->validate($morphs_request->rules());
 
 
         $response = $this->request('post', $this->IPG_URL('send'), false, $params);
@@ -60,7 +46,7 @@ class VandarIPGController extends Controller
             $morphs["vandar_$key"] = $morphs[$key];
             unset($morphs[$key]);
         }
-
+        
         # Add {payment_token} into $params
         $params['token'] = $response->json()['token'];
         $params = array_merge($params, $morphs);

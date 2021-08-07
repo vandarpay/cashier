@@ -3,26 +3,12 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 use Vandar\VandarCashier\Models\VandarWithdrawal;
-use Vandar\VandarCashier\Utilities\VandarValidationRules;
+use Vandar\VandarCashier\RequestsValidation\WithdrawalRequestValidation;
 
 class VandarWithdrawalController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
-
-    private $withdrawal_validation_rules;
-
-
-    /**
-     * Set related validation rules
-     */
-
-    public function __construct()
-    {
-        $this->withdrawal_validation_rules = VandarValidationRules::withdrawal();
-    }
-
 
 
     /**
@@ -36,13 +22,9 @@ class VandarWithdrawalController extends Controller
     {
         $params['notify_url'] = $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL'];
 
-
-        # Validate {params} by their rules
-        $validator = Validator::make($params, $this->withdrawal_validation_rules['store']);
-
-        # Show {error message} if there is any incompatibility with rules 
-        if ($validator->fails())
-            return $validator->errors()->messages();
+        # Request Validation
+        $request = new WithdrawalRequestValidation($params);
+        $request->validate($request->rules());
 
 
         $response = $this->request('post', $this->WITHDRAWAL_URL('store'), true, $params);

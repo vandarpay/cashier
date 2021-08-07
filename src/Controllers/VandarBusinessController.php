@@ -3,25 +3,13 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use Vandar\VandarCashier\Utilities\VandarValidationRules;
+use Vandar\VandarCashier\RequestsValidation\ListRequestValidation;
 
 class VandarBusinessController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
 
-    private $business_validation_rules;
-
     const BUSINESS_BASE_URL = 'https://api.vandar.io/v2/business/';
-
-
-    /**
-     * Set related validation rules
-     */
-    public function __construct()
-    {
-        $this->business_validation_rules = VandarValidationRules::business();
-    }
 
 
     /**
@@ -63,14 +51,11 @@ class VandarBusinessController extends Controller
      * 
      * @return array 
      */
-    public function users(array $params = null): array
+    public function users(array $params = []): array
     {
-        # Validate {params} by their rules
-        $validator = Validator::make($params, $this->business_validation_rules['users']);
-
-        # Show {error message} if there is any incompatibility with rules 
-        if ($validator->fails())
-            return $validator->errors()->messages();
+        # Request Validation
+        $business_request = new ListRequestValidation($params);
+        $business_request->validate($business_request->rules());
 
 
         $response = $this->request('get', $this->BUSINESS_URL($params['business'] ?? null, '/iam'), true, $params);
