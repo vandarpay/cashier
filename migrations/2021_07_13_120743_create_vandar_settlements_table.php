@@ -31,9 +31,8 @@ class CreateVandarSettlementsTable extends Migration
             $table->date('settlement_date')->nullable();
             $table->time('settlement_time')->nullable();
             $table->string('settlement_date_jalali')->nullable();
-            $table->json('prediction')->nullable();
-            $table->string('notify_url')->nullable();
-            $table->string('errors')->nullable();
+            $table->string('settlement_done_time_prediction')->nullable();
+            $table->json('errors')->nullable();
             $table->timestamps();
         });
     }

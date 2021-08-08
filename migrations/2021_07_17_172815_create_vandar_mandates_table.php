@@ -19,7 +19,7 @@ class CreateVandarMandatesTable extends Migration
             $table->string('token');
             $table->string('authorization_id')->nullable();
             $table->string('name')->nullable();
-            $table->string('mobile')->nullable();
+            $table->string('mobile_number')->nullable();
             $table->string('email')->nullable();
             $table->integer('count');
             $table->decimal('limit', 20, 0)->comment('Cuurency : RIAL');
