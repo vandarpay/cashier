@@ -21,7 +21,7 @@ class VandarSettlementController extends Controller
      */
     public function store(array $params): array
     {
-        $params['notify_url'] = $params['notify_url'] ?? env('VANDAR_NOTIFY_URL');
+        $params['notify_url'] = $params['notify_url'] ?? config('vandar.notify_url');
 
         # Request Validation
         $request = new SettlementRequestValidation($params);
@@ -36,16 +36,17 @@ class VandarSettlementController extends Controller
         $response = $this->request('post', $this->SETTLEMENT_URL('store', 'v3'), true, $params);
 
         # convert id to settlement_id for database compatible
-        $data = $response->json()['data']['settlement'][0];
+        $db_data = $response->json()['data']['settlement'][0];
 
-
-        $data['settlement_id'] = $data['id'];
-        $data['prediction'] = json_encode($data['prediction']);
-        unset($data['id']);
+        
+        $db_data['settlement_id'] = $db_data['id'];
+        unset($db_data['id']);
+        unset($db_data['prediction']);
 
 
         VandarSettlement::where('track_id', $params['track_id'])
-            ->update((array)$data);
+            ->update((array)$db_data);
+
 
         return $response->json();
     }
@@ -131,6 +132,6 @@ class VandarSettlementController extends Controller
      */
     private function SETTLEMENT_URL($param = null, $version = 'v2.1'): string
     {
-        return "https://api.vandar.io/$version/business/{$_ENV['VANDAR_BUSINESS_NAME']}/settlement/$param";
+        return config('vandar.api_base_url') . "$version/business/" . config('vandar.business_name') . "/settlement/$param";
     }
 }

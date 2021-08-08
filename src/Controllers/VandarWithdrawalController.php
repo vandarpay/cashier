@@ -20,8 +20,8 @@ class VandarWithdrawalController extends Controller
      */
     public function store(array $params)
     {
-        $params['notify_url'] = $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL'];
-
+        $params['notify_url'] = $params['notify_url'] ?? config('vandar.notify_url');
+        
         # Request Validation
         $request = new WithdrawalRequestValidation($params);
         $request->validate($request->rules());
@@ -101,6 +101,6 @@ class VandarWithdrawalController extends Controller
      */
     private function WITHDRAWAL_URL(string $param = null): string
     {
-        return "https://api.vandar.io/v2/business/$_ENV[VANDAR_BUSINESS_NAME]/subscription/withdrawal/$param";
+        return config('vandar.api_base_url') . "v2/business/" . config('vandar.business_name') . "/subscription/withdrawal/$param";
     }
 }

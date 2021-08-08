@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
 use Vandar\VandarCashier\Models\VandarMandate;
 use Vandar\VandarCashier\RequestsValidation\MandateRequestValidation;
+use Vandar\VandarCashier\Utilities\ParamsFormatConvertor;
 
 class VandarMandateController extends Controller
 {
@@ -37,19 +38,21 @@ class VandarMandateController extends Controller
     public function store(array $params)
     {
         $params['expiration_date'] = $params['expiration_date'] ?? date('Y-m-d', strtotime(date('Y-m-d') . ' + 3 years'));
-        $params['callback_url'] = $params['callback_url'] ?? env('VANDAR_CALLBACK_URL');
+        $params['callback_url'] = $params['callback_url'] ?? config('vandar.callback_url');
 
-
+        
         # Request Validation
         $request = new MandateRequestValidation($params);
         $request->validate($request->rules());
         
-
-        $response = $this->request('post', $this->MANDATE_URL('store'), true, $params);
-
-
+        $newParams = ParamsFormatConvertor::mobileFormat($params);
+        
+        
+        $response = $this->request('post', $this->MANDATE_URL('store'), true, $newParams);
+        
+        
         $params['token'] = $response->json()['result']['authorization']['token'];
-
+        
 
         VandarMandate::create($params);
 
@@ -101,6 +104,7 @@ class VandarMandateController extends Controller
      */
     private function MANDATE_URL(string $param = null): string
     {
-        return 'https://api.vandar.io/v2/business/' . env('VANDAR_BUSINESS_NAME') . '/subscription/authorization/' . $param;
+        return config('vandar.api_base_url') . 'v2/business/' . config('vandar.business_name') . '/subscription/authorization/' . $param;
     }
+
 }

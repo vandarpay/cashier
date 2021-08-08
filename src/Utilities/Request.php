@@ -19,10 +19,6 @@ trait Request
      */
     public function request(string $method, string $url, bool $header, array $params = null)
     {
-        if (is_array($params) and array_key_exists('business', $params))
-            unset($params['business']);
-
-
         # Send Headers without header
         if (!$header)
             return $this->checkResponse(Http::$method($url, $params));

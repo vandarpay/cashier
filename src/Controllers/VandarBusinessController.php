@@ -8,9 +8,7 @@ use Vandar\VandarCashier\RequestsValidation\ListRequestValidation;
 class VandarBusinessController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
-
-    const BUSINESS_BASE_URL = 'https://api.vandar.io/v2/business/';
-
+    
 
     /**
      * Get the list of businesses
@@ -74,7 +72,7 @@ class VandarBusinessController extends Controller
      */
     private function BUSINESS_URL(string $business = null, string $param = null): string
     {
-        $business = $business ?? env('VANDAR_BUSINESS_NAME');
-        return self::BUSINESS_BASE_URL . $business . $param;
+        $business = $business ?? config('vandar.business_name');
+        return config('vandar.api_base_url') . 'v2/business/' . $business . $param;
     }
 }

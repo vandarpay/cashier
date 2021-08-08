@@ -10,9 +10,6 @@ class VandarAuthController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
 
-    const LOGIN_BASE_URL = 'https://api.vandar.io/v3/';
-
-    
 
     /**
      * Get the access token for accessing account
@@ -41,8 +38,7 @@ class VandarAuthController extends Controller
      */
     protected function login(): array
     {
-        $params = ['mobile' => env('VANDAR_MOBILE'), 'password' => env('VANDAR_PASSWORD')];
-
+        $params = ['mobile' => config('vandar.mobile'), 'password' => config('vandar.password')];
 
         # Validate Login Request
         $request = new AuthRequestValidation($params);
@@ -123,6 +119,6 @@ class VandarAuthController extends Controller
      */
     private function LOGIN_URL(string $param = null)
     {
-        return self::LOGIN_BASE_URL . $param;
+        return config('vandar.api_base_url') . 'v3/' . $param;
     }
 }

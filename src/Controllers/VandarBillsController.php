@@ -3,16 +3,12 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use App\Http\Controllers\Controller;
-use Vandar\VandarCashier\Utilities\ParamsCaseFormat;
+use Vandar\VandarCashier\Utilities\ParamsFormatConvertor;
 use Vandar\VandarCashier\RequestsValidation\BillsListRequestValidation;
 
 class VandarBillsController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
-
-    private $bills_validation_rules;
-
-    const BASE_BILLING_URL = 'https://api.vandar.io/v2/business/';
 
 
     /**
@@ -41,7 +37,7 @@ class VandarBillsController extends Controller
     {
         # prepare data for send request
         $keys = ['from_date', 'to_date', 'status_kind'];
-        $params = ParamsCaseFormat::convert($params, 'camel', $keys);
+        $params = ParamsFormatConvertor::caseFormat($params, 'camel', $keys);
 
         # Request Validation
         $request = new BillsListRequestValidation($params);
@@ -63,6 +59,6 @@ class VandarBillsController extends Controller
      */
     private function BILLING_URL(string $param): string
     {
-        return self::BASE_BILLING_URL . env('VANDAR_BUSINESS_NAME') . "/$param";
+        return config('vandar.api_base_url') . 'v2/business/' . config('vandar.business_name') . "/$param";
     }
 }

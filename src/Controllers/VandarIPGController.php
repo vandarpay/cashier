@@ -2,20 +2,16 @@
 
 namespace Vandar\VandarCashier\Controllers;
 
-use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
 use Vandar\VandarCashier\Models\VandarPayment;
 use Vandar\VandarCashier\RequestsValidation\IPGRequestValidation;
 use Vandar\VandarCashier\RequestsValidation\MorphsRequestValidation;
-use Vandar\VandarCashier\Utilities\ParamsCaseFormat;
+use Vandar\VandarCashier\Utilities\ParamsFormatConvertor;
 
 class VandarIPGController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
-
-    const IPG_BASE_URL = 'https://ipg.vandar.io/api/v3/';
-    const IPG_REDIRECT_URL = 'https://ipg.vandar.io/v3/';
 
 
     /**
@@ -26,10 +22,10 @@ class VandarIPGController extends Controller
      */
     public function pay(array $params, array $morphs = [])
     {
-        $params['callback_url'] = $params['callback_url'] ?? (env('VANDAR_CALLBACK_URL'));
-        $params['api_key'] = env('VANDAR_API_KEY');
+        $params['callback_url'] = $params['callback_url'] ?? config('vandar.callback_url');
+        $params['api_key'] = config('vandar.api_key');
 
-
+        
         # Request Validation 
         $ipg_request = new IPGRequestValidation($params);
         $ipg_request->validate($ipg_request->rules());
@@ -56,7 +52,7 @@ class VandarIPGController extends Controller
         VandarPayment::create($params);
 
 
-        return Redirect::away(self::IPG_REDIRECT_URL . $response->json()['token']);
+        return Redirect::away($this->REDIRECT_URL($response->json()['token']));
     }
 
 
@@ -69,7 +65,7 @@ class VandarIPGController extends Controller
      */
     public function verifyTransaction(string $payment_token): array
     {
-        $params = ['api_key' => env('VANDAR_API_KEY'), 'token' => $payment_token];
+        $params = ['api_key' => config('vandar.api_key'), 'token' => $payment_token];
 
         $response = $this->request('post', $this->IPG_URL('verify'), false, $params);
 
@@ -84,7 +80,7 @@ class VandarIPGController extends Controller
 
 
         # prepare response for making compatible with DB
-        $response = ParamsCaseFormat::convert($response->json(), 'snake');
+        $response = ParamsFormatConvertor::caseFormat($response->json(), 'snake');
 
 
         $response['status'] = 'SUCCEED';
@@ -106,6 +102,19 @@ class VandarIPGController extends Controller
      */
     private function IPG_URL(string $url_param): string
     {
-        return self::IPG_BASE_URL . $url_param;
+        return config('vandar.ipg_base_url') . 'api/v3/' . $url_param;
+    }
+
+
+    /**
+     * Make proper Redirect Url for payment page
+     *
+     * @param string $token
+     * 
+     * @return string
+     */
+    private function REDIRECT_URL($token): string
+    {
+        return config('vandar.ipg_base_url') . "v3/$token";
     }
 }
