@@ -3,7 +3,8 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use App\Http\Controllers\Controller;
-use Vandar\VandarCashier\RequestsValidation\ListBillsRequestValidation;
+use Vandar\VandarCashier\Utilities\ParamsCaseFormat;
+use Vandar\VandarCashier\RequestsValidation\BillsListRequestValidation;
 
 class VandarBillsController extends Controller
 {
@@ -38,8 +39,12 @@ class VandarBillsController extends Controller
      */
     public function list(array $params = []): array
     {
+        # prepare data for send request
+        $keys = ['from_date', 'to_date', 'status_kind'];
+        $params = ParamsCaseFormat::convert($params, 'camel', $keys);
+
         # Request Validation
-        $request = new ListBillsRequestValidation($params);
+        $request = new BillsListRequestValidation($params);
         $request->validate($request->rules());
 
         $response = $this->request('get', $this->BILLING_URL('transaction'), true, $params);

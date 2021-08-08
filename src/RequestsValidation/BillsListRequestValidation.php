@@ -5,7 +5,7 @@ namespace Vandar\VandarCashier\RequestsValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 
-class ListBillsRequestValidation extends FormRequest
+class BillsListRequestValidation extends FormRequest
 {
 
     /**

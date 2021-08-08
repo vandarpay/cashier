@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Redirect;
 use Vandar\VandarCashier\Models\VandarPayment;
 use Vandar\VandarCashier\RequestsValidation\IPGRequestValidation;
 use Vandar\VandarCashier\RequestsValidation\MorphsRequestValidation;
+use Vandar\VandarCashier\Utilities\ParamsCaseFormat;
 
 class VandarIPGController extends Controller
 {
@@ -32,7 +33,7 @@ class VandarIPGController extends Controller
         # Request Validation 
         $ipg_request = new IPGRequestValidation($params);
         $ipg_request->validate($ipg_request->rules());
-        
+
         # Request Validation
         $morphs_request = new MorphsRequestValidation($morphs);
         $morphs_request->validate($morphs_request->rules());
@@ -46,7 +47,7 @@ class VandarIPGController extends Controller
             $morphs["vandar_$key"] = $morphs[$key];
             unset($morphs[$key]);
         }
-        
+
         # Add {payment_token} into $params
         $params['token'] = $response->json()['token'];
         $params = array_merge($params, $morphs);
@@ -83,7 +84,8 @@ class VandarIPGController extends Controller
 
 
         # prepare response for making compatible with DB
-        $response = $this->prepareResponseFormat($response->json());
+        $response = ParamsCaseFormat::convert($response->json(), 'snake');
+
 
         $response['status'] = 'SUCCEED';
 
@@ -105,31 +107,5 @@ class VandarIPGController extends Controller
     private function IPG_URL(string $url_param): string
     {
         return self::IPG_BASE_URL . $url_param;
-    }
-
-
-
-
-    /**
-     * Prepare final response format 
-     *
-     * @param array $params
-     * 
-     * @return array $params
-     */
-    private function prepareResponseFormat(array $params): array
-    {
-        $keys = array_keys($params);
-        foreach ($keys as $key) {
-            $keys[array_search($key, $keys)] = Str::snake($key);
-            $params = array_combine($keys, $params);
-        }
-
-        if (array_key_exists('mobile', $params)) {
-            $params['mobile_number'] = $params['mobile'];
-            unset($params['mobile']);
-        }
-
-        return $params;
     }
 }
