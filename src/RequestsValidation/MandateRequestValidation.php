@@ -29,7 +29,7 @@ class MandateRequestValidation extends FormRequest
     {
         return [
             'bank_code' => 'required|string',
-            'mobile' => 'required|string',
+            'mobile_number' => 'nullable|string|starts_with:09|size:11',
             'callback_url' => 'required|string',
             'count' => 'required|int',
             'limit' => 'required|int',

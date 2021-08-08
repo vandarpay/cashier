@@ -4,7 +4,7 @@ namespace Vandar\VandarCashier\Utilities;
 
 use Illuminate\Support\Str;
 
-class ParamsCaseFormat
+class ParamsFormatConvertor
 {
     /**
      * Convert Data CaseFormat 
@@ -14,7 +14,7 @@ class ParamsCaseFormat
      * @param array|null $keys
      * @return array $params
      */
-    public static function convert($params, $caseFormat, $keys = null)
+    public static function caseFormat($params, $caseFormat, $keys = null)
     {
         $keys = $keys ?? array_keys($params);
         foreach ($keys as $key) {
@@ -27,10 +27,30 @@ class ParamsCaseFormat
             }
         }
 
+        $params = self::mobileFormat($params);
+
+
+        return $params;
+    }
+
+
+
+    /**
+     * Convert Mobile Number Format
+     *
+     * @param array $params
+     * 
+     * @return array $params
+     */
+    public static function mobileFormat($params)
+    {
 
         if (array_key_exists('mobile', $params)) {
             $params['mobile_number'] = $params['mobile'];
             unset($params['mobile']);
+        } else if (array_key_exists('mobile_number', $params)) {
+            $params['mobile'] = $params['mobile_number'];
+            unset($params['mobile_number']);
         }
 
 
