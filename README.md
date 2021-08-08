@@ -4,8 +4,43 @@
 This package allows you to access and send your requests to **Vandar APIs** easier.
 
 Just do the following steps to prepare for using.
+<br><br>
 
-<br><br><hr><br><br>
+- [Installation](https://gitlab.com/vandario/vandar-cashier/#installation)
+- [Publish and Database migrations](https://gitlab.com/vandario/vandar-cashier/#publish-and-database-migrations)
+- [Enviroment Variables](https://gitlab.com/vandario/vandar-cashier/#enviroment-variables)
+- [Model](https://gitlab.com/vandario/vandar-cashier/#model)
+- [USAGE](https://gitlab.com/vandario/vandar-cashier/#usage)
+- [Authentication](https://gitlab.com/vandario/vandar-cashier/#authentication)
+- [IPG](https://gitlab.com/vandario/vandar-cashier/#ipg)
+	- [IPG:pay](https://gitlab.com/vandario/vandar-cashier/#ipgpay)
+	- [IPG:checkStatus](https://gitlab.com/vandario/vandar-cashier/#ipgcheckstatus)
+- [Settlement](https://gitlab.com/vandario/vandar-cashier/#settlement)
+	- [Settlement List](https://gitlab.com/vandario/vandar-cashier/#settlement-list)
+	- [Settlement Store](https://gitlab.com/vandario/vandar-cashier/#settlement-store)
+	- [Settlement Show](https://gitlab.com/vandario/vandar-cashier/#settlement-show)
+	- [Settlement Cancel](https://gitlab.com/vandario/vandar-cashier/#settlement-cancel)
+- [Billing](https://gitlab.com/vandario/vandar-cashier/#billing)
+	- [Billing Balance](https://gitlab.com/vandario/vandar-cashier/#billing-balance)
+	- [Billing List](https://gitlab.com/vandario/vandar-cashier/#billing-list)
+- [Business](https://gitlab.com/vandario/vandar-cashier/#business)
+	- [Business List](https://gitlab.com/vandario/vandar-cashier/#business-list)
+	- [Business Info](https://gitlab.com/vandario/vandar-cashier/#business-info)
+	- [Business Users](https://gitlab.com/vandario/vandar-cashier/#business-users)
+- [Mandate](https://gitlab.com/vandario/vandar-cashier/#mandate)
+	- [Mandate List](https://gitlab.com/vandario/vandar-cashier/#mandate-list)
+	- [Mandate Store](https://gitlab.com/vandario/vandar-cashier/#mandate-store)
+	- [Mandate CheckStatus](https://gitlab.com/vandario/vandar-cashier/#mandate-checkstatus)
+	- [Mandate Show](https://gitlab.com/vandario/vandar-cashier/#mandate-show)
+	- [Mandate Revoke](https://gitlab.com/vandario/vandar-cashier/#mandate-revoke)
+- [Withdrawal](https://gitlab.com/vandario/vandar-cashier/#withdrawal)
+	- [Withdrawal List](https://gitlab.com/vandario/vandar-cashier/#withdrawal-list)
+	- [Withdrawal Store](https://gitlab.com/vandario/vandar-cashier/#withdrawal-store)
+	- [Withdrawal Show](https://gitlab.com/vandario/vandar-cashier/#withdrawal-show)
+	- [Withdrawal Cancel](https://gitlab.com/vandario/vandar-cashier/#withdrawal-cancel)
+- [Credits](https://gitlab.com/vandario/vandar-cashier/#credits)
+
+<br><hr><br><br>
 
 #### #Installation
 
@@ -25,9 +60,11 @@ The Vandar Cashier migrations will add some tables into your database to store `
 
 
 
-At first you need to publish the migrations by using `vendor:publish` artisan command and then migrate it:
+At first you need to publish the `migrations`  and `config` files by using `vendor:publish` artisan command and then migrate it:
 ```bash
-php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=migrations
+php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=vandar-migrations
+
+php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=vandar-config
 
 php artisan migrate
 ```
@@ -47,7 +84,7 @@ And if not: register the package in **config/app.php** providers array manually:
 
 <br><br><hr><br><br>
 
-#### # Enviroment Variables
+#### #Enviroment Variables
 
 For proper package operation, you must define some enviroment variables in `.env` file to be used during the processes:
 
@@ -123,7 +160,7 @@ Vandar::Auth()->token(); // Get token
 
 #### #IPG
 
-####	 #IPG:pay
+####	 #IPG Pay
 | Name               | Type          | Status        |
 | :---:              |    :----:     |         :---: |
 | amount     	 	 | Integer       | required      |
@@ -141,7 +178,7 @@ Vandar::IPG()->pay(array $params); // Pass payment parameter that mentioned in t
 
 <br><br>
 
-####	 #IPG:checkStatus
+####	 #IPG CheckStatus
 
 ```php
 Vandar::CheckStatus(); // Use it in your callback page (callback_url)
@@ -183,7 +220,7 @@ Vandar::CheckStatus(); // Use it in your callback page (callback_url)
 
 #### #Settlement
 
-#### #Settlement:list
+#### #Settlement List
 | Name               | Type          | Status        |
 | :---:              |    :----:     |         :---: |
 | page     	     	 | Integer       | optional      |
@@ -195,7 +232,7 @@ Vandar::Settlement()->list(array $params); // Get the list of settlements
 
 <br><br>
 
-#### #Settlement:store
+#### #Settlement Store
 
 | Name               | Type          | Status        |
 | :---:              |    :----:     |      :---:    |
@@ -211,7 +248,7 @@ Vandar::Settlement()->store(array $params); // Store new settlement
 
 <br><br>
 
-#### #Settlement:show
+#### #Settlement Show
 | Name               | Type          | Status        |
 | :---:              |    :----:     |      :---:    |
 | settlement_id    	 | String        | optional      |
@@ -221,7 +258,7 @@ Vandar::Settlement()->show(string $settlement_id); // Get more details about a s
 
 <br><br>
 
-#### #Settlement:cancel
+#### #Settlement Cancel
 | Name               | Type          | Status        |
 | :---:              |    :----:     |      :---:    |
 | transaction_id     | String        | optional      |
@@ -238,13 +275,13 @@ Vandar::Settlement()->cancel(int $transaction_id); // Cancel the specific settle
 
 #### #Billing
 
-#### #Billing:balance
+#### #Billing Balance
 ```php
 Vandar::Bills()->balance(); // Get the current balance of your business
 ```
 <br><br>
 
-#### #Billing:list
+#### #Billing List
 | Name               | Type          | Status        |
 | :---:              |    :----:     |      :---:    |
 | from_date     	 | String        | optional      |
@@ -272,14 +309,14 @@ Vandar::Bills()->list(array $params); // Get the list of billing of your busines
 
 #### #Business
 
-#### #Business:list
+#### #Business List
 
 ```php
 Vandar::Business()->list(); // Get the list of your businesses of your Vandar account
 ```
 <br><br>
 
-#### #Business:info
+#### #Business Info
 
 | Name               | Type          | Status        |
 | :---:              |    :----:     |      :---:    |
@@ -289,7 +326,7 @@ Vandar::Business()->info(string $business); // Show the informations about the s
 ```
 <br><br>
 
-#### #Business:users
+#### #Business Users
 | Name               | Type           | Status        |
 | :---:              |    :----:      |      :---:    |
 | business     		 | String         | optional      |
@@ -306,13 +343,13 @@ Vandar::Business()->users(array $params); // Get the list of busniess users with
 
 
 #### #Mandate
-#### #Mandate:list
+#### #Mandate List
 ```php
 Vandar::Mandate()->list(); // Get the list of confirmed Mandates
 ```
 <br><br>
 
-#### #Mandate:store
+#### #Mandate Store
 | Name               | Type           | Status        |
 | :---:              |    :----:      |      :---:    |
 | bank_code     	 | String         | required      |
@@ -330,7 +367,7 @@ Vandar::Mandate()->store(array $params); // Store new Mandate
 
 <br><br>
 
-#### #Mandate:checkStatus
+#### #Mandate CheckStatus
 ```php
 Vandar::CheckStatus(); // Use it in your callback page (callback_url)
 ```
@@ -356,7 +393,7 @@ Vandar::CheckStatus(); // Use it in your callback page (callback_url)
 
 <br><br>
 
-#### #Mandate:show
+#### #Mandate Show
 | Name               | Type           | Status        |
 | :---:              |    :----:      |      :---:    |
 | authorization_id   | String         | required      |
@@ -366,7 +403,7 @@ Vandar::Mandate()->show(string $authorization_id); // Show the informations of s
 
 <br><br>
 
-#### #Mandate:revoke
+#### #Mandate Revoke
 | Name               | Type           | Status        |
 | :---:              |    :----:      |      :---:    |
 | authorization_id   | String         | required      |
@@ -381,13 +418,13 @@ Vandar::Mandate()->revoke(string $authorization_id); // Revoke specific mandate
 
 #### #Withdrawal
 
-#### #Withdrawal:list
+#### #Withdrawal List
 ```php
 Vandar::Withdrawal()->list(); // Get the list of Withdrawals
 ```
 <br><br>
 
-#### #Withdrawal:store
+#### #Withdrawal Store
 | Name               | Type           | Status        |
 | :---:              |    :----:      |      :---:    |
 | authorization_id   | String         | required      |
@@ -401,7 +438,7 @@ Vandar::Withdrawal()->store(array $params); // Store new withdrawal
 ```
 <br><br>
 
-#### #Withdrawal:show
+#### #Withdrawal Show
 | Name               | Type           | Status        |
 | :---:              |    :----:      |      :---:    |
 | withdrawal_id  	 | String         | required      |
@@ -410,7 +447,7 @@ Vandar::Withdrawal()->show(string $withdrawal_id); // Show details about specifi
 ```
 <br><br>
 
-#### #Withdrawal:cancel
+#### #Withdrawal Cancel
 | Name               | Type           | Status        |
 | :---:              |    :----:      |      :---:    |
 | withdrawal_id  	 | String         | required      |
