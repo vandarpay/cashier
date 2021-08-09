@@ -31,7 +31,6 @@ class CreateVandarPaymentsTable extends Migration
             $table->string('valid_card_number')->nullable();
             $table->string('card_number')->nullable();
             $table->string('cid')->comment('SHA256')->nullable();
-            $table->string('payment_start')->nullable();
             $table->dateTime('payment_date')->nullable();
             $table->string('message')->nullable();
             $table->json('errors')->nullable();

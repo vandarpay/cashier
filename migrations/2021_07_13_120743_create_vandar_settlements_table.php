@@ -24,7 +24,6 @@ class CreateVandarSettlementsTable extends Migration
             $table->uuid('track_id');
             $table->string('payment_number')->nullable();
             $table->string('transaction_id')->nullable();
-            $table->string('gateway_transaction_id')->nullable();
             $table->string('status')->default('INIT');
             $table->decimal('wallet', 20, 0)->nullable()->comment('Cuurency : RIAL');
             $table->boolean('is_instant')->default(false);
