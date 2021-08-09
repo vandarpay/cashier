@@ -8,7 +8,7 @@ use Vandar\VandarCashier\RequestsValidation\ListRequestValidation;
 class VandarBusinessController extends Controller
 {
     use \Vandar\VandarCashier\Utilities\Request;
-    
+
 
     /**
      * Get the list of businesses
@@ -17,9 +17,9 @@ class VandarBusinessController extends Controller
      * 
      * @return array
      */
-    public function list(string $business = null): array
+    public function list(): array
     {
-        $response = $this->request('get', $this->BUSINESS_URL($business ?? null), true);
+        $response = $this->request('get', $this->BUSINESS_URL(), true);
 
         return $response->json();
     }
@@ -35,7 +35,7 @@ class VandarBusinessController extends Controller
      */
     public function info(string $business = null): array
     {
-        $response = $this->request('get', $this->BUSINESS_URL($business ?? null), true);
+        $response = $this->request('get', $this->BUSINESS_URL($business ?? config('vandar.business_name')), true);
 
         return $response->json();
     }
@@ -55,8 +55,10 @@ class VandarBusinessController extends Controller
         $business_request = new ListRequestValidation($params);
         $business_request->validate($business_request->rules());
 
+        $business = $params['business'] ?? config('vandar.business_name');
+        unset($params['business']);
 
-        $response = $this->request('get', $this->BUSINESS_URL($params['business'] ?? null, '/iam'), true, $params);
+        $response = $this->request('get', $this->BUSINESS_URL($business, '/iam'), true, $params);
 
         return $response->json();
     }
@@ -72,7 +74,6 @@ class VandarBusinessController extends Controller
      */
     private function BUSINESS_URL(string $business = null, string $param = null): string
     {
-        $business = $business ?? config('vandar.business_name');
         return config('vandar.api_base_url') . 'v2/business/' . $business . $param;
     }
 }

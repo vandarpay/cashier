@@ -34,7 +34,8 @@ class VandarIPGController extends Controller
         $morphs_request = new MorphsRequestValidation($morphs);
         $morphs_request->validate($morphs_request->rules());
 
-
+        $params = ParamsFormatConvertor::caseFormat($params, 'camel', ['factor_number']);
+        
         $response = $this->request('post', $this->IPG_URL('send'), false, $params);
 
 
@@ -81,7 +82,7 @@ class VandarIPGController extends Controller
 
         # prepare response for making compatible with DB
         $response = ParamsFormatConvertor::caseFormat($response->json(), 'snake');
-
+        $response = ParamsFormatConvertor::mobileFormat($response);
 
         $response['status'] = 'SUCCEED';
 

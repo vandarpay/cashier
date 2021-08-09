@@ -14,7 +14,7 @@ class ParamsFormatConvertor
      * @param array|null $keys
      * @return array $params
      */
-    public static function caseFormat($params, $caseFormat, $keys = null)
+    public static function caseFormat(array $params, string $caseFormat, array $keys = null)
     {
         $keys = $keys ?? array_keys($params);
         foreach ($keys as $key) {
@@ -27,7 +27,6 @@ class ParamsFormatConvertor
             }
         }
 
-        $params = self::mobileFormat($params);
 
 
         return $params;
