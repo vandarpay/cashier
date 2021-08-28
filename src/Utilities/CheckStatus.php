@@ -55,22 +55,42 @@ trait CheckStatus
      */
     private static function checkMandateStatus($request_query)
     {
-        if ($request_query['status'] != 'SUCCEED') {
-            VandarMandate::where('token', $request_query['token'])
-                ->update([
-                    'errors' => json_encode('Failed To Access'),
-                    'status' => $request_query['status']
-                ]);
+        switch ($request_query['status']) {
 
-            return $request_query;
+            case 'SUCCEED':
+                VandarMandate::where('token', $request_query['token'])
+                    ->update([
+                        'is_active' => true,
+                        'status' => $request_query['status'],
+                        'authorization_id' => $request_query['authorization_id']
+                    ]);
+
+                break;
+
+
+            case 'FAILED':
+                VandarMandate::where('token', $request_query['token'])
+                    ->update([
+                        'errors' => json_encode('Failed_To_Access_Bank_Account'),
+                        'status' => $request_query['status']
+                    ]);
+
+                break;
+
+
+            case 'FAILED_TO_ACCESS_BANK':
+                VandarMandate::where('token', $request_query['token'])
+                    ->update([
+                        'errors' => json_encode('Failed_To_Access_Bank'),
+                        'status' => $request_query['status']
+                    ]);
+
+                break;
+
+
+            default:
+                break;
         }
-
-        VandarMandate::where('token', $request_query['token'])
-            ->update([
-                'is_active' => true,
-                'status' => $request_query['status'],
-                'authorization_id' => $request_query['authorization_id']
-            ]);
 
         return $request_query;
     }
