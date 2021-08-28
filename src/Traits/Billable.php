@@ -2,7 +2,7 @@
 
 namespace Vandar\VandarCashier\Traits;
 
-trait billable
+trait Billable
 {
     public function vandar_payments()
     {
