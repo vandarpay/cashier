@@ -2,10 +2,10 @@
 
 namespace Vandar\VandarCashier\Traits;
 
-trait Payable
+trait billable
 {
     public function vandar_payments()
     {
-        return $this->morphMany(VandarPayment::class, 'vandar_payable');
+        return $this->morphMany(VandarPayment::class, 'billable');
     }
 }
