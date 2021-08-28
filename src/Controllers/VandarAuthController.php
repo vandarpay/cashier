@@ -8,6 +8,7 @@ use Vandar\VandarCashier\RequestsValidation\AuthRequestValidation;
 
 class VandarAuthController extends Controller
 {
+    // TODO check overriding methods with Request::request()
     use \Vandar\VandarCashier\Utilities\Request;
 
 
