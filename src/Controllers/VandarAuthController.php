@@ -2,7 +2,7 @@
 
 namespace Vandar\VandarCashier\Controllers;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Vandar\VandarCashier\Models\VandarAuthList;
 use Vandar\VandarCashier\RequestsValidation\AuthRequestValidation;
 

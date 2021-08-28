@@ -2,7 +2,7 @@
 
 namespace Vandar\VandarCashier\Controllers;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Redirect;
 use Vandar\VandarCashier\Models\VandarPayment;
 use Vandar\VandarCashier\RequestsValidation\IPGRequestValidation;

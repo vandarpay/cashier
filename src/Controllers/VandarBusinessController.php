@@ -2,7 +2,7 @@
 
 namespace Vandar\VandarCashier\Controllers;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Vandar\VandarCashier\RequestsValidation\ListRequestValidation;
 
 class VandarBusinessController extends Controller
