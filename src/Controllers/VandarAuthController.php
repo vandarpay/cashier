@@ -1,15 +1,15 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
 use Illuminate\Routing\Controller;
-use Vandar\VandarCashier\Models\AuthList;
-use Vandar\VandarCashier\RequestsValidation\AuthRequestValidation;
+use Vandar\Cashier\Models\AuthList;
+use Vandar\Cashier\RequestsValidation\AuthRequestValidation;
 
 class VandarAuthController extends Controller
 {
     // TODO check overriding methods with Request::request()
-    use \Vandar\VandarCashier\Utilities\Request;
+    use \Vandar\Cashier\Utilities\Request;
 
 
     /**

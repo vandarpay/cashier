@@ -1,17 +1,17 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Redirect;
-use Vandar\VandarCashier\Models\Mandate;
-use Vandar\VandarCashier\RequestsValidation\MandateRequestValidation;
-use Vandar\VandarCashier\Utilities\ParamsFormatConvertor;
+use Vandar\Cashier\Models\Mandate;
+use Vandar\Cashier\RequestsValidation\MandateRequestValidation;
+use Vandar\Cashier\Utilities\ParamsFormatConvertor;
 
 class VandarMandateController extends Controller
 {
-    use \Vandar\VandarCashier\Utilities\Request;
+    use \Vandar\Cashier\Utilities\Request;
 
     const MANDATE_REDIRECT_URL = 'https://subscription.vandar.io/authorizations/';
 

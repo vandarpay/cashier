@@ -1,18 +1,18 @@
 <?php
 
-namespace Vandar\VandarCashier;
+namespace Vandar\Cashier;
 
-use Vandar\VandarCashier\Controllers\VandarIPGController;
-use Vandar\VandarCashier\Controllers\VandarAuthController;
-use Vandar\VandarCashier\Controllers\VandarBillsController;
-use Vandar\VandarCashier\Controllers\VandarMandateController;
-use Vandar\VandarCashier\Controllers\VandarBusinessController;
-use Vandar\VandarCashier\Controllers\VandarSettlementController;
-use Vandar\VandarCashier\Controllers\VandarWithdrawalController;
+use Vandar\Cashier\Controllers\VandarIPGController;
+use Vandar\Cashier\Controllers\VandarAuthController;
+use Vandar\Cashier\Controllers\VandarBillsController;
+use Vandar\Cashier\Controllers\VandarMandateController;
+use Vandar\Cashier\Controllers\VandarBusinessController;
+use Vandar\Cashier\Controllers\VandarSettlementController;
+use Vandar\Cashier\Controllers\VandarWithdrawalController;
 
 class Vandar
 {
-    use \Vandar\VandarCashier\Utilities\CheckStatus;
+    use \Vandar\Cashier\Utilities\CheckStatus;
 
 
     /**

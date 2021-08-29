@@ -78,7 +78,7 @@ And if not: register the package in **config/app.php** providers array manually:
 ```php
 'providers' => [
 	...
-	\Vandar\VandarCashier\VandarCashierServiceProvider::class,
+	\Vandar\Cashier\VandarCashierServiceProvider::class,
 ],
 ```
 
@@ -116,10 +116,10 @@ VandarPayment Model and table, use the Polyphorphism relations
 So if you want, use one of these traits(As needed) in your Model:
 
 ```php
-use Vandar\VandarCashier\Traits\Payable
+use Vandar\Cashier\Traits\Payable
 use Payable;
 
-use Vandar\VandarCashier\Traits\Paymentable
+use Vandar\Cashier\Traits\Paymentable
 use Paymentable;
 
 ```
@@ -129,7 +129,7 @@ use Paymentable;
 #### #**USAGE**
 For Using all the package method, you just need to use main Vandar file namespace in your files that you use it:
 ```php
-use Vandar\VandarCashier\Vandar;
+use Vandar\Cashier\Vandar;
 ```
 
 <br>

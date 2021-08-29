@@ -1,8 +1,8 @@
 <?php
 
-namespace Vandar\VandarCashier\Traits;
+namespace Vandar\Cashier\Traits;
 
-use Vandar\VandarCashier\Models\Payment;
+use Vandar\Cashier\Models\Payment;
 
 trait Billable
 {

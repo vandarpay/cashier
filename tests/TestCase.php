@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Vandar\VandarCashier\Tests;
+namespace Vandar\Cashier\Tests;
 
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 

@@ -1,15 +1,15 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
 use Illuminate\Routing\Controller;
-use Vandar\VandarCashier\Models\Settlement;
-use Vandar\VandarCashier\RequestsValidation\ListRequestValidation;
-use Vandar\VandarCashier\RequestsValidation\SettlementRequestValidation;
+use Vandar\Cashier\Models\Settlement;
+use Vandar\Cashier\RequestsValidation\ListRequestValidation;
+use Vandar\Cashier\RequestsValidation\SettlementRequestValidation;
 
 class VandarSettlementController extends Controller
 {
-    use \Vandar\VandarCashier\Utilities\Request;
+    use \Vandar\Cashier\Utilities\Request;
 
 
     /**

@@ -1,10 +1,10 @@
 <?php
 
-namespace Vandar\VandarCashier\Utilities;
+namespace Vandar\Cashier\Utilities;
 
-use Vandar\VandarCashier\Controllers\VandarIPGController;
-use Vandar\VandarCashier\Models\Mandate;
-use Vandar\VandarCashier\Models\Payment;
+use Vandar\Cashier\Controllers\VandarIPGController;
+use Vandar\Cashier\Models\Mandate;
+use Vandar\Cashier\Models\Payment;
 use Illuminate\Support\Str;
 
 trait CheckStatus

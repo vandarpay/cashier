@@ -1,6 +1,6 @@
 <?php
 
-namespace Vandar\VandarCashier;
+namespace Vandar\Cashier;
 
 use Illuminate\Support\ServiceProvider;
 

@@ -23,18 +23,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Vandar\\VandarCashier\\": "src/"
+            "Vandar\\Cashier\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Vandar\\VandarCashier\\Tests\\": "tests/"
+            "Vandar\\Cashier\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Vandar\\VandarCashier\\VandarCashierServiceProvider"
+                "Vandar\\Cashier\\VandarCashierServiceProvider"
             ]
         }
     }

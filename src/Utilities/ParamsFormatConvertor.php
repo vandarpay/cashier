@@ -1,6 +1,6 @@
 <?php
 
-namespace Vandar\VandarCashier\Utilities;
+namespace Vandar\Cashier\Utilities;
 
 use Illuminate\Support\Str;
 

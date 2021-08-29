@@ -1,14 +1,14 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
 use Illuminate\Routing\Controller;
-use Vandar\VandarCashier\Models\Withdrawal;
-use Vandar\VandarCashier\RequestsValidation\WithdrawalRequestValidation;
+use Vandar\Cashier\Models\Withdrawal;
+use Vandar\Cashier\RequestsValidation\WithdrawalRequestValidation;
 
 class VandarWithdrawalController extends Controller
 {
-    use \Vandar\VandarCashier\Utilities\Request;
+    use \Vandar\Cashier\Utilities\Request;
 
 
     /**

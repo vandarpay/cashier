@@ -1,6 +1,6 @@
 <?php
 
-namespace Vandar\VandarCashier\Models;
+namespace Vandar\Cashier\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

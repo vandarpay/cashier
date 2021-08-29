@@ -1,14 +1,14 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
 use Illuminate\Routing\Controller;
-use Vandar\VandarCashier\Utilities\ParamsFormatConvertor;
-use Vandar\VandarCashier\RequestsValidation\BillsListRequestValidation;
+use Vandar\Cashier\Utilities\ParamsFormatConvertor;
+use Vandar\Cashier\RequestsValidation\BillsListRequestValidation;
 
 class VandarBillsController extends Controller
 {
-    use \Vandar\VandarCashier\Utilities\Request;
+    use \Vandar\Cashier\Utilities\Request;
 
 
     /**

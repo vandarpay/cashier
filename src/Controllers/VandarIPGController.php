@@ -1,17 +1,17 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Redirect;
-use Vandar\VandarCashier\Models\Payment;
-use Vandar\VandarCashier\RequestsValidation\IPGRequestValidation;
-use Vandar\VandarCashier\RequestsValidation\MorphsRequestValidation;
-use Vandar\VandarCashier\Utilities\ParamsFormatConvertor;
+use Vandar\Cashier\Models\Payment;
+use Vandar\Cashier\RequestsValidation\IPGRequestValidation;
+use Vandar\Cashier\RequestsValidation\MorphsRequestValidation;
+use Vandar\Cashier\Utilities\ParamsFormatConvertor;
 
 class VandarIPGController extends Controller
 {
-    use \Vandar\VandarCashier\Utilities\Request;
+    use \Vandar\Cashier\Utilities\Request;
 
 
     /**

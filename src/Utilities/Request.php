@@ -1,10 +1,9 @@
 <?php
 
-namespace Vandar\VandarCashier\Utilities;
+namespace Vandar\Cashier\Utilities;
 
 use Illuminate\Support\Facades\Http;
-use Vandar\VandarCashier\Vandar;
-use Vandar\VandarCashier\VandarAuth;
+use Vandar\Cashier\Vandar;
 
 trait Request
 {
