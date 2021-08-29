@@ -6,8 +6,8 @@ use Vandar\Cashier\Models\Payment;
 
 trait Billable
 {
-    public function vandar_payments()
+    public function payments()
     {
-        return $this->morphMany(Payment::class, 'billable');
+        return $this->hasMany(Payment::class, 'billable');
     }
 }

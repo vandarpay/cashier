@@ -3,16 +3,15 @@
 namespace Vandar\Cashier\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User;
 
 class Payment extends Model
 {
     protected $table = 'vandar_payments';
     protected $guarded =['id'];
-    
 
-    public function billable()
+    public function user()
     {
-        return $this->morphTo();
+        return $this->belongsTo(User::class);
     }
-    
 }
