@@ -5,7 +5,7 @@ namespace Vandar\VandarCashier\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class VandarAuthList extends Model
+class AuthList extends Model
 {
     protected $table = "vandar_auth_list";
 

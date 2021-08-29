@@ -3,7 +3,7 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use Illuminate\Routing\Controller;
-use Vandar\VandarCashier\Models\VandarSettlement;
+use Vandar\VandarCashier\Models\Settlement;
 use Vandar\VandarCashier\RequestsValidation\ListRequestValidation;
 use Vandar\VandarCashier\RequestsValidation\SettlementRequestValidation;
 
@@ -28,8 +28,8 @@ class VandarSettlementController extends Controller
         $request->validate($request->rules());
 
 
-        VandarSettlement::create($params);
-        $params['track_id'] = VandarSettlement::get('track_id')->last()['track_id'];
+        Settlement::create($params);
+        $params['track_id'] = Settlement::get('track_id')->last()['track_id'];
         $params['amount'] /= 10; // convert RIAL to TOMAN (for sending request)
 
 
@@ -44,7 +44,7 @@ class VandarSettlementController extends Controller
         unset($db_data['prediction']);
 
 
-        VandarSettlement::where('track_id', $params['track_id'])
+        Settlement::where('track_id', $params['track_id'])
             ->update((array)$db_data);
 
 
@@ -104,14 +104,14 @@ class VandarSettlementController extends Controller
         $response = $this->request('delete', $this->SETTLEMENT_URL($transaction_id), true);
 
         if ($response->status() != 200) {
-            VandarSettlement::where('transaction_id', $transaction_id)
+            Settlement::where('transaction_id', $transaction_id)
                 ->update([
                     'errors' => $response->object()->error
                 ]);
             return $response->json();
         }
 
-        VandarSettlement::where('transaction_id', $transaction_id)
+        Settlement::where('transaction_id', $transaction_id)
             ->update([
                 'status' => 'CANCELED',
             ]);

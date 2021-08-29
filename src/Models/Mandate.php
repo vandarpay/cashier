@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool is_active whether current mandate is active
  * @property array errors
  */
-class VandarMandate extends Model
+class Mandate extends Model
 {
     protected $table = 'vandar_mandates';
     protected $guarded = ['id'];

@@ -4,7 +4,7 @@ namespace Vandar\VandarCashier\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class VandarPayment extends Model
+class Payment extends Model
 {
     protected $table = 'vandar_payments';
     protected $guarded =['id'];

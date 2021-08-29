@@ -3,7 +3,7 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use Illuminate\Routing\Controller;
-use Vandar\VandarCashier\Models\VandarAuthList;
+use Vandar\VandarCashier\Models\AuthList;
 use Vandar\VandarCashier\RequestsValidation\AuthRequestValidation;
 
 class VandarAuthController extends Controller
@@ -19,10 +19,10 @@ class VandarAuthController extends Controller
      */
     public function token(): string
     {
-        if (!(VandarAuthList::count()))
+        if (!(AuthList::count()))
             return ($this->login()['access_token']);
 
-        $authData = VandarAuthList::get()->last();
+        $authData = AuthList::get()->last();
 
         if (!$this->isTokenValid($authData['expires_in']))
             return $this->refreshToken($authData['refresh_token'])['access_token'];
@@ -65,7 +65,7 @@ class VandarAuthController extends Controller
      */
     protected function refreshToken(string $refresh_token = null): array
     {
-        $refresh_token = $refresh_token ?? (VandarAuthList::get('refresh_token')->last())->refresh_token;
+        $refresh_token = $refresh_token ?? (AuthList::get('refresh_token')->last())->refresh_token;
 
         $params = ['refreshtoken' => $refresh_token];
         $response = $this->request('post', $this->LOGIN_URL('refreshtoken'), false, $params);
@@ -87,7 +87,7 @@ class VandarAuthController extends Controller
      */
     protected function isTokenValid(int $expirationTime = null): bool
     {
-        ($expirationTime) ?? $expirationTime = VandarAuthList::get('expires_in')->last();
+        ($expirationTime) ?? $expirationTime = AuthList::get('expires_in')->last();
 
         return (time() < $expirationTime);
     }
@@ -101,11 +101,11 @@ class VandarAuthController extends Controller
      */
     private function addAuthData(array $response)
     {
-        $auth_id = (VandarAuthList::get('id')->last())['id'] ?? 1;
+        $auth_id = (AuthList::get('id')->last())['id'] ?? 1;
 
         $response['expires_in'] += time();
 
-        VandarAuthList::updateOrCreate(['id' => $auth_id], $response);
+        AuthList::updateOrCreate(['id' => $auth_id], $response);
     }
 
 

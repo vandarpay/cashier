@@ -5,7 +5,7 @@ namespace Vandar\VandarCashier\Controllers;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Redirect;
-use Vandar\VandarCashier\Models\VandarMandate;
+use Vandar\VandarCashier\Models\Mandate;
 use Vandar\VandarCashier\RequestsValidation\MandateRequestValidation;
 use Vandar\VandarCashier\Utilities\ParamsFormatConvertor;
 
@@ -54,7 +54,7 @@ class VandarMandateController extends Controller
         $params['token'] = $response->json()['result']['authorization']['token'];
         
 
-        VandarMandate::create($params);
+        Mandate::create($params);
 
 
         return Redirect::away(self::MANDATE_REDIRECT_URL . $params['token']);
@@ -88,7 +88,7 @@ class VandarMandateController extends Controller
     {
         $response = $this->request('delete', $this->MANDATE_URL($authorization_id), true);
 
-        VandarMandate::where('authorization_id', $authorization_id)
+        Mandate::where('authorization_id', $authorization_id)
             ->update(['is_active' => false]);
 
         return $response->json();

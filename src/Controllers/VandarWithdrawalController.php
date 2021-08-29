@@ -3,7 +3,7 @@
 namespace Vandar\VandarCashier\Controllers;
 
 use Illuminate\Routing\Controller;
-use Vandar\VandarCashier\Models\VandarWithdrawal;
+use Vandar\VandarCashier\Models\Withdrawal;
 use Vandar\VandarCashier\RequestsValidation\WithdrawalRequestValidation;
 
 class VandarWithdrawalController extends Controller
@@ -35,7 +35,7 @@ class VandarWithdrawalController extends Controller
         $db_data['withdrawal_id'] = $db_data['id'];
         unset($db_data['id']);
 
-        VandarWithdrawal::create($db_data);
+        Withdrawal::create($db_data);
 
 
         return $response->json();
@@ -84,7 +84,7 @@ class VandarWithdrawalController extends Controller
     {
         $response = $this->request('put', $this->WITHDRAWAL_URL($withdrawal_id), true);
 
-        VandarWithdrawal::where('withdrawal_id', $withdrawal_id)
+        Withdrawal::where('withdrawal_id', $withdrawal_id)
             ->update(['status' => 'CANCELED']);
 
 

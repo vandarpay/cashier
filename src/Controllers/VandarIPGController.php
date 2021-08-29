@@ -4,7 +4,7 @@ namespace Vandar\VandarCashier\Controllers;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Redirect;
-use Vandar\VandarCashier\Models\VandarPayment;
+use Vandar\VandarCashier\Models\Payment;
 use Vandar\VandarCashier\RequestsValidation\IPGRequestValidation;
 use Vandar\VandarCashier\RequestsValidation\MorphsRequestValidation;
 use Vandar\VandarCashier\Utilities\ParamsFormatConvertor;
@@ -50,7 +50,7 @@ class VandarIPGController extends Controller
         $params = array_merge($params, $morphs);
 
 
-        VandarPayment::create($params);
+        Payment::create($params);
 
 
         return Redirect::away($this->REDIRECT_URL($response->json()['token']));
@@ -71,7 +71,7 @@ class VandarIPGController extends Controller
         $response = $this->request('post', $this->IPG_URL('verify'), false, $params);
 
         if ($response->status() != 200) {
-            VandarPayment::where('token', $payment_token)
+            Payment::where('token', $payment_token)
                 ->update([
                     'errors' => json_encode($response->json()['errors']),
                     'status' => 'FAILED'
@@ -86,7 +86,7 @@ class VandarIPGController extends Controller
 
         $response['status'] = 'SUCCEED';
 
-        VandarPayment::where('token', $payment_token)
+        Payment::where('token', $payment_token)
             ->update($response);
 
         return $response;

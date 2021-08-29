@@ -2,12 +2,12 @@
 
 namespace Vandar\VandarCashier\Traits;
 
-use Vandar\VandarCashier\Models\VandarPayment;
+use Vandar\VandarCashier\Models\Payment;
 
 trait Billable
 {
     public function vandar_payments()
     {
-        return $this->morphMany(VandarPayment::class, 'billable');
+        return $this->morphMany(Payment::class, 'billable');
     }
 }
