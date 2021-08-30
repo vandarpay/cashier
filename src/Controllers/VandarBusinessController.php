@@ -4,10 +4,10 @@ namespace Vandar\Cashier\Controllers;
 
 use Illuminate\Routing\Controller;
 use Vandar\Cashier\RequestsValidation\ListRequestValidation;
+use Vandar\Cashier\Utilities\Client;
 
 class VandarBusinessController extends Controller
 {
-    use \Vandar\Cashier\Utilities\Request;
 
 
     /**
@@ -19,7 +19,7 @@ class VandarBusinessController extends Controller
      */
     public function list(): array
     {
-        $response = $this->request('get', $this->BUSINESS_URL(), true);
+        $response = Client::request('get', $this->BUSINESS_URL(), true);
 
         return $response->json();
     }
@@ -35,7 +35,7 @@ class VandarBusinessController extends Controller
      */
     public function info(string $business = null): array
     {
-        $response = $this->request('get', $this->BUSINESS_URL($business ?? config('vandar.business_name')), true);
+        $response = Client::request('get', $this->BUSINESS_URL($business ?? config('vandar.business_name')), true);
 
         return $response->json();
     }
@@ -51,14 +51,14 @@ class VandarBusinessController extends Controller
      */
     public function users(array $params = []): array
     {
-        # Request Validation
+        # Client Validation
         $business_request = new ListRequestValidation($params);
         $business_request->validate($business_request->rules());
 
         $business = $params['business'] ?? config('vandar.business_name');
         unset($params['business']);
 
-        $response = $this->request('get', $this->BUSINESS_URL($business, '/iam'), true, $params);
+        $response = Client::request('get', $this->BUSINESS_URL($business, '/iam'), true, $params);
 
         return $response->json();
     }

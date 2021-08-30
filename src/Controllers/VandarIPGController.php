@@ -8,10 +8,10 @@ use Vandar\Cashier\Models\Payment;
 use Vandar\Cashier\RequestsValidation\IPGRequestValidation;
 use Vandar\Cashier\RequestsValidation\MorphsRequestValidation;
 use Vandar\Cashier\Utilities\ParamsFormatConvertor;
+use \Vandar\Cashier\Utilities\Client;
 
 class VandarIPGController extends Controller
 {
-    use \Vandar\Cashier\Utilities\Request;
 
 
     /**
@@ -26,17 +26,17 @@ class VandarIPGController extends Controller
         $params['api_key'] = config('vandar.api_key');
 
         
-        # Request Validation 
+        # Client Validation
         $ipg_request = new IPGRequestValidation($params);
         $ipg_request->validate($ipg_request->rules());
 
-        # Request Validation
+        # Client Validation
         $morphs_request = new MorphsRequestValidation($morphs);
         $morphs_request->validate($morphs_request->rules());
 
         $params = ParamsFormatConvertor::caseFormat($params, 'camel', ['factor_number']);
         
-        $response = $this->request('post', $this->IPG_URL('send'), false, $params);
+        $response = Client::request('post', $this->IPG_URL('send'), false, $params);
 
 
         # Create {morphs} compatibility with db structure
@@ -68,7 +68,7 @@ class VandarIPGController extends Controller
     {
         $params = ['api_key' => config('vandar.api_key'), 'token' => $payment_token];
 
-        $response = $this->request('post', $this->IPG_URL('verify'), false, $params);
+        $response = Client::request('post', $this->IPG_URL('verify'), false, $params);
 
         if ($response->status() != 200) {
             Payment::where('token', $payment_token)

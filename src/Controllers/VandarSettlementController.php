@@ -6,10 +6,10 @@ use Illuminate\Routing\Controller;
 use Vandar\Cashier\Models\Settlement;
 use Vandar\Cashier\RequestsValidation\ListRequestValidation;
 use Vandar\Cashier\RequestsValidation\SettlementRequestValidation;
+use Vandar\Cashier\Utilities\Client;
 
 class VandarSettlementController extends Controller
 {
-    use \Vandar\Cashier\Utilities\Request;
 
 
     /**
@@ -23,7 +23,7 @@ class VandarSettlementController extends Controller
     {
         $params['notify_url'] = $params['notify_url'] ?? config('vandar.notify_url');
 
-        # Request Validation
+        # Client Validation
         $request = new SettlementRequestValidation($params);
         $request->validate($request->rules());
 
@@ -33,7 +33,7 @@ class VandarSettlementController extends Controller
         $params['amount'] /= 10; // convert RIAL to TOMAN (for sending request)
 
 
-        $response = $this->request('post', $this->SETTLEMENT_URL('store', 'v3'), true, $params);
+        $response = Client::request('post', $this->SETTLEMENT_URL('store', 'v3'), true, $params);
 
         # convert id to settlement_id for database compatible
         $db_data = $response->json()['data']['settlement'][0];
@@ -63,7 +63,7 @@ class VandarSettlementController extends Controller
      */
     public function show(string $settlement_id): array
     {
-        $response = $this->request('get', $this->SETTLEMENT_URL($settlement_id), true);
+        $response = Client::request('get', $this->SETTLEMENT_URL($settlement_id), true);
 
         return $response->json();
     }
@@ -80,11 +80,11 @@ class VandarSettlementController extends Controller
      */
     public function list(array $params = []): array
     {
-        # Request Validation
+        # Client Validation
         $request = new ListRequestValidation($params);
         $request->validate($request->rules());
 
-        $response = $this->request('get', $this->SETTLEMENT_URL(), true, $params);
+        $response = Client::request('get', $this->SETTLEMENT_URL(), true, $params);
 
         return $response->json();
     }
@@ -101,7 +101,7 @@ class VandarSettlementController extends Controller
      */
     public function cancel(int $transaction_id): array
     {
-        $response = $this->request('delete', $this->SETTLEMENT_URL($transaction_id), true);
+        $response = Client::request('delete', $this->SETTLEMENT_URL($transaction_id), true);
 
         if ($response->status() != 200) {
             Settlement::where('transaction_id', $transaction_id)

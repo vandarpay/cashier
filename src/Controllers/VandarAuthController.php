@@ -5,13 +5,10 @@ namespace Vandar\Cashier\Controllers;
 use Illuminate\Routing\Controller;
 use Vandar\Cashier\Models\AuthList;
 use Vandar\Cashier\RequestsValidation\AuthRequestValidation;
+use \Vandar\Cashier\Utilities\Client;
 
 class VandarAuthController extends Controller
 {
-    // TODO check overriding methods with Request::request()
-    use \Vandar\Cashier\Utilities\Request;
-
-
     /**
      * Get the access token for accessing account
      *
@@ -41,12 +38,12 @@ class VandarAuthController extends Controller
     {
         $params = ['mobile' => config('vandar.mobile'), 'password' => config('vandar.password')];
 
-        # Validate Login Request
+        # Validate Login Client
         $request = new AuthRequestValidation($params);
         $request->validate($request->rules());
 
 
-        $response = $this->request('post', $this->LOGIN_URL('login'), false, $params);
+        $response = Client::request('post', $this->LOGIN_URL('login'), false, $params);
 
         $this->addAuthData($response->json());
 
@@ -68,7 +65,7 @@ class VandarAuthController extends Controller
         $refresh_token = $refresh_token ?? (AuthList::get('refresh_token')->last())->refresh_token;
 
         $params = ['refreshtoken' => $refresh_token];
-        $response = $this->request('post', $this->LOGIN_URL('refreshtoken'), false, $params);
+        $response = Client::request('post', $this->LOGIN_URL('refreshtoken'), false, $params);
 
         $this->addAuthData($response->json());
 
