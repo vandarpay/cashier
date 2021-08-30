@@ -21,6 +21,12 @@ abstract class TestCase extends OrchestraTestCase
         return [VandarCashierServiceProvider::class];
     }
 
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('vandar.mobile', env('VANDAR_MOBILE'));
+        $app['config']->set('vandar.password', env('VANDAR_PASSWORD'));
+    }
+
     /**
      * Runs migrations and defines a callback to revert them.
      *

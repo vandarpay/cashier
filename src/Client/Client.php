@@ -2,6 +2,7 @@
 
 namespace Vandar\Cashier\Client;
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Vandar\Cashier\Vandar;
 
@@ -14,26 +15,24 @@ class Client
      * @param string $method HTTP method ('get', 'post', etc.)
      * @param string $url URL for the request
      * @param boolean $appendHeaders Determines that request has HEADER or no!
-     * @param array|null $params list of parameters for the request
+     * @param array|null $payload list of parameters for the request
      */
-    public static function request(string $method, string $url, bool $appendHeaders, array $params = null)
+    public static function request(string $method, string $url, array $payload = null, bool $appendHeaders=true) : Response
     {
         # Send the request without headers
         if (! $appendHeaders){
-            $response = Http::$method($url, $params);
+            /** @var Response $response */
+            $response = Http::accept('application/json')->$method($url, $payload);
         } else { # Send the request with headers attached
-            $access_token = Vandar::Auth()->token();
-            $headers = [
-                'Authorization' => "Bearer {$access_token}",
-                'Accept' => 'application/json'
-            ];
-
-            $response = Http::withHeaders($headers)->$method($url, $params);
+            /** @var Response $response */
+            $response = Http::accept('application/json')
+                ->withToken(Authenticate::getToken())
+                ->$method($url, $payload);
         }
 
         if ($response->status() != 200)
         {
-            return $response->throw();
+            dd($response->body());
         }
 
         return $response;
