@@ -2,9 +2,10 @@
 
 namespace Vandar\Cashier\Client;
 
-use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
+
+use Psr\Http\Message\ResponseInterface;
 use Vandar\Cashier\Vandar;
+use GuzzleHttp;
 
 class Client
 {
@@ -16,25 +17,27 @@ class Client
      * @param string $url URL for the request
      * @param boolean $appendHeaders Determines that request has HEADER or no!
      * @param array|null $payload list of parameters for the request
+     * @throws GuzzleHttp\Exception\GuzzleException
      */
-    public static function request(string $method, string $url, array $payload = null, bool $appendHeaders=true) : Response
+    public static function request(string $method, string $url, array $payload = null, bool $appendHeaders=true) : ResponseInterface
     {
+        $client = new GuzzleHttp\Client();
+        $options = [
+            'headers' => [
+                'Accept' => 'application/json',
+            ]
+        ];
+
+        if ($payload){
+            $options['form_params'] = $payload;
+        }
+
         # Send the request without headers
-        if (! $appendHeaders){
-            /** @var Response $response */
-            $response = Http::accept('application/json')->$method($url, $payload);
-        } else { # Send the request with headers attached
-            /** @var Response $response */
-            $response = Http::accept('application/json')
-                ->withToken(Authenticate::getToken())
-                ->$method($url, $payload);
+        if ($appendHeaders){
+            $options['headers']['Authorization'] = 'Bearer ' . Authenticate::getToken();
+
         }
 
-        if ($response->status() != 200)
-        {
-            dd($response->body());
-        }
-
-        return $response;
+        return $client->request($method, $url, $options);
     }
 }
