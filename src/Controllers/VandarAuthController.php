@@ -5,7 +5,7 @@ namespace Vandar\Cashier\Controllers;
 use Illuminate\Routing\Controller;
 use Vandar\Cashier\Models\AuthList;
 use Vandar\Cashier\RequestsValidation\AuthRequestValidation;
-use \Vandar\Cashier\Utilities\Client;
+use \Vandar\Cashier\Client\Client;
 
 class VandarAuthController extends Controller
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Vandar\Cashier\Utilities;
+namespace Vandar\Cashier\Client;
 
 use Illuminate\Support\Facades\Http;
 use Vandar\Cashier\Vandar;
