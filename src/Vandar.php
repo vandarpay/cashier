@@ -42,16 +42,6 @@ class Vandar
         return new VandarBillsController;
     }
 
-
-    /**
-     * Business
-     */
-    public static function Business()
-    {
-        return new VandarBusinessController;
-    }
-
-
     /**
      * IPG
      */
