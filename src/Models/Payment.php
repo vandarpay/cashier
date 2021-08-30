@@ -10,7 +10,10 @@ class Payment extends Model
     protected $table = 'vandar_payments';
     protected $guarded =['id'];
 
-    public function user()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
     }
