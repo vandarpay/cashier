@@ -3,6 +3,7 @@
 namespace Vandar\Cashier;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class VandarCashierServiceProvider extends ServiceProvider
 {
@@ -25,10 +26,7 @@ class VandarCashierServiceProvider extends ServiceProvider
         
         
         // php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=vandar-migrations
-        $this->loadMigrationsFrom(self::MIGRATIONS_PATH);
-        $this->publishes([
-            self::MIGRATIONS_PATH => database_path('migrations')
-        ], 'vandar-migrations');
+        $this->publishMigrations(Vandar::ACTIVE_MIGRATIONS);
     }
 
 
