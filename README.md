@@ -78,3 +78,6 @@ else {
     return redirect($user->authorizeMandate());
 }
 ```
+
+# License
+All material in this project (unless otherwise noted) are available under the MIT License. See LICENSE for more information.
