@@ -48,4 +48,12 @@ return [
     # Notify Url for getting webhook request from Vandar
     #------------------------
     'notify_url' => env('VANDAR_NOTIFY_URL'),
+
+    # Authentication information, filled and used automatically
+    'auth' => [
+        'token_type' => null,
+        'expires_in' => null,
+        'access_token' => null,
+        'refresh_token' => null,
+    ]
 ];

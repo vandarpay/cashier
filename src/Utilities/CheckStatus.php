@@ -1,10 +1,10 @@
 <?php
 
-namespace Vandar\VandarCashier\Utilities;
+namespace Vandar\Cashier\Utilities;
 
-use Vandar\VandarCashier\Controllers\VandarIPGController;
-use Vandar\VandarCashier\Models\VandarMandate;
-use Vandar\VandarCashier\Models\VandarPayment;
+use Vandar\Cashier\Controllers\VandarIPGController;
+use Vandar\Cashier\Models\Mandate;
+use Vandar\Cashier\Models\Payment;
 use Illuminate\Support\Str;
 
 trait CheckStatus
@@ -32,7 +32,7 @@ trait CheckStatus
     {
         if ($request_query['payment_status'] != 'OK') {
 
-            VandarPayment::where('token', $request_query['token'])
+            Payment::where('token', $request_query['token'])
                 ->update([
                     'errors' => json_encode('Failed Payment'),
                     'status' => $request_query['payment_status']
@@ -58,7 +58,7 @@ trait CheckStatus
         switch ($request_query['status']) {
 
             case 'SUCCEED':
-                VandarMandate::where('token', $request_query['token'])
+                Mandate::where('token', $request_query['token'])
                     ->update([
                         'is_active' => true,
                         'status' => $request_query['status'],
@@ -69,7 +69,7 @@ trait CheckStatus
 
 
             case 'FAILED':
-                VandarMandate::where('token', $request_query['token'])
+                Mandate::where('token', $request_query['token'])
                     ->update([
                         'errors' => json_encode('Failed_To_Access_Bank_Account'),
                         'status' => $request_query['status']
@@ -79,7 +79,7 @@ trait CheckStatus
 
 
             case 'FAILED_TO_ACCESS_BANK':
-                VandarMandate::where('token', $request_query['token'])
+                Mandate::where('token', $request_query['token'])
                     ->update([
                         'errors' => json_encode('Failed_To_Access_Bank'),
                         'status' => $request_query['status']

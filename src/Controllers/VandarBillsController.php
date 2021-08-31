@@ -1,14 +1,14 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
-use App\Http\Controllers\Controller;
-use Vandar\VandarCashier\Utilities\ParamsFormatConvertor;
-use Vandar\VandarCashier\RequestsValidation\BillsListRequestValidation;
+use Illuminate\Routing\Controller;
+use Vandar\Cashier\Utilities\ParamsFormatConvertor;
+use Vandar\Cashier\RequestsValidation\BillsListRequestValidation;
+use Vandar\Cashier\Utilities\Client;
 
 class VandarBillsController extends Controller
 {
-    use \Vandar\VandarCashier\Utilities\Request;
 
 
     /**
@@ -18,7 +18,7 @@ class VandarBillsController extends Controller
      */
     public function balance(): array
     {
-        $response = $this->request('get', $this->BILLING_URL('balance'), true);
+        $response = Client::request('get', $this->BILLING_URL('balance'), true);
 
         return $response->json();
     }
@@ -39,11 +39,11 @@ class VandarBillsController extends Controller
         $keys = ['from_date', 'to_date', 'status_kind'];
         $params = ParamsFormatConvertor::caseFormat($params, 'camel', $keys);
 
-        # Request Validation
+        # Client Validation
         $request = new BillsListRequestValidation($params);
         $request->validate($request->rules());
 
-        $response = $this->request('get', $this->BILLING_URL('transaction'), true, $params);
+        $response = Client::request('get', $this->BILLING_URL('transaction'), true, $params);
 
         return $response->json();
     }

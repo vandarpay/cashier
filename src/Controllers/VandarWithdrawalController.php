@@ -1,15 +1,14 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
-use App\Http\Controllers\Controller;
-use Vandar\VandarCashier\Models\VandarWithdrawal;
-use Vandar\VandarCashier\RequestsValidation\WithdrawalRequestValidation;
+use Illuminate\Routing\Controller;
+use Vandar\Cashier\Models\Withdrawal;
+use Vandar\Cashier\RequestsValidation\WithdrawalRequestValidation;
+use Vandar\Cashier\Utilities\Client;
 
 class VandarWithdrawalController extends Controller
 {
-    use \Vandar\VandarCashier\Utilities\Request;
-
 
     /**
      * Store new withdrawal
@@ -27,7 +26,7 @@ class VandarWithdrawalController extends Controller
         $request->validate($request->rules());
 
 
-        $response = $this->request('post', $this->WITHDRAWAL_URL('store'), true, $params);
+        $response = Client::request('post', $this->WITHDRAWAL_URL('store'), true, $params);
 
 
         # prepare data for DB structure
@@ -35,7 +34,7 @@ class VandarWithdrawalController extends Controller
         $db_data['withdrawal_id'] = $db_data['id'];
         unset($db_data['id']);
 
-        VandarWithdrawal::create($db_data);
+        Withdrawal::create($db_data);
 
 
         return $response->json();
@@ -50,7 +49,7 @@ class VandarWithdrawalController extends Controller
      */
     public function list(): array
     {
-        $response = $this->request('get', $this->WITHDRAWAL_URL(), true);
+        $response = Client::request('get', $this->WITHDRAWAL_URL(), true);
 
         return $response->json();
     }
@@ -66,7 +65,7 @@ class VandarWithdrawalController extends Controller
      */
     public function show(string $withdrawal_id): array
     {
-        $response = $this->request('get', $this->WITHDRAWAL_URL($withdrawal_id), true);
+        $response = Client::request('get', $this->WITHDRAWAL_URL($withdrawal_id), true);
 
         return $response->json();
     }
@@ -82,9 +81,9 @@ class VandarWithdrawalController extends Controller
      */
     public function cancel(string $withdrawal_id): array
     {
-        $response = $this->request('put', $this->WITHDRAWAL_URL($withdrawal_id), true);
+        $response = Client::request('put', $this->WITHDRAWAL_URL($withdrawal_id), true);
 
-        VandarWithdrawal::where('withdrawal_id', $withdrawal_id)
+        Withdrawal::where('withdrawal_id', $withdrawal_id)
             ->update(['status' => 'CANCELED']);
 
 

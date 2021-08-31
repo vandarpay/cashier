@@ -1,6 +1,6 @@
 <?php
 
-namespace Vandar\VandarCashier\RequestsValidation;
+namespace Vandar\Cashier\RequestsValidation;
 
 use Illuminate\Foundation\Http\FormRequest;
 

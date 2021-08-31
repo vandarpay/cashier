@@ -1,27 +1,29 @@
 <?php
 
-namespace Vandar\VandarCashier;
+namespace Vandar\Cashier;
 
-use Vandar\VandarCashier\Controllers\VandarIPGController;
-use Vandar\VandarCashier\Controllers\VandarAuthController;
-use Vandar\VandarCashier\Controllers\VandarBillsController;
-use Vandar\VandarCashier\Controllers\VandarMandateController;
-use Vandar\VandarCashier\Controllers\VandarBusinessController;
-use Vandar\VandarCashier\Controllers\VandarSettlementController;
-use Vandar\VandarCashier\Controllers\VandarWithdrawalController;
+use Vandar\Cashier\Controllers\VandarIPGController;
+use Vandar\Cashier\Controllers\VandarBillsController;
+use Vandar\Cashier\Controllers\VandarMandateController;
+use Vandar\Cashier\Controllers\VandarSettlementController;
+use Vandar\Cashier\Controllers\VandarWithdrawalController;
 
 class Vandar
 {
-    use \Vandar\VandarCashier\Utilities\CheckStatus;
+    const VERSION = '1.0';
 
+    const ACTIVE_MIGRATIONS = [
+        'CreateVandarMandatesTable',
+        'CreateVandarPaymentsTable',
+        'CreateVandarSettlementsTable',
+        'CreateVandarWithdrawalsTable',
+    ];
 
-    /**
-     * Authentication
-     */
-    public static function Auth()
-    {
-        return new VandarAuthController;
-    }
+    const API_BASE_URL = 'https://api.vandar.io/';
+
+    const API_AUTH_VERSION = 3;
+
+    use \Vandar\Cashier\Utilities\CheckStatus;
 
 
     /**
@@ -31,16 +33,6 @@ class Vandar
     {
         return new VandarBillsController;
     }
-
-
-    /**
-     * Business
-     */
-    public static function Business()
-    {
-        return new VandarBusinessController;
-    }
-
 
     /**
      * IPG

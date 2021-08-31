@@ -1,11 +1,13 @@
 <?php
 
-namespace Vandar\VandarCashier;
+namespace Vandar\Cashier;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class VandarCashierServiceProvider extends ServiceProvider
 {
+    const MIGRATIONS_PATH = __DIR__ . '/../database/migrations/';
 
     /**
      * Bootstrap services.
@@ -16,8 +18,6 @@ class VandarCashierServiceProvider extends ServiceProvider
     {
         $config_path = realpath(__DIR__ . '/../config/vandar.php');
         
-        $migrations_path =  realpath(__DIR__ . '/../migrations/');
-        
         
         // php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=vandar-config
         $this->publishes([
@@ -26,10 +26,7 @@ class VandarCashierServiceProvider extends ServiceProvider
         
         
         // php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=vandar-migrations
-        $this->loadMigrationsFrom($migrations_path);
-        $this->publishes([
-            $migrations_path => database_path('migrations')
-        ], 'vandar-migrations');
+        $this->publishMigrations(Vandar::ACTIVE_MIGRATIONS);
     }
 
 
@@ -43,4 +40,23 @@ class VandarCashierServiceProvider extends ServiceProvider
     {
         //
     }
+
+
+    protected function publishMigrations(array $publishables): void
+    {
+        // Generate a list of migrations that have not been published yet.
+        $migrations = [];
+        foreach($publishables as $publishable)
+        {
+            // Migration already exists, continuing
+            if(class_exists($publishable)){
+                continue;
+            }
+            $file = Str::snake($publishable) . '.php';
+            $migrations[self::MIGRATIONS_PATH . $file . '.stub'] = database_path('migrations/'.date('Y_m_d_His', time())."_$file");
+        }
+
+        $this->publishes($migrations, 'migrations');
+    }
+
 }

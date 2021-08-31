@@ -1,17 +1,16 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Redirect;
-use Vandar\VandarCashier\Models\VandarMandate;
-use Vandar\VandarCashier\RequestsValidation\MandateRequestValidation;
-use Vandar\VandarCashier\Utilities\ParamsFormatConvertor;
-
+use Vandar\Cashier\Models\Mandate;
+use Vandar\Cashier\RequestsValidation\MandateRequestValidation;
+use Vandar\Cashier\Utilities\ParamsFormatConvertor;
+use Vandar\Cashier\Utilities\Client;
 class VandarMandateController extends Controller
 {
-    use \Vandar\VandarCashier\Utilities\Request;
 
     const MANDATE_REDIRECT_URL = 'https://subscription.vandar.io/authorizations/';
 
@@ -23,7 +22,7 @@ class VandarMandateController extends Controller
      */
     public function list(): array
     {
-        $response = $this->request('get', $this->MANDATE_URL(), true);
+        $response = Client::request('get', $this->MANDATE_URL(), true);
 
         return $response->json();
     }
@@ -41,20 +40,20 @@ class VandarMandateController extends Controller
         $params['callback_url'] = $params['callback_url'] ?? config('vandar.callback_url');
 
         
-        # Request Validation
+        # Client Validation
         $request = new MandateRequestValidation($params);
         $request->validate($request->rules());
         
         $newParams = ParamsFormatConvertor::mobileFormat($params);
         
         
-        $response = $this->request('post', $this->MANDATE_URL('store'), true, $newParams);
+        $response = Client::request('post', $this->MANDATE_URL('store'), true, $newParams);
         
         
         $params['token'] = $response->json()['result']['authorization']['token'];
         
 
-        VandarMandate::create($params);
+        Mandate::create($params);
 
 
         return Redirect::away(self::MANDATE_REDIRECT_URL . $params['token']);
@@ -71,7 +70,7 @@ class VandarMandateController extends Controller
      */
     public function show(string $authorization_id): array
     {
-        $response = $this->request('get', $this->MANDATE_URL($authorization_id), true);
+        $response = Client::request('get', $this->MANDATE_URL($authorization_id), true);
 
         return $response->json();
     }
@@ -86,9 +85,9 @@ class VandarMandateController extends Controller
      */
     public function revoke(string $authorization_id): array
     {
-        $response = $this->request('delete', $this->MANDATE_URL($authorization_id), true);
+        $response = Client::request('delete', $this->MANDATE_URL($authorization_id), true);
 
-        VandarMandate::where('authorization_id', $authorization_id)
+        Mandate::where('authorization_id', $authorization_id)
             ->update(['is_active' => false]);
 
         return $response->json();
