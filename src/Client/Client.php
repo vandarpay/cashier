@@ -22,10 +22,16 @@ class Client
     public static function request(string $method, string $url, array $payload = null, bool $appendHeaders=true) : ResponseInterface
     {
         $client = new GuzzleHttp\Client();
+        $stack = new GuzzleHttp\HandlerStack(new GuzzleHttp\Handler\CurlHandler());
+        $stack->push(GuzzleHttp\Middleware::mapResponse(function(ResponseInterface $response) {
+            return new CustomResponse($response);
+        }));
+
         $options = [
             'headers' => [
                 'Accept' => 'application/json',
-            ]
+            ],
+            'handler' => $stack,
         ];
 
         if ($payload){
@@ -37,7 +43,6 @@ class Client
             $options['headers']['Authorization'] = 'Bearer ' . Authenticate::getToken();
 
         }
-
         return $client->request($method, $url, $options);
     }
 }
