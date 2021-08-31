@@ -6,8 +6,6 @@ use Vandar\Cashier\Vandar;
 
 class Authenticate
 {
-    protected const BASE_URL = Vandar::API_BASE_URL . 'v' . Vandar::API_AUTH_VERSION . '/';
-
     public static function getToken() : string
     {
         // No previous token has been set, issue a completely new token.
@@ -32,14 +30,14 @@ class Authenticate
     protected static function setFreshToken() : void
     {
         $payload = ['mobile' => config('vandar.mobile'), 'password' => config('vandar.password')];
-        $response = Client::request('post', self::BASE_URL . 'login', $payload, false)->json();
+        $response = Client::request('post', Vandar::url('AUTH', 'login'), $payload, false)->json();
         self::setToken($response);
     }
 
     protected static function setRefreshedToken(): void
     {
         $payload = ['refreshtoken' => config('vandar.auth.refresh_token')];
-        $response = Client::request('post', self::BASE_URL . 'refreshtoken', $payload, false)->json();
+        $response = Client::request('post', Vandar::url('AUTH', 'refreshtoken'), $payload, false)->json();
         self::setToken($response);
     }
 
