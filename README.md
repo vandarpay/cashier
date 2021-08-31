@@ -36,7 +36,8 @@ In Vandar Cashier, we are assuming that anyone making a payment is already logge
 ```php
 Route::get('/make-payment', function(Request $request){
     $user = auth()->user(); // Added as a separate variable for clarity
-    return redirect($user->payments()->create($payload)) // See documentation for info on payload and callback
+    $payment = $user->payments()->create($payload);
+    return redirect($payment->url); // See documentation for info on payload and callback
 });
 ```
 Once the transaction finishes (successfully or not), they will be redirect back to the path you defined in callback, you may define a controller or a route to verify the payment using the `Payment::verify($request)` method:

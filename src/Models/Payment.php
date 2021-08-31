@@ -11,7 +11,7 @@ use Vandar\Cashier\Vandar;
 class Payment extends Model
 {
     protected $table = 'vandar_payments';
-    protected $guarded =['id'];
+    protected $guarded = ['id'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -50,5 +50,10 @@ class Payment extends Model
         $this->update($response);
 
         return true;
+    }
+
+    public function getUrlAttribute() : string
+    {
+        return Vandar::url('IPG', $this->token);
     }
 }
