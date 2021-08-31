@@ -18,6 +18,7 @@ class CreateVandarMandatesTable extends Migration
             $table->bigIncrements('id');
             $table->string('token');
             $table->string('authorization_id')->nullable();
+            $table->foreignIdFor(\Illuminate\Foundation\Auth\User::class);
             $table->string('name')->nullable();
             $table->string('mobile_number')->nullable();
             $table->string('email')->nullable();

@@ -26,4 +26,12 @@ class Mandate extends Model
     protected $table = 'vandar_mandates';
     protected $guarded = ['id'];
 
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }
