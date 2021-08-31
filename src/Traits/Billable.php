@@ -28,7 +28,7 @@ trait Billable
 
     public function isValidMandate()
     {
-        if ($this->mandates() and $this->mandates()->where('expiration_date', '>', date('Y-m-d')))
+        if ($this->mandates()->where('expiration_date', '>', date('Y-m-d'))->exists())
             return true;
 
         return false;

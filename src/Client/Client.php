@@ -6,6 +6,8 @@ namespace Vandar\Cashier\Client;
 use Psr\Http\Message\ResponseInterface;
 use Vandar\Cashier\Vandar;
 use GuzzleHttp;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 
 class Client
 {
@@ -44,11 +46,17 @@ class Client
         }
 
 
-        $response = $client->request($method, $url, $options);
+
 
         # convert response error message key format
-        if ((new CustomResponse($response))->getStatusCode() != 200)
-            $response = CasingFormatter::convertFailedResponseFormat($response);
+        try {
+            $response = $client->request($method, $url, $options);
+        } catch (ClientException $e) {
+            if (($response)->getStatusCode() != 200)
+                $response = CasingFormatter::convertFailedResponseFormat($response);
+        } catch (ServerException $e) {
+            throw $e;
+        }
 
         return $response;
     }

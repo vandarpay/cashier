@@ -3,12 +3,9 @@
 namespace Vandar\Cashier\Client;
 
 use Illuminate\Support\Str;
-use Vandar\Cashier\Concerns\ResponseJsonConcern;
 
 class CasingFormatter
 {
-    use ResponseJsonConcern;
-
     /**
      * Convert key naming format to snake or camel case
      *
@@ -76,8 +73,6 @@ class CasingFormatter
      */
     public static function convertFailedResponseFormat($response)
     {
-        $response = $response->json();
-
         if (array_key_exists('error', $response)) {
             $response['errors'] = $response['error'];
             unset($response['error']);
