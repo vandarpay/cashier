@@ -18,7 +18,7 @@ class CreateVandarMandatesTable extends Migration
             $table->bigIncrements('id');
             $table->string('token');
             $table->string('authorization_id')->nullable();
-            $table->foreignIdFor(\Illuminate\Foundation\Auth\User::class);
+            $table->unsignedBigInteger('user_id');
             $table->string('name')->nullable();
             $table->string('mobile_number')->nullable();
             $table->string('email')->nullable();
@@ -30,6 +30,8 @@ class CreateVandarMandatesTable extends Migration
             $table->boolean('is_active')->default(false);
             $table->json('errors')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
