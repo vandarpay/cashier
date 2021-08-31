@@ -42,42 +42,6 @@ class VandarIPGController extends Controller
 
 
 
-
-    /**
-     * Verify the all transaction by sending {TOKEN & API_KEY} 
-     *
-     * @return array 
-     */
-    public function verifyTransaction(string $payment_token): array
-    {
-        $params = ['api_key' => config('vandar.api_key'), 'token' => $payment_token];
-
-        $response = Client::request('post', $this->IPG_URL('verify'), $params, false);
-
-        if ($response->getStatusCode() != 200) {
-            Payment::where('token', $payment_token)
-                ->update([
-                    'errors' => json_encode($response->json()['errors']),
-                    'status' => 'FAILED'
-                ]);
-            return $response->json();
-        }
-
-
-        # prepare response for making compatible with DB
-        $response = CasingFormatter::convertKeysToSnake($response->json());
-        $response = CasingFormatter::mobileKeyFormat($response);
-
-        $response['status'] = 'SUCCEED';
-
-        Payment::where('token', $payment_token)
-            ->update($response);
-
-        return $response;
-    }
-
-
-
     /**
      * Make proper IPG Url for sending requests
      *

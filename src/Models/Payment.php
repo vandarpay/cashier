@@ -4,6 +4,9 @@ namespace Vandar\Cashier\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
+use Vandar\Cashier\Client\CasingFormatter;
+use Vandar\Cashier\Client\Client;
+use Vandar\Cashier\Vandar;
 
 class Payment extends Model
 {
@@ -16,5 +19,36 @@ class Payment extends Model
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Verify a given transactions
+     *
+     * @return bool
+     */
+    public function verify(): bool
+    {
+        $endpoint = Vandar::url('IPG_API', $this->token);
+        $params = ['api_key' => config('vandar.api_key'), 'token' => $this->token];
+
+        $response = Client::request('post', $endpoint, $params, false);
+
+        if ($response->getStatusCode() != 200) {
+            $this->update([
+                    'errors' => json_encode($response->json()['errors']),
+                    'status' => 'FAILED'
+                ]);
+            return false;
+        }
+
+
+        # prepare response for making compatible with DB
+        $response = CasingFormatter::convertKeysToSnake($response->json());
+        $response = CasingFormatter::mobileKeyFormat($response);
+
+        $response['status'] = 'SUCCEED';
+        $this->update($response);
+
+        return true;
     }
 }
