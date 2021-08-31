@@ -1,462 +1,78 @@
-# Vandar Cashier Package Document
-============
+Vandar Cashier is a Laravel package that provides you with a seamless integration with Vandar services. Take a look at Vandar Documentation for more information on the services we provide.
 
-This package allows you to access and send your requests to **Vandar APIs** easier.
-
-Just do the following steps to prepare for using.
-<br><br>
-
-- [Installation](https://gitlab.com/vandario/vandar-cashier/#installation)
-- [Publish and Database migrations](https://gitlab.com/vandario/vandar-cashier/#publish-and-database-migrations)
-- [Enviroment Variables](https://gitlab.com/vandario/vandar-cashier/#enviroment-variables)
-- [Model](https://gitlab.com/vandario/vandar-cashier/#model)
-- [USAGE](https://gitlab.com/vandario/vandar-cashier/#usage)
-- [Authentication](https://gitlab.com/vandario/vandar-cashier/#authentication)
-- [IPG](https://gitlab.com/vandario/vandar-cashier/#ipg)
-	- [IPG:pay](https://gitlab.com/vandario/vandar-cashier/#ipgpay)
-	- [IPG:checkStatus](https://gitlab.com/vandario/vandar-cashier/#ipgcheckstatus)
-- [Settlement](https://gitlab.com/vandario/vandar-cashier/#settlement)
-	- [Settlement List](https://gitlab.com/vandario/vandar-cashier/#settlement-list)
-	- [Settlement Store](https://gitlab.com/vandario/vandar-cashier/#settlement-store)
-	- [Settlement Show](https://gitlab.com/vandario/vandar-cashier/#settlement-show)
-	- [Settlement Cancel](https://gitlab.com/vandario/vandar-cashier/#settlement-cancel)
-- [Billing](https://gitlab.com/vandario/vandar-cashier/#billing)
-	- [Billing Balance](https://gitlab.com/vandario/vandar-cashier/#billing-balance)
-	- [Billing List](https://gitlab.com/vandario/vandar-cashier/#billing-list)
-- [Business](https://gitlab.com/vandario/vandar-cashier/#business)
-	- [Business List](https://gitlab.com/vandario/vandar-cashier/#business-list)
-	- [Business Info](https://gitlab.com/vandario/vandar-cashier/#business-info)
-	- [Business Users](https://gitlab.com/vandario/vandar-cashier/#business-users)
-- [Mandate](https://gitlab.com/vandario/vandar-cashier/#mandate)
-	- [Mandate List](https://gitlab.com/vandario/vandar-cashier/#mandate-list)
-	- [Mandate Store](https://gitlab.com/vandario/vandar-cashier/#mandate-store)
-	- [Mandate CheckStatus](https://gitlab.com/vandario/vandar-cashier/#mandate-checkstatus)
-	- [Mandate Show](https://gitlab.com/vandario/vandar-cashier/#mandate-show)
-	- [Mandate Revoke](https://gitlab.com/vandario/vandar-cashier/#mandate-revoke)
-- [Withdrawal](https://gitlab.com/vandario/vandar-cashier/#withdrawal)
-	- [Withdrawal List](https://gitlab.com/vandario/vandar-cashier/#withdrawal-list)
-	- [Withdrawal Store](https://gitlab.com/vandario/vandar-cashier/#withdrawal-store)
-	- [Withdrawal Show](https://gitlab.com/vandario/vandar-cashier/#withdrawal-show)
-	- [Withdrawal Cancel](https://gitlab.com/vandario/vandar-cashier/#withdrawal-cancel)
-- [Credits](https://gitlab.com/vandario/vandar-cashier/#credits)
-
-<br><hr><br><br>
-
-#### #Installation
-
-First, install the Cacshier package for Vandar, using the composer package manager:
-
-	composer require vandar\vandar-cashier
-
-
-<br><br><hr><br><br>
-
-
-#### #Publish and Database migrations
-
-Vandar Cashier package registers its own database migration directory, so remember to migrate your database after installing the package.
-
-The Vandar Cashier migrations will add some tables into your database to store `Authentications`, `Payments`, `Settlements`, `Mandates` and `Withdrawals`.
-
-
-
-At first you need to publish the `migrations`  and `config` files by using `vendor:publish` artisan command and then migrate it:
+# Setup
+To use Vandar Cashier, you need to install it through Composer first:
 ```bash
-php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=vandar-migrations
-
-php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=vandar-config
-
+composer require vandar/cashier
+```
+Then, you will need to publish the package's assets and migrate your project's database to add Vandar Cashier's tables:
+```php
+php artisan vendor:publish --provider="Vandar\\Cashier\\VandarCashierServiceProvider"
 php artisan migrate
 ```
-<br>
-
-> If you're using Laravel version 5.5+, VandarCashier package will be auto-discovered by Laravel. 
-
-<br>
-
-And if not: register the package in **config/app.php** providers array manually:
+After that, open your User model (located in `app/User.php` or `app/Models/User.php` in most projects) and add the `Billable` trait:
 ```php
-'providers' => [
-	...
-	\Vandar\Cashier\VandarCashierServiceProvider::class,
-],
+use Vandar\Cashier\Traits\Billable;
+// ...
+class User extends Authenticatable
+{
+    use Billable;
+// ...
 ```
-
-<br><br><hr><br><br>
-
-#### #Enviroment Variables
-
-For proper package operation, you must define some enviroment variables in `.env` file to be used during the processes:
-
-
+Finally, you will need to add the necessary configuration to your `.env` file:
 ```php
-VANDAR_MOBILE=			//example: VANDAR_MOBILE=09123657458
-VANDAR_PASSWORD=		//example: VANDAR_PASSWORD=YerYP%B3
-VANDAR_BUSINESS_NAME=		//example: VANDAR_BUSINESS_NAME=sampleBusiness
-VANDAR_API_KEY=			//example: VANDAR_API_KEY=7a5cb1b2f87b2c8a9a2
-VANDAR_CALLBACK_URL=		//example: VANDAR_CALLBACK_URL=https://www.yourDomainName.com
-VANDAR_NOTIFY_URL=		//example: VANDAR_NOTIFY_URL=https://https://www.yourDomainName.com
+VANDAR_MOBILE=
+VANDAR_PASSWORD=
+VANDAR_BUSINESS_SLUG=
+VANDAR_API_KEY=
 ```
+`VANDAR_MOBILE` and `VANDAR_PASSWORD` are your login credentials to Vandar dashboard, the `VANDAR_BUSINESS_SLUG` is set by you when you add a business in Vandar and `VANDAR_API_KEY` is obtained through your business dashboard.
 
-|                     Important Notes 					 					 				|
-| 							:---:     						 			    	   		    |
-| You can retrieve your Vandar API Key from the [Vandar.Dashboard](https://dash.vandar.io/) |
-| CALLBACK_URL must be one of the URLs that you added in your Vandar.Dashboard     			|
+# Usage
+Currently, Vandar provides two services: **IPG** and **Direct Debit**. IPG is the more common method used which provides you with a link that the user can use to pay for a service. The direct debit service works by requesting access from a user's bank account and charging them periodically without a need for user interaction.
 
-<br><br><hr><br><br>
-
-#### #Model
-VandarPayment Model and table, use the Polyphorphism relations
-
-| Morph_type             | definition                    | 
-| :---:                  |    :----:                     |
-| **payable**       	 | person who pay                |
-| **paymentable**  	 	 | what the payment was done for |
-<br>
-So if you want, use one of these traits(As needed) in your Model:
-
+## IPG
+In Vandar Cashier, we are assuming that anyone making a payment is already logged-in to your system, therefore, you can create a payment link for them to redirect them to through their user model:
 ```php
-use Vandar\Cashier\Traits\Payable
-use Payable;
-
-use Vandar\Cashier\Traits\Paymentable
-use Paymentable;
-
+Route::get('/make-payment', function(Request $request){
+    $user = auth()->user(); // Added as a separate variable for clarity
+    return redirect($user->payments()->create($payload)) // See documentation for info on payload and callback
+});
 ```
-
-<br><br><hr><br><br>
-
-#### #**USAGE**
-For Using all the package method, you just need to use main Vandar file namespace in your files that you use it:
+Once the transaction finishes (successfully or not), they will be redirect back to the path you defined in callback, you may define a controller or a route to verify the payment using the `Payment::verify($request)` method:
 ```php
-use Vandar\Cashier\Vandar;
+use Vandar\Cashier\Models\Payment;
+Route::get('/callback', function(Request $request){
+    if(Payment::verify($request)){
+        return 'Success!';
+    } 
+    else {
+        return 'Failed!';
+    }
+})
 ```
+The verify method automatically updates the transaction status in your database.
 
-<br>
+## Direct-Debit
+When setting up direct-debit, you have two main steps to take.
+1. Get user to allow for access to their account (also known as a Mandate)
+2. Request a withdrawal from a user's account
 
-|                     Important Notes 					 					 		|
-| 							:---:     						 			    	    |
-| **api_key** will be use from `.env` file 					  			  	        |
-| You can pass **callback_url** in the input parameters OR use from `.env` file     |
-|The CallBack url must be added in  "callback url list" in your Vandar Account |
-| You can pass **notify_url** in the input parameters OR use from `.env` file     |
-| In Business methods, you can pass **business** name in the input parameters OR use from `.env` file     |
-| To check the payment & mandate status after return from bank page, you Just need to be added checkStatus vandar method in your callback page to check status to continue and verify process.     |
-| In the operation of each method, related data will be create or update in their tables!!     |
-| Each method that get more than one parameter, should be pass in **Array** format.     |
+### Mandate
+Before any withdrawal from a user's account can be done, it is required to check whether they have a valid mandate, in other words, whether they are still allowing us to access their account. This is done using the `hasValidMandate` method in the User model. See the examples below.
 
-<br>
+if the user is not a valid subscriber, you can use the `authorizeMandate` method to generate a link for them to authorize it.
 
-<br><br><hr><br><br>
+### Withdrawal
+Once the mandate is verified, you may create a withdrawal using the `User::withdrawals()->create()` method.
 
-#### #Authentication
-In the usage of this package, you don't want to use **token()** method manually no where and all the token operations(generate, refresh, ...) will do automatically but if you want to get token, you can use following method:
+All of the code below is used in this example:
 ```php
-Vandar::Auth()->token(); // Get token
-
+$user = User::find(1);
+if($user->hasValidMandate()){
+    $user->withdrawals()->create($payload);
+}
+else {
+    return redirect($user->authorizeMandate());
+}
 ```
-
-<br><br><hr><br><br>
-
-#### #IPG
-
-####	 #IPG Pay
-| Name               | Type          | Status        |
-| :---:              |    :----:     |         :---: |
-| amount     	 	 | Integer       | required      |
-| callback_url  	 | String        | required <br> (If don't define in `.env` file)     |
-| mobile_number      | String        | optional      |
-| factor_number      | String        | optional      |
-| description        | String        | optional      |
-| valid_card_number  | String        | optional      |
-
-<br>
-
-```php
-Vandar::IPG()->pay(array $params); // Pass payment parameter that mentioned in the Vandar Document to do the all payment process(generate token, redirect payment page).
-```
-
-<br><br>
-
-####	 #IPG CheckStatus
-
-```php
-Vandar::CheckStatus(); // Use it in your callback page (callback_url)
-```
-
-
-- **Response when payment is failed from bank payment page**:
-```php
-[
-"token": "Y8ENGSR5WHJSZE6",
-"status": "FAILED"
-]
-```
- 
-- **Response when payment(transaction) is Successfully**:
-```php
-[
-"status": "SUCCEED",
-"amount": "10000.00",
-"real_amount": 9500,
-"wage": "500",
-"trans_id": 162898700786,
-"factor_number": null,
-"description": null,
-"card_number": "610433******6685",
-"payment_date": "2021-08-07 23:40:51",
-"cid": "9AEEC623JODW5DEEDE3D67CE19BA14A4949CB70E3528E4A85DGT807F09F28753",
-"message": "ok",
-"mobile_number": null
-]
-```
-
-
-
-
-<br><br><hr><br><br>
-
-
-
-#### #Settlement
-
-#### #Settlement List
-| Name               | Type          | Status        |
-| :---:              |    :----:     |         :---: |
-| page     	     	 | Integer       | optional      |
-| per_page  	     | Integer       | optional      |
-
-```php
-Vandar::Settlement()->list(array $params); // Get the list of settlements
-```
-
-<br><br>
-
-#### #Settlement Store
-
-| Name               | Type          | Status        |
-| :---:              |    :----:     |      :---:    |
-| amount     	 	 | Integer       | required      |
-| iban  			 | String        | required      |
-| track_id     		 | String        | required      |
-| payment_number     | Integer       | optional      |
-| notify_url         | String        | optional      |
-
-```php
-Vandar::Settlement()->store(array $params); // Store new settlement
-```
-
-<br><br>
-
-#### #Settlement Show
-| Name               | Type          | Status        |
-| :---:              |    :----:     |      :---:    |
-| settlement_id    	 | String        | optional      |
-```php
-Vandar::Settlement()->show(string $settlement_id); // Get more details about a specific settlement
-```
-
-<br><br>
-
-#### #Settlement Cancel
-| Name               | Type          | Status        |
-| :---:              |    :----:     |      :---:    |
-| transaction_id     | String        | optional      |
-```php
-Vandar::Settlement()->cancel(int $transaction_id); // Cancel the specific settlement
-```
-
-
-
-<br><br><hr><br><br>
-
-
-
-
-#### #Billing
-
-#### #Billing Balance
-```php
-Vandar::Bills()->balance(); // Get the current balance of your business
-```
-<br><br>
-
-#### #Billing List
-| Name               | Type          | Status        |
-| :---:              |    :----:     |      :---:    |
-| from_date     	 | String        | optional      |
-| to_date  			 | String        | optional      |
-| status_kind    	 | String        | optional      |
-| status   		     | String        | optional      |
-| channel            | String        | optional      |
-| form_id             | String        | optional      |
-| ref_id             | String        | optional      |
-| tracking_code      | String        | optional      |
-| id                 | String        | optional      |
-| track_id           | String        | optional      |
-| q                  | String        | optional      |
-| per_page           | String        | optional      |
-| page               | String        | optional      |
-```php
-Vandar::Bills()->list(array $params); // Get the list of billing of your business
-```
-
-
-<br><br><hr><br><br>
-
-
-
-
-#### #Business
-
-#### #Business List
-
-```php
-Vandar::Business()->list(); // Get the list of your businesses of your Vandar account
-```
-<br><br>
-
-#### #Business Info
-
-| Name               | Type          | Status        |
-| :---:              |    :----:     |      :---:    |
-| business     		 | String        | optional      |
-```php
-Vandar::Business()->info(string $business); // Show the informations about the specific business
-```
-<br><br>
-
-#### #Business Users
-| Name               | Type           | Status        |
-| :---:              |    :----:      |      :---:    |
-| business     		 | String         | optional      |
-| page     			 | Integer        | optional      |
-| per_page     		 | Integer        | optional      |
-```php
-Vandar::Business()->users(array $params); // Get the list of busniess users with their informations
-```
-
-
-
-<br><br><hr><br><br>
-
-
-
-#### #Mandate
-#### #Mandate List
-```php
-Vandar::Mandate()->list(); // Get the list of confirmed Mandates
-```
-<br><br>
-
-#### #Mandate Store
-| Name               | Type           | Status        |
-| :---:              |    :----:      |      :---:    |
-| bank_code     	 | String         | required      |
-| mobile     		 | String         | required      |
-| callback_url     	 | String         | required <br> (If don't define in `.env` file)      |
-| count     		 | Integer        | required      |
-| limit     		 | Integer        | required      |
-| name     			 | String         | optional      |
-| email     		 | String         | optional      |
-| expiration_date    | date           | optional      |
-| wage_type     	 | String         | optional      |
-```php
-Vandar::Mandate()->store(array $params); // Store new Mandate
-```
-
-<br><br>
-
-#### #Mandate CheckStatus
-```php
-Vandar::CheckStatus(); // Use it in your callback page (callback_url)
-```
-
-<br>
-
-- **Successfull mandate creation response**:
-```php
-[
-"token": "afa74040-f7b2-1s4b-a852-3b8sl2373ea",
-"authorization_id": "070b2b10-fab3-11sb-ba2a-59sl237ef2d6",
-"status": "SUCCEED"
-]
-```
- 
-- **Failed mandate creation response**:
-```php
-[
-"token": "afa74040-f7b2-1s4b-a852-3b8sl2373ea",
-"status": "FAILED"
-]
-```
-
-<br><br>
-
-#### #Mandate Show
-| Name               | Type           | Status        |
-| :---:              |    :----:      |      :---:    |
-| authorization_id   | String         | required      |
-```php
-Vandar::Mandate()->show(string $authorization_id); // Show the informations of specific mandate
-```
-
-<br><br>
-
-#### #Mandate Revoke
-| Name               | Type           | Status        |
-| :---:              |    :----:      |      :---:    |
-| authorization_id   | String         | required      |
-```php
-Vandar::Mandate()->revoke(string $authorization_id); // Revoke specific mandate
-```
-
-
-
-
-<br><br><hr><br><br>
-
-#### #Withdrawal
-
-#### #Withdrawal List
-```php
-Vandar::Withdrawal()->list(); // Get the list of Withdrawals
-```
-<br><br>
-
-#### #Withdrawal Store
-| Name               | Type           | Status        |
-| :---:              |    :----:      |      :---:    |
-| authorization_id   | String         | required      |
-| amount  			 | String         | required      |
-| withdrawal_date    | String         | required <br> (if is_instant=0)     |
-| is_instant   		 | integer(0, 1)  | optional      |
-| notify_url   		 | String         | optional <br> (If don't define in `.env` file)     |
-| max_retry_count    | integer	      | optional      |
-```php
-Vandar::Withdrawal()->store(array $params); // Store new withdrawal
-```
-<br><br>
-
-#### #Withdrawal Show
-| Name               | Type           | Status        |
-| :---:              |    :----:      |      :---:    |
-| withdrawal_id  	 | String         | required      |
-```php
-Vandar::Withdrawal()->show(string $withdrawal_id); // Show details about specific withdrawal
-```
-<br><br>
-
-#### #Withdrawal Cancel
-| Name               | Type           | Status        |
-| :---:              |    :----:      |      :---:    |
-| withdrawal_id  	 | String         | required      |
-```php
-Vandar::Withdrawal()->cancel(string $withdrawal_id); // Cancel the specific withdrawal
-```
-
-<br><br><hr><br><br>
-
-#### #Credits
-
- - Vandar - [vandar.io](https://vandar.io)
