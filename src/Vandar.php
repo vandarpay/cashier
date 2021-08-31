@@ -13,7 +13,6 @@ class Vandar
     const VERSION = '1.0';
 
     const ACTIVE_MIGRATIONS = [
-        'CreateVandarAuthListTable',
         'CreateVandarMandatesTable',
         'CreateVandarPaymentsTable',
         'CreateVandarSettlementsTable',

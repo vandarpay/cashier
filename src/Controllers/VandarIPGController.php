@@ -4,53 +4,37 @@ namespace Vandar\Cashier\Controllers;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Redirect;
+use Vandar\Cashier\Client\CasingFormatter;
 use Vandar\Cashier\Models\Payment;
 use Vandar\Cashier\RequestsValidation\IPGRequestValidation;
-use Vandar\Cashier\RequestsValidation\MorphsRequestValidation;
-use Vandar\Cashier\Utilities\ParamsFormatConvertor;
-use \Vandar\Cashier\Utilities\Client;
+use \Vandar\Cashier\Client\Client;
 
 class VandarIPGController extends Controller
 {
 
-
     /**
-     * Send payment parameters to get Payment Token
+     * Send payment payload, get token and redirect to payment page
      * 
-     * @param array $params
-     * @param array|null $morphs
+     * @param array  $payload
+     * @param string $callback_url
      */
-    public function pay(array $params, array $morphs = [])
+    public function pay(array $payload, string $callback_url)
     {
-        $params['callback_url'] = $params['callback_url'] ?? config('vandar.callback_url');
-        $params['api_key'] = config('vandar.api_key');
+        $payload['callback_url'] = $callback_url;
+        $payload['api_key'] = config('vandar.api_key');
 
         
         # Client Validation
-        $ipg_request = new IPGRequestValidation($params);
+        $ipg_request = new IPGRequestValidation($payload);
         $ipg_request->validate($ipg_request->rules());
 
-        # Client Validation
-        $morphs_request = new MorphsRequestValidation($morphs);
-        $morphs_request->validate($morphs_request->rules());
 
-        $params = ParamsFormatConvertor::caseFormat($params, 'camel', ['factor_number']);
+        $payload = CasingFormatter::convertKeyFormat('camel', $payload, ['factor_number']);
         
-        $response = Client::request('post', $this->IPG_URL('send'), false, $params);
+        $response = Client::request('post', $this->IPG_URL('send'), $payload, false);
 
 
-        # Create {morphs} compatibility with db structure
-        foreach ($morphs as $key => $value) {
-            $morphs["vandar_$key"] = $morphs[$key];
-            unset($morphs[$key]);
-        }
-
-        # Add {payment_token} into $params
-        $params['token'] = $response->json()['token'];
-        $params = array_merge($params, $morphs);
-
-
-        Payment::create($params);
+        Payment::create($payload);
 
 
         return Redirect::away($this->REDIRECT_URL($response->json()['token']));
@@ -68,9 +52,9 @@ class VandarIPGController extends Controller
     {
         $params = ['api_key' => config('vandar.api_key'), 'token' => $payment_token];
 
-        $response = Client::request('post', $this->IPG_URL('verify'), false, $params);
+        $response = Client::request('post', $this->IPG_URL('verify'), $params, false);
 
-        if ($response->status() != 200) {
+        if ($response->getStatusCode() != 200) {
             Payment::where('token', $payment_token)
                 ->update([
                     'errors' => json_encode($response->json()['errors']),
@@ -81,8 +65,8 @@ class VandarIPGController extends Controller
 
 
         # prepare response for making compatible with DB
-        $response = ParamsFormatConvertor::caseFormat($response->json(), 'snake');
-        $response = ParamsFormatConvertor::mobileFormat($response);
+        $response = CasingFormatter::convertKeysToSnake($response->json());
+        $response = CasingFormatter::mobileKeyFormat($response);
 
         $response['status'] = 'SUCCEED';
 
@@ -116,6 +100,6 @@ class VandarIPGController extends Controller
      */
     private function REDIRECT_URL($token): string
     {
-        return config('vandar.ipg_base_url') . "v3/$token";
+        return config('vandar.ipg_base_url') . 'v3/' . $token;
     }
 }

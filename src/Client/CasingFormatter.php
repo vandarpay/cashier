@@ -50,7 +50,6 @@ class CasingFormatter
      *
      * @param array $array
      * @return array
-     * @deprecated we'll use hard-coded logic in classes until Vandar decides on a single formatting
      */
     public static function mobileKeyFormat($array)
     {
