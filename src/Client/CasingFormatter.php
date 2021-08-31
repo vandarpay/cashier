@@ -3,9 +3,12 @@
 namespace Vandar\Cashier\Client;
 
 use Illuminate\Support\Str;
+use Vandar\Cashier\Concerns\ResponseJsonConcern;
 
 class CasingFormatter
 {
+    use ResponseJsonConcern;
+
     /**
      * Convert key naming format to snake or camel case
      *
@@ -14,7 +17,7 @@ class CasingFormatter
      * @param array|null $only_keys if set, only the given keys will be converted
      * @return array
      */
-    public static function convertKeyFormat(string $mode, array $array, array $only_keys = null) : array
+    public static function convertKeyFormat(string $mode, array $array, array $only_keys = null): array
     {
         $keys = $only_keys ?? array_keys($array);
 
@@ -38,7 +41,7 @@ class CasingFormatter
      * @param $array
      * @return array
      */
-    public static function convertKeysToSnake($array) : array
+    public static function convertKeysToSnake($array): array
     {
         return self::convertKeyFormat('snake', $array);
     }
@@ -64,5 +67,28 @@ class CasingFormatter
 
 
         return $array;
+    }
+
+
+
+    /**
+     * Convert response error message key format 
+     */
+    public static function convertFailedResponseFormat($response)
+    {
+        $response = $response->json();
+
+        if (array_key_exists('error', $response)) {
+            $response['errors'] = $response['error'];
+            unset($response['error']);
+        }
+
+
+        if (array_key_exists('message', $response)) {
+            $response['errors'] = $response['message'];
+            unset($response['message']);
+        }
+
+        return json_encode($response);
     }
 }
