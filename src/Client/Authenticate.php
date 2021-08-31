@@ -6,7 +6,7 @@ use Vandar\Cashier\Vandar;
 
 class Authenticate
 {
-    protected const BASE_URL = Vandar::API_BASE_URL . '/v' . Vandar::API_AUTH_VERSION . '/';
+    protected const BASE_URL = Vandar::API_BASE_URL . 'v' . Vandar::API_AUTH_VERSION . '/';
 
     public static function getToken() : string
     {
