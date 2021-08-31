@@ -1,5 +1,5 @@
 {
-    "name": "vandar/vandar-cashier",
+    "name": "vandar/cashier",
     "description": "Official Vander package for easier access to Vander documents",
     "type": "library",
     "license": "MIT",
@@ -7,7 +7,7 @@
         "name": "Vandar",
         "email": "info@vandar.io"
     }],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
         "php": "^7.2.5|^8.0",
         "guzzlehttp/guzzle": "^6.3.1|^7.0.1",
