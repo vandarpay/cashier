@@ -1,45 +1,54 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use SebastianBergmann\CodeCoverage\Report\PHP;
-use Vandar\VandarCashier\Models\VandarSettlement;
+use Illuminate\Routing\Controller;
+use Vandar\Cashier\Models\Settlement;
+use Vandar\Cashier\RequestsValidation\ListRequestValidation;
+use Vandar\Cashier\RequestsValidation\SettlementRequestValidation;
+use Vandar\Cashier\Utilities\Client;
 
 class VandarSettlementController extends Controller
 {
-    use \Vandar\VandarCashier\Utilities\Request;
+
 
     /**
      * Store a new settlement
      *
-     * @param  $params
+     * @param  array $params
      * 
      * @return array 
      */
-    public static function store($params)
+    public function store(array $params): array
     {
-        $params['notify_url'] = $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL'];
-        VandarSettlement::create($params);
-        $params['track_id'] = VandarSettlement::get('track_id')->last()['track_id'];
+        $params['notify_url'] = $params['notify_url'] ?? config('vandar.notify_url');
+
+        # Client Validation
+        $request = new SettlementRequestValidation($params);
+        $request->validate($request->rules());
+
+
+        Settlement::create($params);
+        $params['track_id'] = Settlement::get('track_id')->last()['track_id'];
         $params['amount'] /= 10; // convert RIAL to TOMAN (for sending request)
 
-        $response = self::request('post', self::SETTLEMENT_URL('store', 'v3'), true, $params);
+
+        $response = Client::request('post', $this->SETTLEMENT_URL('store', 'v3'), true, $params);
 
         # convert id to settlement_id for database compatible
-        $data = $response->json()['data']['settlement'][0];
+        $db_data = $response->json()['data']['settlement'][0];
+
+        
+        $db_data['settlement_id'] = $db_data['id'];
+        unset($db_data['id']);
+        unset($db_data['prediction']);
 
 
-        $data['settlement_id'] = $data['id'];
-        $data['prediction'] = json_encode($data['prediction']);
-        unset($data['id']);
+        Settlement::where('track_id', $params['track_id'])
+            ->update((array)$db_data);
 
 
-        VandarSettlement::where('track_id', $params['track_id'])
-            ->update((array)$data);
-
-        return $response->json()['data']['settlement'];
+        return $response->json();
     }
 
 
@@ -48,15 +57,15 @@ class VandarSettlementController extends Controller
     /**
      * Get Complete Details about a settlement
      *
-     * @param int $settlement_id
+     * @param string $settlement_id
      * 
      * @return array
      */
-    public static function show($settlement_id)
+    public function show(string $settlement_id): array
     {
-        $response = self::request('get', self::SETTLEMENT_URL($settlement_id), true);
+        $response = Client::request('get', $this->SETTLEMENT_URL($settlement_id), true);
 
-        return $response->json()['data']['settlement'];
+        return $response->json();
     }
 
 
@@ -69,11 +78,15 @@ class VandarSettlementController extends Controller
      *
      * @return array
      */
-    public static function list($params = null)
+    public function list(array $params = []): array
     {
-        $response = self::request('get', self::SETTLEMENT_URL(), true, $params);
+        # Client Validation
+        $request = new ListRequestValidation($params);
+        $request->validate($request->rules());
 
-        return $response->json()['data'];
+        $response = Client::request('get', $this->SETTLEMENT_URL(), true, $params);
+
+        return $response->json();
     }
 
 
@@ -86,25 +99,25 @@ class VandarSettlementController extends Controller
      * 
      * @return string
      */
-    public static function cancel($transaction_id)
+    public function cancel(int $transaction_id): array
     {
-        $response = self::request('delete', self::SETTLEMENT_URL($transaction_id), true);
+        $response = Client::request('delete', $this->SETTLEMENT_URL($transaction_id), true);
 
         if ($response->status() != 200) {
-            VandarSettlement::where('transaction_id', $transaction_id)
+            Settlement::where('transaction_id', $transaction_id)
                 ->update([
                     'errors' => $response->object()->error
                 ]);
             return $response->json();
         }
 
-        VandarSettlement::where('transaction_id', $transaction_id)
+        Settlement::where('transaction_id', $transaction_id)
             ->update([
                 'status' => 'CANCELED',
             ]);
 
 
-        return $response->json()['message'];
+        return $response->json();
     }
 
 
@@ -112,13 +125,13 @@ class VandarSettlementController extends Controller
     /**
      * Prepare Settlement Url for sending request
      *
-     * @param string $param
+     * @param string|null $param
      * @param string $version
      * 
      * @return string 
      */
-    private static function SETTLEMENT_URL($param = null, $version = 'v2.1')
+    private function SETTLEMENT_URL($param = null, $version = 'v2.1'): string
     {
-        return "https://api.vandar.io/$version/business/{$_ENV['VANDAR_BUSINESS_NAME']}/settlement/$param";
+        return config('vandar.api_base_url') . "$version/business/" . config('vandar.business_name') . "/settlement/$param";
     }
 }

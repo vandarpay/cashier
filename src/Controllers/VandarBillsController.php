@@ -1,26 +1,26 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Vandar\Cashier\Utilities\ParamsFormatConvertor;
+use Vandar\Cashier\RequestsValidation\BillsListRequestValidation;
+use Vandar\Cashier\Utilities\Client;
 
 class VandarBillsController extends Controller
 {
-    use \Vandar\VandarCashier\Utilities\Request;
 
-    const BASE_BILLING_URL = 'https://api.vandar.io/v2/business/';
 
     /**
      * Get Wallet Balance
      *
-     * @return array $data
+     * @return array
      */
-    public static function balance()
+    public function balance(): array
     {
-        $response = self::request('get', self::BILLING_URL('balance'), true);
+        $response = Client::request('get', $this->BILLING_URL('balance'), true);
 
-        return $response->json()['data'];
+        return $response->json();
     }
 
 
@@ -29,13 +29,23 @@ class VandarBillsController extends Controller
     /**
      * Get Bills List
      *
-     * @return array $data
+     * @param array $params
+     * 
+     * @return array 
      */
-    public static function list($params)
+    public function list(array $params = []): array
     {
-        $response = self::request('get', self::BILLING_URL('transaction'), true, $params);
+        # prepare data for send request
+        $keys = ['from_date', 'to_date', 'status_kind'];
+        $params = ParamsFormatConvertor::caseFormat($params, 'camel', $keys);
 
-        return $response->json()['data'];
+        # Client Validation
+        $request = new BillsListRequestValidation($params);
+        $request->validate($request->rules());
+
+        $response = Client::request('get', $this->BILLING_URL('transaction'), true, $params);
+
+        return $response->json();
     }
 
 
@@ -47,8 +57,8 @@ class VandarBillsController extends Controller
      * 
      * @return string  
      */
-    private static function BILLING_URL(string $param)
+    private function BILLING_URL(string $param): string
     {
-        return self::BASE_BILLING_URL . $_ENV['VANDAR_BUSINESS_NAME'] . "/$param";
+        return config('vandar.api_base_url') . 'v2/business/' . config('vandar.business_name') . "/$param";
     }
 }

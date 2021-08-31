@@ -1,14 +1,14 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Vandar\VandarCashier\Models\VandarWithdrawal;
+use Illuminate\Routing\Controller;
+use Vandar\Cashier\Models\Withdrawal;
+use Vandar\Cashier\RequestsValidation\WithdrawalRequestValidation;
+use Vandar\Cashier\Utilities\Client;
 
 class VandarWithdrawalController extends Controller
 {
-    use \Vandar\VandarCashier\Utilities\Request;
 
     /**
      * Store new withdrawal
@@ -17,23 +17,27 @@ class VandarWithdrawalController extends Controller
      * 
      * @return object $data
      */
-    public static function store($params)
+    public function store(array $params)
     {
-        $params['notify_url'] = $params['notify_url'] ?? $_ENV['VANDAR_NOTIFY_URL'];
+        $params['notify_url'] = $params['notify_url'] ?? config('vandar.notify_url');
+        
+        # Request Validation
+        $request = new WithdrawalRequestValidation($params);
+        $request->validate($request->rules());
 
-        $response = self::request('post', self::WITHDRAWAL_URL('store'), true, $params);
+
+        $response = Client::request('post', $this->WITHDRAWAL_URL('store'), true, $params);
+
 
         # prepare data for DB structure
-        $data = $response->json()['result']['withdrawal'];
+        $db_data = $response->json()['result']['withdrawal'];
+        $db_data['withdrawal_id'] = $db_data['id'];
+        unset($db_data['id']);
 
-        $data['withdrawal_id'] = $data['id'];
-        unset($data['id']);
-
-
-        VandarWithdrawal::create((array)$data);
+        Withdrawal::create($db_data);
 
 
-        return $data;
+        return $response->json();
     }
 
 
@@ -41,11 +45,11 @@ class VandarWithdrawalController extends Controller
     /**
      * Show the list of withdrawals
      *
-     * @return object
+     * @return array
      */
-    public static function list()
+    public function list(): array
     {
-        $response = self::request('get', self::WITHDRAWAL_URL(), true);
+        $response = Client::request('get', $this->WITHDRAWAL_URL(), true);
 
         return $response->json();
     }
@@ -57,13 +61,13 @@ class VandarWithdrawalController extends Controller
      *
      * @param string $withdrawal_id
      * 
-     * @return object
+     * @return array
      */
-    public static function show($withdrawal_id)
+    public function show(string $withdrawal_id): array
     {
-        $response = self::request('get', self::WITHDRAWAL_URL($withdrawal_id), true);
+        $response = Client::request('get', $this->WITHDRAWAL_URL($withdrawal_id), true);
 
-        return $response->json()['result']['withdrawal'];
+        return $response->json();
     }
 
 
@@ -73,13 +77,13 @@ class VandarWithdrawalController extends Controller
      *
      * @param string $withdrawal_id
      * 
-     * @return object
+     * @return array
      */
-    public static function cancel($withdrawal_id)
+    public function cancel(string $withdrawal_id): array
     {
-        $response = self::request('put', self::WITHDRAWAL_URL($withdrawal_id), true);
+        $response = Client::request('put', $this->WITHDRAWAL_URL($withdrawal_id), true);
 
-        VandarWithdrawal::where('withdrawal_id', $withdrawal_id)
+        Withdrawal::where('withdrawal_id', $withdrawal_id)
             ->update(['status' => 'CANCELED']);
 
 
@@ -92,10 +96,10 @@ class VandarWithdrawalController extends Controller
      *
      * @param string|null $param
      * 
-     * @return string $url
+     * @return string
      */
-    private static function WITHDRAWAL_URL(string $param = null)
+    private function WITHDRAWAL_URL(string $param = null): string
     {
-        return "https://api.vandar.io/v2/business/$_ENV[VANDAR_BUSINESS_NAME]/subscription/withdrawal/$param";
+        return config('vandar.api_base_url') . "v2/business/" . config('vandar.business_name') . "/subscription/withdrawal/$param";
     }
 }

@@ -1,81 +1,76 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Redirect;
-use Vandar\VandarCashier\Models\VandarPayment;
+use Vandar\Cashier\Client\CasingFormatter;
+use Vandar\Cashier\Models\Payment;
+use Vandar\Cashier\RequestsValidation\IPGRequestValidation;
+use \Vandar\Cashier\Client\Client;
 
 class VandarIPGController extends Controller
 {
-    use \Vandar\VandarCashier\Utilities\Request;
-
-
-    const IPG_BASE_URL = "https://ipg.vandar.io/api/v3/";
-    const IPG_REDIRECT_URL = "https://ipg.vandar.io/v3/";
-
 
     /**
-     * Send payment parameters to get Payment Token
+     * Send payment payload, get token and redirect to payment page
      * 
-     * @param array $params
-     * @param array $morphs
+     * @param array  $payload
+     * @param string $callback_url
      */
-    public static function pay(array $params = null, $morphs = null)
+    public function pay(array $payload, string $callback_url)
     {
-        $params['callback_url'] = $params['callback_url'] ?? ($_ENV['VANDAR_CALLBACK_URL']);
-        $params['api_key'] = $_ENV['VANDAR_API_KEY'];
+        $payload['callback_url'] = $callback_url;
+        $payload['api_key'] = config('vandar.api_key');
 
-        $response = self::request('post', self::IPG_URL('send'), false, $params);
-
-        # compatible morphs with db structure
-        foreach ($morphs as $key => $value) {
-            $morphs["vandar_$key"] = $morphs[$key];
-            unset($morphs[$key]);
-        }
-
-        # Add {payment_token} into $params
-        $params['token'] = $response->json()['token'];
-        $params = array_merge($params, $morphs);
+        
+        # Client Validation
+        $ipg_request = new IPGRequestValidation($payload);
+        $ipg_request->validate($ipg_request->rules());
 
 
-        VandarPayment::create($params);
+        $payload = CasingFormatter::convertKeyFormat('camel', $payload, ['factor_number']);
+        
+        $response = Client::request('post', $this->IPG_URL('send'), $payload, false);
 
 
-        return Redirect::away(self::IPG_REDIRECT_URL . $response->json()['token']);
+        Payment::create($payload);
+
+
+        return Redirect::away($this->REDIRECT_URL($response->json()['token']));
     }
+
 
 
 
     /**
      * Verify the all transaction by sending {TOKEN & API_KEY} 
      *
-     * @return bool 1:SUCCEED
+     * @return array 
      */
-    public static function verifyTransaction($payment_token)
+    public function verifyTransaction(string $payment_token): array
     {
-        $params = ['api_key' => $_ENV['VANDAR_API_KEY'], 'token' => $payment_token];
+        $params = ['api_key' => config('vandar.api_key'), 'token' => $payment_token];
 
-        $response = self::request('post', self::IPG_URL('verify'), false, $params);
+        $response = Client::request('post', $this->IPG_URL('verify'), $params, false);
 
-        if ($response->status() != 200) {
-            VandarPayment::where('token', $payment_token)
+        if ($response->getStatusCode() != 200) {
+            Payment::where('token', $payment_token)
                 ->update([
                     'errors' => json_encode($response->json()['errors']),
                     'status' => 'FAILED'
                 ]);
-            return $response->json()['errors'];
+            return $response->json();
         }
 
 
         # prepare response for making compatible with DB
-        $response = self::prepareResponseFormat($response->json());
+        $response = CasingFormatter::convertKeysToSnake($response->json());
+        $response = CasingFormatter::mobileKeyFormat($response);
 
         $response['status'] = 'SUCCEED';
 
-        VandarPayment::where('token', $payment_token)
+        Payment::where('token', $payment_token)
             ->update($response);
 
         return $response;
@@ -90,27 +85,21 @@ class VandarIPGController extends Controller
      * 
      * @return string 
      */
-    private static function IPG_URL(string $url_param)
+    private function IPG_URL(string $url_param): string
     {
-        return self::IPG_BASE_URL . $url_param;
+        return config('vandar.ipg_base_url') . 'api/v3/' . $url_param;
     }
 
 
-
-
-    private static function prepareResponseFormat($params)
+    /**
+     * Make proper Redirect Url for payment page
+     *
+     * @param string $token
+     * 
+     * @return string
+     */
+    private function REDIRECT_URL($token): string
     {
-        $keys = array_keys($params);
-        foreach ($keys as $key) {
-            $keys[array_search($key, $keys)] = Str::snake($key);
-            $params = array_combine($keys, $params);
-        }
-
-        if (array_key_exists('mobile', $params)) {
-            $params['mobile_number'] = $params['mobile'];
-            unset($params['mobile']);
-        }
-
-        return $params;
+        return config('vandar.ipg_base_url') . 'v3/' . $token;
     }
 }

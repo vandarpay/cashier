@@ -1,15 +1,16 @@
 <?php
 
-namespace Vandar\VandarCashier\Controllers;
+namespace Vandar\Cashier\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Redirect;
-use Vandar\VandarCashier\Models\VandarMandate;
-
+use Vandar\Cashier\Models\Mandate;
+use Vandar\Cashier\RequestsValidation\MandateRequestValidation;
+use Vandar\Cashier\Utilities\ParamsFormatConvertor;
+use Vandar\Cashier\Utilities\Client;
 class VandarMandateController extends Controller
 {
-    use \Vandar\VandarCashier\Utilities\Request;
 
     const MANDATE_REDIRECT_URL = 'https://subscription.vandar.io/authorizations/';
 
@@ -17,11 +18,11 @@ class VandarMandateController extends Controller
     /**
      * Get the list of confirmed Mandates
      *
-     * @return object
+     * @return array
      */
-    public static function list()
+    public function list(): array
     {
-        $response = self::request('get', self::MANDATE_URL(), true);
+        $response = Client::request('get', $this->MANDATE_URL(), true);
 
         return $response->json();
     }
@@ -33,17 +34,26 @@ class VandarMandateController extends Controller
      *
      * @param array $params
      */
-    public static function store($params)
+    public function store(array $params)
     {
         $params['expiration_date'] = $params['expiration_date'] ?? date('Y-m-d', strtotime(date('Y-m-d') . ' + 3 years'));
-        $params['callback_url'] = $params['callback_url'] ?? $_ENV['VANDAR_CALLBACK_URL'];
+        $params['callback_url'] = $params['callback_url'] ?? config('vandar.callback_url');
 
-        $response = self::request('post', self::MANDATE_URL('store'), true, $params);
-
+        
+        # Client Validation
+        $request = new MandateRequestValidation($params);
+        $request->validate($request->rules());
+        
+        $newParams = ParamsFormatConvertor::mobileFormat($params);
+        
+        
+        $response = Client::request('post', $this->MANDATE_URL('store'), true, $newParams);
+        
+        
         $params['token'] = $response->json()['result']['authorization']['token'];
+        
 
-
-        VandarMandate::create($params);
+        Mandate::create($params);
 
 
         return Redirect::away(self::MANDATE_REDIRECT_URL . $params['token']);
@@ -54,13 +64,13 @@ class VandarMandateController extends Controller
     /**
      * Show the mandate details
      *
-     * @param string $subscription_code
+     * @param string $authorization_id
      * 
      * @return array
      */
-    public static function show($authorization_id)
+    public function show(string $authorization_id): array
     {
-        $response = self::request('get', self::MANDATE_URL($authorization_id), true);
+        $response = Client::request('get', $this->MANDATE_URL($authorization_id), true);
 
         return $response->json();
     }
@@ -69,15 +79,15 @@ class VandarMandateController extends Controller
     /**
      * Revoke Confirmed mandates
      *
-     * @param string $subscription_code
+     * @param string $authorization_id
      * 
      * @return array
      */
-    public static function revoke($authorization_id)
+    public function revoke(string $authorization_id): array
     {
-        $response = self::request('delete', self::MANDATE_URL($authorization_id), true);
+        $response = Client::request('delete', $this->MANDATE_URL($authorization_id), true);
 
-        VandarMandate::where('authorization_id', $authorization_id)
+        Mandate::where('authorization_id', $authorization_id)
             ->update(['is_active' => false]);
 
         return $response->json();
@@ -89,10 +99,11 @@ class VandarMandateController extends Controller
      *
      * @param string|null $param
      * 
-     * @return string $url
+     * @return string 
      */
-    private static function MANDATE_URL(string $param = null)
+    private function MANDATE_URL(string $param = null): string
     {
-        return "https://api.vandar.io/v2/business/$_ENV[VANDAR_BUSINESS_NAME]/subscription/authorization/$param";
+        return config('vandar.api_base_url') . 'v2/business/' . config('vandar.business_name') . '/subscription/authorization/' . $param;
     }
+
 }

@@ -1,11 +1,36 @@
 <?php
 
-namespace Vandar\VandarCashier;
+namespace Vandar\Cashier;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class VandarCashierServiceProvider extends ServiceProvider
 {
+    const MIGRATIONS_PATH = __DIR__ . '/../database/migrations/';
+
+    /**
+     * Bootstrap services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $config_path = realpath(__DIR__ . '/../config/vandar.php');
+        
+        
+        // php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=vandar-config
+        $this->publishes([
+            $config_path => config_path('vandar.php'),
+        ], 'vandar-config');
+        
+        
+        // php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=vandar-migrations
+        $this->publishMigrations(Vandar::ACTIVE_MIGRATIONS);
+    }
+
+
+
     /**
      * Register services.
      *
@@ -17,24 +42,21 @@ class VandarCashierServiceProvider extends ServiceProvider
     }
 
 
-
-    /**
-     * Bootstrap services.
-     *
-     * @return void
-     */
-    public function boot()
+    protected function publishMigrations(array $publishables): void
     {
-        $migrations_path =  __DIR__ . '/../migrations/';
-        
-        
-        $this->loadMigrationsFrom($migrations_path);
+        // Generate a list of migrations that have not been published yet.
+        $migrations = [];
+        foreach($publishables as $publishable)
+        {
+            // Migration already exists, continuing
+            if(class_exists($publishable)){
+                continue;
+            }
+            $file = Str::snake($publishable) . '.php';
+            $migrations[self::MIGRATIONS_PATH . $file . '.stub'] = database_path('migrations/'.date('Y_m_d_His', time())."_$file");
+        }
 
-        // php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=migrations
-        $this->publishes([
-            $migrations_path => database_path('migrations')
-        ], 'migrations');
+        $this->publishes($migrations, 'migrations');
     }
+
 }
-
-

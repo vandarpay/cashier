@@ -1,224 +1,78 @@
-# Vandar Cashier Package Document
-============
+Vandar Cashier is a Laravel package that provides you with a seamless integration with Vandar services. Take a look at Vandar Documentation for more information on the services we provide.
 
-This package allows you to access and send your requests to **Vandar APIs** easier.
-
-Just do the following steps to prepare for using.
-
-
-
-#### #Installation
-
-First, install the Cacshier package for Vandar, using the composer package manager:
-
-	composer require vandar\vandar-cashier
-
-
-
-#### #Publish and Database migrations
-
-Vandar Cashier package registers its own database migration directory, so remember to migrate your database after installing the package.
-
-The Vandar Cashier migrations will add 2 tables into your database to save:
-1. Your authentication data (for easy access to authentication data)
-2. All transaction data that you get from Vandar response (For a detailed review of all transactions)
-
-
-
-At first you need to publish the migrations by using `vendor:publish` artisan command and then migrate it:
+# Setup
+To use Vandar Cashier, you need to install it through Composer first:
 ```bash
-php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=migrations
-
+composer require vandar/cashier
+```
+Then, you will need to publish the package's assets and migrate your project's database to add Vandar Cashier's tables:
+```php
+php artisan vendor:publish --provider="Vandar\\Cashier\\VandarCashierServiceProvider"
 php artisan migrate
 ```
-
-> If you're using Laravel version 5.5+, VandarCashier package will be auto-discovered by Laravel. 
-
-And if not: register the package in **config/app.php** providers array manually:
+After that, open your User model (located in `app/User.php` or `app/Models/User.php` in most projects) and add the `Billable` trait:
 ```php
-'providers' => [
-	...
-	\Vandar\VandarCashier\VandarCashierServiceProvider::class,
-],
+use Vandar\Cashier\Traits\Billable;
+// ...
+class User extends Authenticatable
+{
+    use Billable;
+// ...
 ```
-
-
-
-#### # Enviroment Variables
-
-For proper package operation, you must define some enviroment variables in `.env` file to be used during the processes:
-
-
-```bash
-VANDAR_USERNAME=
+Finally, you will need to add the necessary configuration to your `.env` file:
+```php
+VANDAR_MOBILE=
 VANDAR_PASSWORD=
-VANDAR_BUSINESS_NAME=
+VANDAR_BUSINESS_SLUG=
 VANDAR_API_KEY=
-VANDAR_CALLBACK_URL=
-VANDAR_NOTIFY_URL=
 ```
-**-> tips**:
--  You can retrieve your Vandar API Key from the [Vandar.Dashboard](https://dash.vandar.io/)
--  Your _Username_ is your mobile number With which you registered in Vandar
--  CALLBACK_URL must be one of the URLs that you added in your Vandar.Dashboard
+`VANDAR_MOBILE` and `VANDAR_PASSWORD` are your login credentials to Vandar dashboard, the `VANDAR_BUSINESS_SLUG` is set by you when you add a business in Vandar and `VANDAR_API_KEY` is obtained through your business dashboard.
 
+# Usage
+Currently, Vandar provides two services: **IPG** and **Direct Debit**. IPG is the more common method used which provides you with a link that the user can use to pay for a service. The direct debit service works by requesting access from a user's bank account and charging them periodically without a need for user interaction.
 
-
-#### #Model
-VandarPayment Model and table, use the Polyphorphism relations
-
-**payable**(person who pay)
-    
-**paymentable**(what the payment was done for)
-
-So if you want, use one of these traits(As needed) in your Model:
-
+## IPG
+In Vandar Cashier, we are assuming that anyone making a payment is already logged-in to your system, therefore, you can create a payment link for them to redirect them to through their user model:
 ```php
-use Vandar\VandarCashier\Traits\Payable
-use Payable;
-
-use Vandar\VandarCashier\Traits\Paymentable
-use Paymentable;
-
+Route::get('/make-payment', function(Request $request){
+    $user = auth()->user(); // Added as a separate variable for clarity
+    return redirect($user->payments()->create($payload)) // See documentation for info on payload and callback
+});
 ```
-
-
-
-#### #**USAGE**
-
-
-#### #Authentication
+Once the transaction finishes (successfully or not), they will be redirect back to the path you defined in callback, you may define a controller or a route to verify the payment using the `Payment::verify($request)` method:
 ```php
-use Vandar\VandarCashier\VandarAuth;
-
-
-VandarAuth::token(); // Get token
-
-VandarAuth::login(); // Login to Vandar account and get token
-
-VandarAuth::isTokenValid(); // Check the token validation (expired or no?)
-
-VandarAuth::refreshToken(); // Refresh the token and get new one
-
+use Vandar\Cashier\Models\Payment;
+Route::get('/callback', function(Request $request){
+    if(Payment::verify($request)){
+        return 'Success!';
+    } 
+    else {
+        return 'Failed!';
+    }
+})
 ```
+The verify method automatically updates the transaction status in your database.
 
+## Direct-Debit
+When setting up direct-debit, you have two main steps to take.
+1. Get user to allow for access to their account (also known as a Mandate)
+2. Request a withdrawal from a user's account
 
+### Mandate
+Before any withdrawal from a user's account can be done, it is required to check whether they have a valid mandate, in other words, whether they are still allowing us to access their account. This is done using the `hasValidMandate` method in the User model. See the examples below.
 
-#### #IPG
+if the user is not a valid subscriber, you can use the `authorizeMandate` method to generate a link for them to authorize it.
+
+### Withdrawal
+Once the mandate is verified, you may create a withdrawal using the `User::withdrawals()->create()` method.
+
+All of the code below is used in this example:
 ```php
-use Vandar\VandarCashier\VandarIPG;
-
-
-VandarIPG::pay($params); // pass **$payment** parameter that mentioned in the Vandar Document to do the all payment process.
+$user = User::find(1);
+if($user->hasValidMandate()){
+    $user->withdrawals()->create($payload);
+}
+else {
+    return redirect($user->authorizeMandate());
+}
 ```
-+ **NOTE!**: To Verify the payment after return from payment page, you must:
-
-1. use `VandarVerify` trait
-
-2. call `verify method` as static
-
-```php
-use Vandar\VandarCashier\Traits\VandarVerify;
-
-use VandarVerify;
-
-self::VandarVerify(); // Call verify method
-```
-in your the {callback page} that you added its URL(callback_url) in your Vandar Account to verify and continue the transaction process. 
-
-
-
-
-#### #Settlement
-```php
-use Vandar\VandarCashier\VandarSettlement;
-
-
-VandarSettlement::list(); // Get the list of settlements
-
-VandarSettlement::store(); // Store new settlement
-
-VandarSettlement::show(); // Get more details about a specific settlement
-
-VandarSettlement::cancel(); // Cancel the specific settlement
-```
-
-
-
-#### #Billing
-```php
-use Vandar\VandarCashier\VandarBills;
-
-
-VandarBills::balance(); // Get the current balance of your business
-
-VandarBills::list(); // Get the list of billing of your business
-```
-
-
-
-#### #Business
-```php
-use Vandar\VandarCashier\VandarBusiness;
-
-
-VandarBusiness::list(); // Get the list of your businesses of your Vandar account
-
-VandarBusiness::info(); // Show the informations about the specific business
-
-VandarBusiness::users(); // Get the list of busniess users with their informations
-
-```
-
-
-
-#### #Mandate
-```php
-use Vandar\VandarCashier\VandarMandate;
-
-
-VandarMandate::list(); // Get the list of confirmed Mandates
-
-VandarMandate::store(); // Store new Mandate
-
-VandarMandate::show(); // Show the informations of specific mandate
-
-VandarMandate::revoke(); // Revoke specific mandate
-
-```
-+ **NOTE!**: To Verify the Mandate after return from bank page, you must:
-
-1. use `VandarVerify` trait
-
-2. call `verify method` as static
-
-```php
-use Vandar\VandarCashier\Traits\VandarVerify;
-
-use VandarVerify;
-
-self::verify(); // Call verify method
-```
-in your the {callback page} that you added its URL(callback_url) in your Vandar Account to verify and continue the process.
-
-
-#### #Withdrawal
-```php
-use Vandar\VandarCashier\VandarWithdrawal;
-
-
-VandarWithdrawal::list(); // Get the list of Withdrawals
-
-VandarWithdrawal::store(); // Store new withdrawal
-
-VandarWithdrawal::show(); // Show details about specific withdrawal
-
-VandarWithdrawal::cancel(); // Cancel the specific withdrawal
-
-```
-
-
-
-#### #Credits
-
- - Vandar - [vandar.io](https://vandar.io)

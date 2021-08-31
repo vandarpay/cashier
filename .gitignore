@@ -1,2 +1,9 @@
 /vendor
+composer.lock
+/phpunit.xml
+.phpunit.result.cache
+/report
+composer.phar
+# Editor Specific Configurations
 /.vscode
+/.idea
