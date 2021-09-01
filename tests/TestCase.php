@@ -14,6 +14,7 @@ abstract class TestCase extends OrchestraTestCase
     {
         parent::setUp();
         $this->setUpDatabase();
+        $this->withFactories(__DIR__ . '/../database/factories');
     }
 
     protected function getPackageProviders($app): array
