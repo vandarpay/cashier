@@ -8,6 +8,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Vandar\Cashier\Concerns\ResponseJsonConcern;
 
+/**
+ * CustomResponse acts as a proxy over the normal Guzzle response class, adding additional concerns for extra functionality.
+ *
+ * This should be deprecated once Vandar Cashier's minimum requirements reaches Laravel 7.x
+ */
 class CustomResponse implements ResponseInterface
 {
     use ResponseJsonConcern;

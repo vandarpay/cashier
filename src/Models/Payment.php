@@ -5,13 +5,14 @@ namespace Vandar\Cashier\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
-use Vandar\Cashier\Database\Factories\PaymentFactory;
+use Vandar\Cashier\Client\CasingFormatter;
+use Vandar\Cashier\Client\Client;
+use Vandar\Cashier\Vandar;
 
 class Payment extends Model
 {
-    use HasFactory;
     protected $table = 'vandar_payments';
-    protected $guarded =['id'];
+    protected $guarded = ['id'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -21,8 +22,40 @@ class Payment extends Model
         return $this->belongsTo(User::class);
     }
 
-    public static function newFactory()
+    /**
+     * Verify a given transactions
+     *
+     * @return bool
+     */
+    public function verify(): bool
     {
-        return new PaymentFactory;
+        $endpoint = Vandar::url('IPG_API', $this->token);
+        $params = ['api_key' => config('vandar.api_key'), 'token' => $this->token];
+
+        $response = Client::request('post', $endpoint, $params, false);
+
+        if ($response->getStatusCode() != 200) {
+            $this->update([
+                    'errors' => json_encode($response->json()['errors']),
+                    'status' => 'FAILED'
+                ]);
+            return false;
+        }
+
+
+        # prepare response for making compatible with DB
+        $response = CasingFormatter::convertKeysToSnake($response->json());
+        $response = CasingFormatter::mobileKeyFormat($response);
+
+        $response['status'] = 'SUCCEED';
+        $this->update($response);
+
+        return true;
+    }
+
+    public function getUrlAttribute() : string
+    {
+        return Vandar::url('IPG', $this->token);
+
     }
 }
