@@ -14,6 +14,7 @@ abstract class TestCase extends OrchestraTestCase
     {
         parent::setUp();
         $this->setUpDatabase();
+        $this->withFactories(__DIR__ . '/../database/factories');
     }
 
     protected function getPackageProviders($app): array
@@ -25,6 +26,16 @@ abstract class TestCase extends OrchestraTestCase
     {
         $app['config']->set('vandar.mobile', env('VANDAR_MOBILE'));
         $app['config']->set('vandar.password', env('VANDAR_PASSWORD'));
+    }
+
+    /**
+     * Define database migrations.
+     *
+     * @return void
+     */
+    protected function defineDatabaseMigrations()
+    {
+        $this->loadLaravelMigrations();
     }
 
     /**
