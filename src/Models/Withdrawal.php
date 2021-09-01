@@ -2,7 +2,7 @@
 
 namespace Vandar\Cashier\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Withdrawal extends Model

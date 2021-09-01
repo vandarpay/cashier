@@ -2,7 +2,6 @@
 
 namespace Vandar\Cashier\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
 use Vandar\Cashier\Client\CasingFormatter;
