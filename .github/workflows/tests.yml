@@ -39,5 +39,5 @@ jobs:
         env:
           VANDAR_MOBILE: ${{ secrets.VANDAR_MOBILE }}
           VANDAR_PASSWORD: ${{ secrets.VANDAR_PASSWORD }}
-          VANDAR_BUSINESS_NAME: ${{ secrets.VANDAR_BUSINESS_NAME }}
+          VANDAR_BUSINESS_SLUG: ${{ secrets.VANDAR_BUSINESS_NAME }}
           VANDAR_API_KEY: ${{ secrets.VANDAR_API_KEY }}

@@ -29,7 +29,7 @@ return [
     #------------------------
     # Business name in vandar, is used for sending request
     #------------------------
-    'business_name' => env('VANDAR_BUSINESS_NAME'),
+    'business_slug' => env('VANDAR_BUSINESS_SLUG'),
 
 
     #------------------------
