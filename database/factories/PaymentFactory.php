@@ -1,5 +1,7 @@
 <?php
 
+namespace Vandar\Cashier\Database\Factories;
+
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 use Vandar\Cashier\Models\Payment;

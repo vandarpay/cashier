@@ -28,6 +28,16 @@ abstract class TestCase extends OrchestraTestCase
     }
 
     /**
+     * Define database migrations.
+     *
+     * @return void
+     */
+    protected function defineDatabaseMigrations()
+    {
+        $this->loadLaravelMigrations();
+    }
+
+    /**
      * Runs migrations and defines a callback to revert them.
      *
      * Since we're not using the standard laravel format for publishing our migrations, we seem to have issues with

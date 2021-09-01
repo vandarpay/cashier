@@ -1,6 +1,8 @@
 <?php
 
-use Illuminate\Foundation\Auth\User;
+namespace Vandar\Cashier\Database\Factories;
+
+use Vandar\Cashier\Tests\Fixtures\User;
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 
