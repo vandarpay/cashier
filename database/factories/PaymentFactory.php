@@ -2,6 +2,7 @@
 
 namespace Vandar\Cashier\Database\Factories;
 
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 use Vandar\Cashier\Models\Payment;
@@ -11,7 +12,7 @@ use Vandar\Cashier\Models\Payment;
 $factory->define(Payment::class, function (Faker $faker) {
     return [
         'token' => Str::uuid(),
-        'user_id' => $faker->randomDigit(),
+        'user_id' => factory(User::class),
         'amount' => $faker->randomDigitNotZero(),
         'real_amount' => $faker->randomDigitNotZero(),
         'wage' => $faker->randomDigit(),
@@ -22,7 +23,7 @@ $factory->define(Payment::class, function (Faker $faker) {
         'tracking_code' => $faker->randomDigit(),
         'factor_number' => $faker->randomDigit(),
         'description' => Str::limit(15),
-        'valid_card_number' => $faker->randomNumber(16),
+        'valid_card_number' => $faker->numerify('######******####'),
         'card_number' => $faker->numerify('######******####'),
         'cid' => Str::uuid(),
         'payment_date' => $faker->dateTime(),
