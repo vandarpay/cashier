@@ -6,7 +6,7 @@ use Vandar\Cashier\Models\Payment;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
 
-class PaymentCreated{
+class PaymentCreating{
 
     use Dispatchable, SerializesModels;
 

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
 use Vandar\Cashier\Client\CasingFormatter;
 use Vandar\Cashier\Client\Client;
+use Vandar\Cashier\Events\PaymentCreating;
 use Vandar\Cashier\Vandar;
 
 class Payment extends Model
@@ -28,6 +29,17 @@ class Payment extends Model
         return $this->belongsTo(User::class);
     }
 
+
+    /**
+     * The event map for the model.
+     *
+     * @var array
+     */
+    protected $dispatchesEvents = [
+        'creating' => PaymentCreating::class
+    ];
+
+    
     /**
      * Verify a given transactions
      *

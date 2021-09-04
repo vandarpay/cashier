@@ -36,8 +36,6 @@ class VandarIPGController extends Controller
             return $response->json()['errors'];
 
         $payment = Payment::create($payload);
-
-        event(new PaymentCreated($payment));
     }
 
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Providers;
+namespace Vandar\Cashier\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Vandar\Cashier\Events\PaymentCreated;
 use Vandar\Cashier\Events\PaymentRedirect;
 
