@@ -4,6 +4,7 @@ namespace Vandar\Cashier\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Vandar\Cashier\Events\MandateCreating;
 
 /**
  * Vandar Mandates
@@ -44,4 +45,14 @@ class Mandate extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+
+     /**
+     * The event map for the model.
+     *
+     * @var array
+     */
+    protected $dispatchesEvents = [
+        'creating' => MandateCreating::class
+    ];
 }
