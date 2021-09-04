@@ -3,11 +3,11 @@
 namespace Vandar\Cashier\Providers;
 
 use Vandar\Cashier\Events\MandateCreating;
-use Vandar\Cashier\Events\MandateRedirect;
-use Vandar\Cashier\Events\PaymentCreated;
-use Vandar\Cashier\Events\PaymentRedirect;
+use Vandar\Cashier\Events\PaymentCreating;
 use Vandar\Cashier\Events\WithdrawalCreating;
-use Vandar\Cashier\Events\WithdrawalResponse;
+use Vandar\Cashier\Listeners\SendMandateRequest;
+use Vandar\Cashier\Listeners\SendPaymentCreateRequest;
+use Vandar\Cashier\Listeners\SendWithdrawalCreateRequest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -19,14 +19,14 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        PaymentCreated::class => [
-            PaymentRedirect::class
+        PaymentCreating::class => [
+            SendPaymentCreateRequest::class
         ],
         MandateCreating::class => [
-            MandateRedirect::class
+            SendMandateRequest::class
         ],
         WithdrawalCreating::class => [
-            WithdrawalResponse::class
+            SendWithdrawalCreateRequest::class
         ]
     ];
 
