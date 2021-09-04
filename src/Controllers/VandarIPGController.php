@@ -3,11 +3,11 @@
 namespace Vandar\Cashier\Controllers;
 
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Redirect;
 use Vandar\Cashier\Client\CasingFormatter;
 use Vandar\Cashier\Models\Payment;
 use Vandar\Cashier\RequestsValidation\IPGRequestValidation;
 use \Vandar\Cashier\Client\Client;
+use Vandar\Cashier\Events\PaymentCreated;
 
 class VandarIPGController extends Controller
 {
@@ -18,26 +18,26 @@ class VandarIPGController extends Controller
      * @param array  $payload
      * @param string $callback_url
      */
-    public function pay(array $payload, string $callback_url)
+    public function pay(array $payload)
     {
-        $payload['callback_url'] = $callback_url;
         $payload['api_key'] = config('vandar.api_key');
 
-        
+
         # Client Validation
         $ipg_request = new IPGRequestValidation($payload);
         $ipg_request->validate($ipg_request->rules());
 
 
         $payload = CasingFormatter::convertKeyFormat('camel', $payload, ['factor_number']);
-        
+
         $response = Client::request('post', $this->IPG_URL('send'), $payload, false);
 
+        if ($response->getStatusCode() != 200)
+            return $response->json()['errors'];
 
-        Payment::create($payload);
+        $payment = Payment::create($payload);
 
-
-        return Redirect::away($this->REDIRECT_URL($response->json()['token']));
+        event(new PaymentCreated($payment));
     }
 
 
