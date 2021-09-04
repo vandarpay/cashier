@@ -13,6 +13,10 @@ class Payment extends Model
     protected $table = 'vandar_payments';
     protected $guarded = ['id'];
 
+    const STATUSES = [self::STATUS_SUCCEED, self::STATUS_FAILED];
+    const STATUS_SUCCEED = 'succeed';
+    const STATUS_FAILED = 'failed';
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
