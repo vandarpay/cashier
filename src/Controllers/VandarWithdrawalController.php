@@ -5,7 +5,7 @@ namespace Vandar\Cashier\Controllers;
 use Illuminate\Routing\Controller;
 use Vandar\Cashier\Models\Withdrawal;
 use Vandar\Cashier\RequestsValidation\WithdrawalRequestValidation;
-use Vandar\Cashier\Utilities\Client;
+use Vandar\Cashier\Client\Client;
 
 class VandarWithdrawalController extends Controller
 {
@@ -18,15 +18,13 @@ class VandarWithdrawalController extends Controller
      * @return object $data
      */
     public function store(array $params)
-    {
-        $params['notify_url'] = $params['notify_url'] ?? config('vandar.notify_url');
-        
+    {        
         # Request Validation
         $request = new WithdrawalRequestValidation($params);
         $request->validate($request->rules());
 
 
-        $response = Client::request('post', $this->WITHDRAWAL_URL('store'), true, $params);
+        $response = Client::request('post', $this->WITHDRAWAL_URL('store'), $params, true);
 
 
         # prepare data for DB structure
@@ -49,7 +47,7 @@ class VandarWithdrawalController extends Controller
      */
     public function list(): array
     {
-        $response = Client::request('get', $this->WITHDRAWAL_URL(), true);
+        $response = Client::request('get', $this->WITHDRAWAL_URL(), [], true);
 
         return $response->json();
     }
@@ -65,7 +63,7 @@ class VandarWithdrawalController extends Controller
      */
     public function show(string $withdrawal_id): array
     {
-        $response = Client::request('get', $this->WITHDRAWAL_URL($withdrawal_id), true);
+        $response = Client::request('get', $this->WITHDRAWAL_URL($withdrawal_id), [], true);
 
         return $response->json();
     }
@@ -81,7 +79,7 @@ class VandarWithdrawalController extends Controller
      */
     public function cancel(string $withdrawal_id): array
     {
-        $response = Client::request('put', $this->WITHDRAWAL_URL($withdrawal_id), true);
+        $response = Client::request('put', $this->WITHDRAWAL_URL($withdrawal_id), [], true);
 
         Withdrawal::where('withdrawal_id', $withdrawal_id)
             ->update(['status' => 'CANCELED']);

@@ -2,9 +2,13 @@
 
 namespace Vandar\Cashier\Providers;
 
-use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Vandar\Cashier\Events\MandateCreating;
+use Vandar\Cashier\Events\MandateRedirect;
 use Vandar\Cashier\Events\PaymentCreated;
 use Vandar\Cashier\Events\PaymentRedirect;
+use Vandar\Cashier\Events\WithdrawalCreating;
+use Vandar\Cashier\Events\WithdrawalResponse;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -18,6 +22,12 @@ class EventServiceProvider extends ServiceProvider
         PaymentCreated::class => [
             PaymentRedirect::class
         ],
+        MandateCreating::class => [
+            MandateRedirect::class
+        ],
+        WithdrawalCreating::class => [
+            WithdrawalResponse::class
+        ]
     ];
 
     /**
