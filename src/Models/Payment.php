@@ -13,9 +13,12 @@ class Payment extends Model
     protected $table = 'vandar_payments';
     protected $guarded = ['id'];
 
-    const STATUSES = [self::STATUS_SUCCEED, self::STATUS_FAILED];
-    const STATUS_SUCCEED = 'succeed';
-    const STATUS_FAILED = 'failed';
+    const STATUSES = [
+        self::STATUS_SUCCEED,
+        self::STATUS_FAILED
+    ];
+    const STATUS_SUCCEED = 'SUCCEED';
+    const STATUS_FAILED = 'FAILED';
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -39,9 +42,9 @@ class Payment extends Model
 
         if ($response->getStatusCode() != 200) {
             $this->update([
-                    'errors' => json_encode($response->json()['errors']),
-                    'status' => 'FAILED'
-                ]);
+                'errors' => json_encode($response->json()['errors']),
+                'status' => 'FAILED'
+            ]);
             return false;
         }
 
@@ -56,9 +59,8 @@ class Payment extends Model
         return true;
     }
 
-    public function getUrlAttribute() : string
+    public function getUrlAttribute(): string
     {
         return Vandar::url('IPG', $this->token);
-
     }
 }

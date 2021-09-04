@@ -26,6 +26,16 @@ class Mandate extends Model
     protected $table = 'vandar_mandates';
     protected $guarded = ['id'];
 
+    const STATUSES = [
+        self::STATUS_INIT,
+        self::STATUS_SUCCEED,
+        self::STATUS_FAILED,
+        self::STATUS_FAILED_TO_ACCESS_BANK
+    ];
+    const STATUS_INIT = 'INIT';
+    const STATUS_SUCCEED = 'SUCCEED';
+    const STATUS_FAILED = 'FAILED';
+    const STATUS_FAILED_TO_ACCESS_BANK = 'FAILED_TO_ACCESS_BANK';
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
