@@ -2,6 +2,7 @@
 
 namespace Vandar\Cashier;
 
+use Vandar\Cashier\Providers\EventServiceProvider;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 
@@ -38,7 +39,7 @@ class VandarCashierServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->register(EventServiceProvider::class);
     }
 
 
