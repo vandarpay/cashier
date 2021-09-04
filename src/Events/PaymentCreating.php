@@ -6,8 +6,8 @@ use Vandar\Cashier\Models\Payment;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
 
-class PaymentCreating{
-
+class PaymentCreating
+{
     use Dispatchable, SerializesModels;
 
     public $payment;
