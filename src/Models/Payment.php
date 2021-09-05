@@ -47,7 +47,7 @@ class Payment extends Model
      */
     public function verify(): bool
     {
-        $endpoint = Vandar::url('IPG_API', $this->token);
+        $endpoint = Vandar::url('IPG_API', 'verify');
         $params = ['api_key' => config('vandar.api_key'), 'token' => $this->token];
 
         $response = Client::request('post', $endpoint, $params, false);
