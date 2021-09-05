@@ -2,10 +2,18 @@
 
 namespace Vandar\Cashier\Concerns;
 
+use Vandar\Cashier\Client\CasingFormatter;
+
 trait ResponseJsonConcern
 {
-    public function json()
+    public function json($format_response=true)
     {
-        return json_decode($this->getBody(), true);
+        $response = json_decode($this->getBody(), true);
+
+        if($format_response && $this->getStatusCode() > 299){
+            return CasingFormatter::convertFailedResponseFormat($response);
+        }
+
+        return $response;
     }
 }

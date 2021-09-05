@@ -2,6 +2,7 @@
 
 namespace Vandar\Cashier;
 
+use Vandar\Cashier\Providers\EventServiceProvider;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 
@@ -26,7 +27,8 @@ class VandarCashierServiceProvider extends ServiceProvider
         
         
         // php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=vandar-migrations
-        $this->publishMigrations(Vandar::ACTIVE_MIGRATIONS);
+        // $this->publishMigrations(Vandar::ACTIVE_MIGRATIONS);
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 
 
@@ -38,7 +40,7 @@ class VandarCashierServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->register(EventServiceProvider::class);
     }
 
 

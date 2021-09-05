@@ -4,6 +4,7 @@ namespace Vandar\Cashier\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Vandar\Cashier\Events\MandateCreating;
 
 /**
  * Vandar Mandates
@@ -26,6 +27,16 @@ class Mandate extends Model
     protected $table = 'vandar_mandates';
     protected $guarded = ['id'];
 
+    const STATUSES = [
+        self::STATUS_INIT,
+        self::STATUS_SUCCEED,
+        self::STATUS_FAILED,
+        self::STATUS_FAILED_TO_ACCESS_BANK
+    ];
+    const STATUS_INIT = 'INIT';
+    const STATUS_SUCCEED = 'SUCCEED';
+    const STATUS_FAILED = 'FAILED';
+    const STATUS_FAILED_TO_ACCESS_BANK = 'FAILED_TO_ACCESS_BANK';
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -34,4 +45,14 @@ class Mandate extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+
+     /**
+     * The event map for the model.
+     *
+     * @var array
+     */
+    protected $dispatchesEvents = [
+        'creating' => MandateCreating::class
+    ];
 }
