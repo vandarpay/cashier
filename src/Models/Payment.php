@@ -18,7 +18,7 @@ use Vandar\Cashier\Vandar;
  * @property string token the token used to make the payment
  * @property mixed amount
  * @property mixed real_amount
- * @property string wage type of wage for this payment
+ * @property string wage amount of the wage taken
  * @property string status current status for this payment, INIT for initialized but not paid yet, SUCCEED and FAILED for transaction results
  * @property string mobile_number
  * @property string trans_id
