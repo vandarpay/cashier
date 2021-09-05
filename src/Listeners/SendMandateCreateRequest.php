@@ -18,8 +18,7 @@ class SendMandateCreateRequest
         $payload['expiration_date'] = $payload['expiration_date'] ?? date('Y-m-d', strtotime(date('Y-m-d') . ' + 3 years'));
 
         $payload = CasingFormatter::mobileKeyFormat($payload);
-
-        $response = Client::request('post', Vandar::url('MANDATE', 'business/' . config('vandar.business_slug') . '/authorization/subscription/store'), $payload, true);
+        $response = Client::request('post', Vandar::url('MANDATE_API', 'store'), $payload, true);
 
         if((! in_array($response->getStatusCode(), [200, 201])))
         {
@@ -27,6 +26,6 @@ class SendMandateCreateRequest
             throw ValidationException::withMessages((array) $response->json()['errors']);
 
         }
-        $event->mandate->token = $response->json()['token'];
+        $event->mandate->token = $response->json()['result']['authorization']['token'];
     }
 }

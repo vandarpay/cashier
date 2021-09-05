@@ -61,6 +61,6 @@ class Mandate extends Model
 
     public function getUrlAttribute(): string
     {
-        return Vandar::url('MANDATE_API', $this->token);
+        return Vandar::url('MANDATE', $this->token);
     }
 }
