@@ -41,3 +41,4 @@ jobs:
           VANDAR_PASSWORD: ${{ secrets.VANDAR_PASSWORD }}
           VANDAR_BUSINESS_SLUG: ${{ secrets.VANDAR_BUSINESS_NAME }}
           VANDAR_API_KEY: ${{ secrets.VANDAR_API_KEY }}
+          VANDAR_TESTING_VALID_CARD: ${{ secrets.VANDAR_TESTING_VALID_CARD }}
