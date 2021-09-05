@@ -13,7 +13,7 @@ $factory->define(Payment::class, function (Faker $faker) {
     return [
         'token' => Str::uuid(),
         'user_id' => factory(User::class),
-        'amount' => $faker->randomDigitNotZero(),
+        'amount' => $faker->randomNumber(5),
         'real_amount' => $faker->randomDigitNotZero(),
         'wage' => $faker->randomDigit(),
         'status' => $faker->randomElement(['INIT', 'SUCCEED', 'FAILED']),
@@ -23,7 +23,7 @@ $factory->define(Payment::class, function (Faker $faker) {
         'tracking_code' => $faker->randomDigit(),
         'factor_number' => $faker->randomDigit(),
         'description' => Str::limit(15),
-        'valid_card_number' => $faker->numerify('######******####'),
+        'valid_card_number' => $faker->numerify('################'),
         'card_number' => $faker->numerify('######******####'),
         'cid' => Str::uuid(),
         'payment_date' => $faker->dateTime(),
