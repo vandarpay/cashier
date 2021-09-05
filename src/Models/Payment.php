@@ -2,6 +2,7 @@
 
 namespace Vandar\Cashier\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
@@ -10,6 +11,32 @@ use Vandar\Cashier\Client\Client;
 use Vandar\Cashier\Events\PaymentCreating;
 use Vandar\Cashier\Vandar;
 
+/**
+ * Payments made through the IPG method
+ *
+ * @property int id
+ * @property string token the token used to make the payment
+ * @property mixed amount
+ * @property mixed real_amount
+ * @property string wage type of wage for this payment
+ * @property string status current status for this payment, INIT for initialized but not paid yet, SUCCEED and FAILED for transaction results
+ * @property string mobile_number
+ * @property string trans_id
+ * @property string ref_number
+ * @property string tracking_code
+ * @property string factor_number
+ * @property string description
+ * @property string valid_card_number
+ * @property string card_number
+ * @property string cid
+ * @property mixed payment_date
+ * @property string messages
+ * @property array errors
+ *
+ * @property string url custom attribute returning the url for payment gateway
+ *
+ * @mixin Builder
+ */
 class Payment extends Model
 {
     protected $table = 'vandar_payments';
