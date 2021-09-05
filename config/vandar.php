@@ -36,13 +36,6 @@ return [
     #------------------------
     'api_key' => env('VANDAR_API_KEY'),
 
-    # Authentication information, filled and used automatically
-    'auth' => [
-        'token_type' => null,
-        'expires_in' => null,
-        'access_token' => null,
-        'refresh_token' => null,
-    ],
     'api_base_url' =>  null,
     'ipg_base_url' =>  null,
 ];
