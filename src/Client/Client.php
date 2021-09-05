@@ -45,18 +45,9 @@ class Client
             $options['headers']['Authorization'] = 'Bearer ' . Authenticate::getToken();
         }
 
-
-
-
-        # convert response error message key format
         try {
             $response = $client->request($method, $url, $options);
-        } catch (ClientException $e) {
-            
-        }
-        catch (ServerException $e) {
-            throw $e;
-        }
+        } catch (ClientException $e) {}
 
         return $response;
     }
