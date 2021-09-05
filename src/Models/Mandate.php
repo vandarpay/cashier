@@ -2,9 +2,11 @@
 
 namespace Vandar\Cashier\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User;
+use Illuminate\Http\Request;
 use Vandar\Cashier\Events\MandateCreating;
+use Vandar\Cashier\Vandar;
 
 /**
  * Vandar Mandates
@@ -21,6 +23,8 @@ use Vandar\Cashier\Events\MandateCreating;
  * @property string status the status of current mandate
  * @property bool is_active whether current mandate is active
  * @property array errors
+ *
+ * @property string url the url user should be redirected to for authorizing the mandate
  */
 class Mandate extends Model
 {
@@ -55,4 +59,43 @@ class Mandate extends Model
     protected $dispatchesEvents = [
         'creating' => MandateCreating::class
     ];
+
+    public function getUrlAttribute(): string
+    {
+        return Vandar::url('MANDATE', $this->token);
+    }
+
+    public static function verifyFromRequest(Request $request) : bool
+    {
+        if(! $request->has(['status', 'token']))
+        {
+            abort(400);
+        }
+
+        $mandate = Mandate::where('token', $request->get('token'))->firstOrFail();
+        switch ($request->get('status')) {
+
+            case self::STATUS_SUCCEED:
+                $mandate->update([
+                        'is_active' => true,
+                        'status' => $request->get('status'),
+                        'authorization_id' => $request->get('authorization_id')
+                    ]);
+                return true;
+            case 'FAILED':
+                $mandate->update([
+                        'errors' => json_encode('Failed_To_Access_Bank_Account'),
+                        'status' => $request->get('status')
+                    ]);
+                return false;
+            case 'FAILED_TO_ACCESS_BANK':
+                $mandate->update([
+                        'errors' => json_encode('Failed_To_Access_Bank'),
+                        'status' => $request->get('status')
+                    ]);
+                return false;
+            default:
+                return false;
+        }
+    }
 }
