@@ -13,6 +13,7 @@ class PaymentTest extends TestCase
     {
         $user = factory(User::class)->create();
         $payment = factory(Payment::class)->make();
+        $payment->valid_card_number = env('VANDAR_TESTING_VALID_CARD');
         try {
             $user->payments()->save($payment);
         } catch (ValidationException $exception)
