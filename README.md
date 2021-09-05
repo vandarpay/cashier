@@ -2,6 +2,7 @@ Vandar Cashier is a Laravel package that provides you with a seamless integratio
 
 # Setup
 **Note: Please note that Vandar Cashier is still in the process of change and development, use of this package in a production environment before it reaches a stable release is not recommended**
+
 To use Vandar Cashier, you need to install it through Composer first:
 ```bash
 composer require vandarpay/cashier
@@ -75,6 +76,7 @@ Also, for IPG, you're going to need to define a callback url for when users are 
 
 ## Direct-Debit
 **This package is in alpha state, as of now, direct-debit functionality is not supported in Vandar Cashier, this usage is kept for specification purposes and is subject to change at any time.**
+
 When setting up direct-debit, you have two main steps to take.
 1. Get user to allow for access to their account (also known as a Mandate)
 2. Request a withdrawal from a user's account
