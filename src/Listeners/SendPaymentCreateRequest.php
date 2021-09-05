@@ -17,13 +17,14 @@ class SendPaymentCreateRequest
 
         $payload = CasingFormatter::convertKeyFormat('camel', $payload, ['factor_number']);
 
-        $response = Client::request('post', Vandar::url('IPG', 'send'), $payload, false);
+        $response = Client::request('post', Vandar::url('IPG_API', 'send'), $payload, false)->json();
 
-        if(! in_array($response->getStatusCode(), [200, 201]))
+        if(! in_array($response->getStatusCode(), [200, 201]) || $response['status'] !== 1)
         {
             $event->payment->update(['status' => Payment::STATUS_FAILED]);
+            // TODO throw custom failure exception
         }
 
-        $event->payment->update(['status' => Payment::STATUS_SUCCEED]);
+        $event->payment->update(['status' => Payment::STATUS_SUCCEED, 'token' => $response['token']]);
     }
 }
