@@ -2,7 +2,13 @@ name: tests
 
 on:
   push:
+    branches:
+      - develop
+      - 'features/*'
   pull_request:
+    branches:
+      - master
+      - 'releases/*'
   schedule:
     - cron: '0 0 * * *'
 
