@@ -116,7 +116,7 @@ Route::get('/initiate-mandate', function(){
     return redirect($mandate->url)
 })
 ```
-You are also going to need a callback url for the user to return to after they're finished with the mandate process, this path should be set as an absolute url through `MANDATE_CALLBACK_URL` or editing the config file.
+You are also going to need a callback url for the user to return to after they're finished with the mandate process, this path should be set as an absolute url through `ٰVANDAR_MANDATE_CALLBACK_URL` or editing the config file.
 
 You can verify whether the mandate was successfully made and update the mandate accordingly using the `Mandate::verifyFromRequest` method:
 ```php
