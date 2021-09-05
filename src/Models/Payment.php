@@ -42,7 +42,7 @@ class Payment extends Model
 
     public static function verifyFromRequest(Request $request) : bool
     {
-        return (new self)->where('token', $request->get('token'))->firstOrFail()->verify($request->get('status'));
+        return (new self)->where('token', $request->get('token'))->firstOrFail()->verify($request->get('payment_status'));
     }
     
     /**
