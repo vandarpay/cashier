@@ -19,21 +19,30 @@ class Vandar
     /**
      * @param string $api can be AUTH, TRANSACTION, SETTLEMENT, IPG, MANDATE, or WITHDRAWAL
      * @param string $additional Additional portion to add to the url
+     * @param string|null $version_number the api version to which the requests should be sent, for backwards compatibility reasons
      * @return string full url for the selected endpoint
      */
-    public static function url(string $api, string $additional=''): string
+    public static function url(string $api, string $additional='', string $version_number=null): string
     {
-        // TODO allow dynamic version assignment
         $api = strtoupper($api);
-        // TODO add custom exception for when given API is missing.
-        $base_url = in_array($api, ['IPG', 'IPG_API']) ? config('vandar.ipg_base_url', 'https://ipg.vandar.io/') : config('vandar.base_url', 'https://api.vandar.io/');
-
-        // TODO refactor this
-        if($api == 'IPG_API'){
-            $base_url .= 'api/';
-            $api = 'IPG';
+        switch ($api) {
+            case 'IPG':
+                $base_url = config('vandar.ipg_base_url', 'https://ipg.vandar.io/');
+                break;
+            case 'IPG_API':
+                $base_url = config('vandar.ipg_base_url', 'https://ipg.vandar.io/api/');
+                $api = 'IPG';
+                break;
+            case 'MANDATE':
+                $base_url = config('vandar.mandate_redirect_url', 'https://subscription.vandar.io/authorizations/');
+                break;
+            case 'MANDATE_API':
+                $base_url = config('vandar.api_base_url', 'https://api.vandar.io/') . 'business/' . config('vandar.business_slug') . '/authorization/subscription';
+                break;
+            default:
+                $base_url = config('vandar.api_base_url', 'https://api.vandar.io/');
         }
 
-        return $base_url . 'v' . self::API_VERSIONS[$api] . '/' . $additional;
+        return $base_url . 'v' . ($version_number ?? self::API_VERSIONS[$api]) . '/' . $additional;
     }
 }
