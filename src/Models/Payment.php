@@ -42,6 +42,12 @@ class Payment extends Model
 
     public static function verifyFromRequest(Request $request) : bool
     {
+        $status = $request->get('payment_status');
+        if($status === 'OK')
+        {
+            $status = self::STATUS_SUCCEED;
+        }
+
         return (new self)->where('token', $request->get('token'))->firstOrFail()->verify($request->get('payment_status'));
     }
     
@@ -52,6 +58,7 @@ class Payment extends Model
      */
     public function verify($request_status=null): bool
     {
+        if ($request_status === 'OK')
         if($this->status !== 'INIT'){
             return $this->status == self::STATUS_SUCCEED;
         }
