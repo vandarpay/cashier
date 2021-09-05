@@ -5,6 +5,7 @@ namespace Vandar\Cashier\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
+use Vandar\Cashier\Client\Client;
 use Vandar\Cashier\Events\MandateCreating;
 use Vandar\Cashier\Vandar;
 
@@ -63,6 +64,24 @@ class Mandate extends Model
     public function getUrlAttribute(): string
     {
         return Vandar::url('MANDATE', $this->token);
+    }
+
+    /**
+     * Revoke Confirmed mandates
+     *
+     * @return bool
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function revoke(): bool
+    {
+        $response = Client::request('delete', Vandar::url('MANDATE_API', $this->authorization_id), [], true);
+
+        if($response->getStatusCode() === 200){
+            $this->update(['is_active' => false]);
+            return true;
+        }
+        
+        return false;
     }
 
     public static function verifyFromRequest(Request $request) : bool

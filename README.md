@@ -129,6 +129,13 @@ Route::get('/mandate-callback', function(Request $request){
     }
 })
 ```
+You can also revoke any mandates through the Mandate model's revoke function:
+```php
+use Vandar\Cashier\Models\Mandate
+
+$mandate = Mandate::find(1);
+$mandate->revoke(); // True if mandate was successful.
+```
 
 ### Withdrawal
 Once the mandate has been created successfully, you may create a withdrawal using the `User::withdrawals()->create()` method.
