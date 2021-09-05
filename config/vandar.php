@@ -40,7 +40,7 @@ return [
     #------------------------
     'api_key' => env('VANDAR_API_KEY'),
 
-    'api_base_url' =>  null,
-    'ipg_base_url' =>  null,
-    'mandate_redirect_url' => null,
+//    'api_base_url' =>  null,
+//    'ipg_base_url' =>  null,
+//    'mandate_redirect_url' => null,
 ];
