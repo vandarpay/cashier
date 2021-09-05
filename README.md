@@ -53,7 +53,8 @@ Route::get('/initiate-payment', function(Request $request){
 Once the transaction finishes (successfully or not), they will be redirect back to the path you defined in callback, you may define a controller or a route to verify the payment using the `Payment::verify($request)` method:
 ```php
 use Vandar\Cashier\Models\Payment;
-Route::get('/payments/{payment:token}', function(Request $request, Payment $payment){
+Route::get('/callback', function(Request $request){
+    $payment = Payment::findOrFail($request->get('token'));
     if($payment->verify()){
         return 'Success!';
     } 
