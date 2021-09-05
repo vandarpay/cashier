@@ -18,7 +18,7 @@ class CreateVandarMandatesTable extends Migration
             $table->bigIncrements('id');
             $table->string('token');
             $table->string('authorization_id')->nullable();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('name')->nullable();
             $table->string('mobile_number')->nullable();
             $table->string('email')->nullable();
