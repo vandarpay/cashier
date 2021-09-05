@@ -13,8 +13,8 @@ $factory->define(Payment::class, function (Faker $faker) {
     return [
         'token' => Str::uuid(),
         'user_id' => factory(User::class),
-        'amount' => $faker->randomNumber(5),
-        'real_amount' => $faker->randomDigitNotZero(),
+        'amount' => $faker->randomNumber(5, true),
+        'real_amount' => $faker->randomNumber(5, true),
         'wage' => $faker->randomDigit(),
         'status' => $faker->randomElement(['INIT', 'SUCCEED', 'FAILED']),
         'mobile_number' => $faker->numerify('09#########'),
