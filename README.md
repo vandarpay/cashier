@@ -116,8 +116,22 @@ Route::get('/initiate-mandate', function(){
     return redirect($mandate->url)
 })
 ```
+You are also going to need a callback url for the user to return to after they're finished with the mandate process, this path should be set as an absolute url through `MANDATE_CALLBACK_URL` or editing the config file.
+
+You can verify whether the mandate was successfully made and update the mandate accordingly using the `Mandate::verifyFromRequest` method:
+```php
+use Vandar\Cashier\Models\Mandate;
+Route::get('/mandate-callback', function(Request $request){
+    if(Mandate::verifyFromRequest($request)){
+        return 'Success!';
+    } else {
+        return 'Failed!';
+    }
+})
+```
+
 ### Withdrawal
-Once the mandate is verified, you may create a withdrawal using the `User::withdrawals()->create()` method.
+Once the mandate has been created successfully, you may create a withdrawal using the `User::withdrawals()->create()` method.
 
 All the code below is used in this example:
 ```php
