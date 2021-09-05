@@ -6,13 +6,6 @@ class Vandar
 {
     const VERSION = '1.0.0-a';
 
-    const ACTIVE_MIGRATIONS = [
-        'CreateVandarMandatesTable',
-        'CreateVandarPaymentsTable',
-        'CreateVandarSettlementsTable',
-        'CreateVandarWithdrawalsTable',
-    ];
-
     // URL Generation Functionality
     protected const API_VERSIONS = [
         'AUTH' => '3',
