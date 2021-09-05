@@ -4,6 +4,7 @@ namespace Vandar\Cashier\Models;
 
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Database\Eloquent\Model;
+use Vandar\Cashier\Events\WithdrawalCreating;
 
 class Withdrawal extends Model
 {
@@ -22,6 +23,10 @@ class Withdrawal extends Model
     const STATUS_DONE = 'DONE';
     const STATUS_CANCELED = 'CANCELED';
     const STATUS_FAILED = 'FAILED';
+
+    protected $dispatchesEvents = [
+        'creating' => WithdrawalCreating::class,
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
