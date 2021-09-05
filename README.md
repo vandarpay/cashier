@@ -3,7 +3,7 @@ Vandar Cashier is a Laravel package that provides you with a seamless integratio
 # Setup
 To use Vandar Cashier, you need to install it through Composer first:
 ```bash
-composer require vandar/cashier
+composer require vandarpay/cashier
 ```
 Then, you will need to publish the package's assets and migrate your project's database to add Vandar Cashier's tables:
 ```php
