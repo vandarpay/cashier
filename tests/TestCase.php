@@ -24,6 +24,7 @@ abstract class TestCase extends OrchestraTestCase
 
     protected function getEnvironmentSetUp($app)
     {
+        $app['config']->set('vandar.api_key', env('VANDAR_API_KEY'));
         $app['config']->set('vandar.mobile', env('VANDAR_MOBILE'));
         $app['config']->set('vandar.password', env('VANDAR_PASSWORD'));
     }
