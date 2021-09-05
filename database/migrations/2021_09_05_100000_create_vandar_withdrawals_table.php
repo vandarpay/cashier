@@ -15,8 +15,8 @@ class CreateVandarWithdrawalsTable extends Migration
     {
         Schema::create('vandar_withdrawals', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('authorization_id');
-            $table->string('withdrawal_id');
+            $table->string('authorization_id')->index();
+            $table->string('withdrawal_id')->index();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->decimal('amount', 20, 0)->comment('Cuurency : RIAL');;
             $table->decimal('wage_amount', 20, 0)->nullable()->comment('Cuurency : RIAL');

@@ -15,7 +15,7 @@ class CreateVandarPaymentsTable extends Migration
     {
         Schema::create('vandar_payments', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('token');
+            $table->string('token')->index();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->decimal('amount', 20, 0)->comment('Cuurency : RIAL');
             $table->decimal('real_amount', 20, 0)->nullable()->comment('Cuurency : RIAL');

@@ -16,8 +16,8 @@ class CreateVandarMandatesTable extends Migration
     {
         Schema::create('vandar_mandates', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('token');
-            $table->string('authorization_id')->nullable();
+            $table->string('token')->index();
+            $table->string('authorization_id')->nullable()->index();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('name')->nullable();
             $table->string('mobile_number')->nullable();
