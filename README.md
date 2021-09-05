@@ -54,7 +54,7 @@ Once the transaction finishes (successfully or not), they will be redirect back 
 ```php
 use Vandar\Cashier\Models\Payment;
 Route::get('/callback', function(Request $request){
-    $payment = Payment::findOrFail($request->get('token'));
+    $payment = Payment::firstOrFail(['token' => $request->get('token')]);
     if($payment->verify()){
         return 'Success!';
     } 
