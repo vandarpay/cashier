@@ -8,7 +8,7 @@ use Vandar\Cashier\Tests\TestCase;
 
 class PaymentTest extends TestCase
 {
-    public function test_can_create_payment()
+    public function test_can_create_payment_with_relation_to_user()
     {
         $user = factory(User::class)->create();
         $payment = factory(Payment::class)->make();
