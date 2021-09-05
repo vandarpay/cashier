@@ -5,11 +5,11 @@ namespace Vandar\Cashier\Database\Factories;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
-use Vandar\Cashier\Models\Payment;
+use Vandar\Cashier\Models\Mandate;
 
 
 
-$factory->define(Payment::class, function (Faker $faker) {
+$factory->define(Mandate::class, function (Faker $faker) {
     return [
         'token' => Str::uuid(),
         'authorization_id' => Str::uuid(),
@@ -22,9 +22,9 @@ $factory->define(Payment::class, function (Faker $faker) {
         'expiration_date' => $faker->dateTimeThisDecade(),
         'bank_code' => $faker->randomElement([
             '012', '016', '021', '055', '056', '058', '059', '062', '063', '066', '069', '060'
-        ]), rand(1),
-        'status' => $faker->randomElement(['INIT, FAILED, SUCCEED, FAILED_TO_ACCESS_BANK']), rand(1),
+        ]),
+        'status' => $faker->randomElement(['INIT, FAILED, SUCCEED, FAILED_TO_ACCESS_BANK']),
         'is_active' => rand(0, 1),
-        'errors' => [],
+        'errors' => json_encode([]),
     ];
 });

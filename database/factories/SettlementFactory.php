@@ -2,14 +2,12 @@
 
 namespace Vandar\Cashier\Database\Factories;
 
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
-use Vandar\Cashier\Models\Payment;
+use Vandar\Cashier\Models\Settlement;
 
 
-
-$factory->define(Payment::class, function (Faker $faker) {
+$factory->define(Settlement::class, function (Faker $faker) {
     return [
         'settlement_id' => Str::uuid(),
         'amount' => $faker->randomNumber(5, true),
@@ -20,7 +18,7 @@ $factory->define(Payment::class, function (Faker $faker) {
         'track_id' => Str::uuid(),
         'payment_number' => $faker->numerify('############'),
         'transaction_id' => $faker->numerify('############'),
-        'status' => $faker->randomElement(['INIT, PENDING, DONE, FAILED, CANCELED']), rand(1),
+        'status' => $faker->randomElement(['INIT, PENDING, DONE, FAILED, CANCELED']),
         'wallet' => $faker->randomNumber(5, true),
         'is_instant' => rand(0, 1),
         'withdrawal_date' => $faker->date('Y-m-d'),
