@@ -24,7 +24,7 @@ class SendMandateCreateRequest
         if((! in_array($response->getStatusCode(), [200, 201])))
         {
             $event->mandate->status = Mandate::STATUS_FAILED;
-            throw ValidationException::withMessages($response->json()['errors']);
+            throw ValidationException::withMessages((array) $response->json()['errors']);
 
         }
         $event->mandate->token = $response->json()['token'];
