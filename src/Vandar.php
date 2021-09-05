@@ -4,7 +4,7 @@ namespace Vandar\Cashier;
 
 class Vandar
 {
-    const VERSION = '1.0';
+    const VERSION = '1.0.0-a';
 
     const ACTIVE_MIGRATIONS = [
         'CreateVandarMandatesTable',
@@ -28,7 +28,7 @@ class Vandar
      * @param string $additional Additional portion to add to the url
      * @return string full url for the selected endpoint
      */
-    public static function url(string $api, string $additional='')
+    public static function url(string $api, string $additional=''): string
     {
         // TODO allow dynamic version assignment
         $api = strtoupper($api);
@@ -42,15 +42,5 @@ class Vandar
         }
 
         return $base_url . 'v' . self::API_VERSIONS[$api] . '/' . $additional;
-    }
-
-    use \Vandar\Cashier\Utilities\CheckStatus;
-    
-    /**
-     * Check Status (Payment, Mandate)
-     */
-    public static function CheckStatus($request = null)
-    {
-        return self::checkerIndex($request ?? (\Request::query()));
     }
 }
