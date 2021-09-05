@@ -26,7 +26,6 @@ class SendPaymentCreateRequest
             // TODO add ValidationException
 
         }
-        $event->payment->status = Payment::STATUS_SUCCEED;
         $event->payment->token = $response->json()['token'];
     }
 }
