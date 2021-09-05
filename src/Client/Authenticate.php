@@ -58,7 +58,7 @@ class Authenticate
     protected static function getData() : array
     {
         try {
-            $data = json_decode(Storage::disk('local')->get('vandar_auth.json'));
+            $data = json_decode(Storage::disk('local')->get('vandar_auth.json'), true);
         } catch (FileNotFoundException $exception)
         {
             $data = [];
