@@ -6,9 +6,14 @@ use Vandar\Cashier\Client\CasingFormatter;
 
 trait ResponseJsonConcern
 {
-    public function json()
+    public function json($format_response=true)
     {
         $response = json_decode($this->getBody(), true);
-        return CasingFormatter::convertFailedResponseFormat($response);
+
+        if($format_response && $this->getStatusCode() > 299){
+            return CasingFormatter::convertFailedResponseFormat($response);
+        }
+
+        return $response;
     }
 }
