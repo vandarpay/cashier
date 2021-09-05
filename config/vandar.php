@@ -42,4 +42,5 @@ return [
 
     'api_base_url' =>  null,
     'ipg_base_url' =>  null,
+    'mandate_redirect_url' => null,
 ];
