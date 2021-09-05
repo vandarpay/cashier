@@ -46,6 +46,7 @@ class Vandar
         // TODO refactor this
         if($api == 'IPG_API'){
             $base_url .= 'api/';
+            $api = 'IPG';
         }
 
         return $base_url . 'v' . self::API_VERSIONS[$api] . '/' . $additional;
