@@ -28,7 +28,7 @@ abstract class TestCase extends OrchestraTestCase
         $app['config']->set('vandar.mobile', env('VANDAR_MOBILE'));
         $app['config']->set('vandar.password', env('VANDAR_PASSWORD'));
         $app['config']->set('vandar.business_slug', env('VANDAR_BUSINESS_SLUG'));
-        $app['config']->set('vandar.callback_url', env('VANDAR_CALLBACK_URL', 'http://127.0.0.1:8000'));
+        $app['config']->set('vandar.callback_url', env('VANDAR_CALLBACK_URL', 'http://127.0.0.1:8000/callback'));
     }
 
     /**
