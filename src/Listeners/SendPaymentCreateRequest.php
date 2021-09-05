@@ -2,6 +2,7 @@
 
 namespace Vandar\Cashier\Listeners;
 
+use Illuminate\Validation\ValidationException;
 use Vandar\Cashier\Client\CasingFormatter;
 use Vandar\Cashier\Client\Client;
 use Vandar\Cashier\Events\PaymentCreating;
@@ -23,7 +24,7 @@ class SendPaymentCreateRequest
         if((! in_array($response->getStatusCode(), [200, 201])) || $response->json()['status'] !== 1)
         {
             $event->payment->status = Payment::STATUS_FAILED;
-            // TODO add ValidationException
+            throw ValidationException::withMessages($response->json()['errors']);
 
         }
         $event->payment->token = $response->json()['token'];
