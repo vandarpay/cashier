@@ -82,10 +82,40 @@ When setting up direct-debit, you have two main steps to take.
 2. Request a withdrawal from a user's account
 
 ### Mandate
-Before any withdrawal from a user's account can be done, it is required to check whether they have a valid mandate, in other words, whether they are still allowing us to access their account. This is done using the `hasValidMandate` method in the User model. See the examples below.
+A mandate is basically a permission that a customer gives us to access their accounts. in Vandar, a customer is defined by their phone number
+and that's considered the primary key when it comes to customers. if you're planning to use subscription services in your project, you will need a
+`mobile_number` column in your users table. This code can be used as a migration that will add such a column:
+```php
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-if the user is not a valid subscriber, you can use the `authorizeMandate` method to generate a link for them to authorize it.
-
+class AddMobileNumbersColumnToUsersTable extends Migration
+{
+    public function up()
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('mobile_number')->nullable();
+        });
+    }
+    
+    public function down()
+    {
+        Schema::table('users', function (Blueprint $table) {
+           $table->dropColumn('mobile_number');
+        });
+    }
+}
+```
+Once that is done, a mandate can be created through such a method:
+```php
+Route::get('/initiate-mandate', function(){
+    $user = auth()->user();
+    $mandate = $user->mandates()->create(['bank_code' => '062', 'count' => 3, 'limit' => 3, 'expiration_date' => '2021-01-01']);
+    
+    return redirect($mandate->url)
+})
+```
 ### Withdrawal
 Once the mandate is verified, you may create a withdrawal using the `User::withdrawals()->create()` method.
 
