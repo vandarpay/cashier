@@ -27,7 +27,8 @@ class VandarCashierServiceProvider extends ServiceProvider
         
         
         // php artisan vendor:publish --provider="Vandar\\VandarCashier\\VandarCashierServiceProvider" --tag=vandar-migrations
-        $this->publishMigrations(Vandar::ACTIVE_MIGRATIONS);
+        // $this->publishMigrations(Vandar::ACTIVE_MIGRATIONS);
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 
 
