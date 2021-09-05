@@ -20,8 +20,6 @@ class Vandar
     ];
 
     // URL Generation Functionality
-    protected const BASE_URL = 'https://api.vandar.io/';
-    protected const IPG_BASE_URL = 'https://ipg.vandar.io/';
     protected const API_VERSIONS = [
         'AUTH' => '3',
         'TRANSACTION' => '2',
@@ -41,7 +39,7 @@ class Vandar
         // TODO allow dynamic version assignment
         $api = strtoupper($api);
         // TODO add custom exception for when given API is missing.
-        $base_url = in_array($api, ['IPG', 'IPG_API']) ? self::IPG_BASE_URL : self::BASE_URL;
+        $base_url = in_array($api, ['IPG', 'IPG_API']) ? config('vandar.ipg_base_url', 'https://ipg.vandar.io/') : config('vandar.base_url', 'https://api.vandar.io/');
 
         // TODO refactor this
         if($api == 'IPG_API'){
