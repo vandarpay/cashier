@@ -11,6 +11,7 @@ class MandateTest extends TestCase
     public function test_can_create_mandate()
     {
         $user = factory(User::class)->create();
+        /** @var Mandate $mandate */
         $mandate = factory(Mandate::class)->make();
         $mandate->mobile_number = config('vandar.mobile');
 
