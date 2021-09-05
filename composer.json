@@ -1,5 +1,5 @@
 {
-    "name": "vandar/cashier",
+    "name": "vandarpay/cashier",
     "description": "Official Vander package for easier access to Vander documents",
     "type": "library",
     "license": "MIT",
