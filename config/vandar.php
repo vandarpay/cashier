@@ -2,10 +2,14 @@
 
 return [
     #------------------------
-    # Callback Url for return requests from bank page (Inserted in the Vandar dashboard)
+    # IPG Callback Url for return requests from bank page (Inserted in the Vandar dashboard)
     #------------------------
     'callback_url' => env('VANDAR_CALLBACK_URL'),
 
+    #------------------------
+    # Mandate Callback Url for return requests from bank page (Inserted in the Vandar dashboard)
+    #------------------------
+    'mandate_callback_url' => env('VANDAR_MANDATE_CALLBACK_URL'),
 
     #------------------------
     # Notify Url for getting webhook request from Vandar
