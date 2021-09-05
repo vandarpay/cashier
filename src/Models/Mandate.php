@@ -59,8 +59,8 @@ class Mandate extends Model
         'creating' => MandateCreating::class
     ];
 
-    public function getUrlAttribute()
+    public function getUrlAttribute(): string
     {
-        return Vandar::url('MANDATE', 'business/' . config('vandar.business_slug') . '/subscription/authorization/' . $this->token);
+        return Vandar::url('MANDATE_API', $this->token);
     }
 }
