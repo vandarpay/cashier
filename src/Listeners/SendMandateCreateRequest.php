@@ -27,5 +27,6 @@ class SendMandateCreateRequest
 
         }
         $event->mandate->token = $response->json()['result']['authorization']['token'];
+        $event->mandate->expiration_date = $event->mandate->expiration_date ?? $payload['expiration_date'];
     }
 }
