@@ -5,6 +5,7 @@ namespace Vandar\Cashier\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
 use Vandar\Cashier\Events\MandateCreating;
+use Vandar\Cashier\Vandar;
 
 /**
  * Vandar Mandates
@@ -21,6 +22,8 @@ use Vandar\Cashier\Events\MandateCreating;
  * @property string status the status of current mandate
  * @property bool is_active whether current mandate is active
  * @property array errors
+ *
+ * @property string url the url user should be redirected to for authorizing the mandate
  */
 class Mandate extends Model
 {
@@ -55,4 +58,9 @@ class Mandate extends Model
     protected $dispatchesEvents = [
         'creating' => MandateCreating::class
     ];
+
+    public function getUrlAttribute()
+    {
+        return Vandar::url('MANDATE', 'business/' . config('vandar.business_slug') . '/subscription/authorization/' . $this->token);
+    }
 }
