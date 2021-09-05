@@ -15,7 +15,7 @@ class SendPaymentCreateRequest
     {
         $payload = $event->payment->only(['amount', 'mobile_number', 'factor_number', 'description', 'valid_card_number']);
         $payload['api_key'] = config('vandar.api_key');
-        $payload['callback_url'] = config('vandar.ipg_callback_url');
+        $payload['callback_url'] = config('vandar.callback_url');
 
         $payload = CasingFormatter::convertKeyFormat('camel', $payload, ['factor_number']);
 
