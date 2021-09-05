@@ -52,9 +52,9 @@ class Client
         try {
             $response = $client->request($method, $url, $options);
         } catch (ClientException $e) {
-            if (($response)->getStatusCode() != 200)
-                $response = CasingFormatter::convertFailedResponseFormat($response);
-        } catch (ServerException $e) {
+            
+        }
+        catch (ServerException $e) {
             throw $e;
         }
 

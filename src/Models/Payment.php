@@ -51,7 +51,7 @@ class Payment extends Model
         $params = ['api_key' => config('vandar.api_key'), 'token' => $this->token];
 
         $response = Client::request('post', $endpoint, $params, false);
-
+        dd(json_encode($response->json()));
         if ($response->getStatusCode() != 200) {
             $this->update([
                 'errors' => json_encode($response->json()['errors']),

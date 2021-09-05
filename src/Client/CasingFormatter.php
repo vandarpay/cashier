@@ -84,6 +84,6 @@ class CasingFormatter
             unset($response['message']);
         }
 
-        return json_encode($response);
+        return $response;
     }
 }
