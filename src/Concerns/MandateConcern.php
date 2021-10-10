@@ -7,7 +7,7 @@ use Vandar\Cashier\Vandar;
 
 trait MandateConcern
 {
-    public function hasValidMandate()
+    public function hasValidMandate(): bool
     {
         if ($this->mandates()->where('expiration_date', '>', date('Y-m-d'))->exists())
             return true;
@@ -15,7 +15,7 @@ trait MandateConcern
         return false;
     }
 
-    public function authorizeMandate($bank_code, $count, $limit, $mobile_number=null, $expiration_date = null, $wage_type = null)
+    public function authorizeMandate($bank_code, $count, $limit, $mobile_number=null, $expiration_date = null, $wage_type = null): string
     {
         /**
          * @var Mandate
