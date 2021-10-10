@@ -6,6 +6,12 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Database\Eloquent\Model;
 use Vandar\Cashier\Events\WithdrawalCreating;
 
+/**
+ * Withdrawal Model
+ *
+ * @property string authorization_id the uuid for the mandate in Vandar APIs
+ * @property string withdrawal_id the uuid for this withdrawal in Vandar APIs
+ */
 class Withdrawal extends Model
 {
     protected $table = 'vandar_withdrawals';
@@ -29,10 +35,15 @@ class Withdrawal extends Model
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
      */
-    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function user(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
     {
-        return $this->belongsTo(User::class);
+        return $this->hasOneThrough(User::class, Mandate::class);
+    }
+
+    public function mandate()
+    {
+        return $this->belongsTo(Mandate::class, 'authorization_id', 'authorization_id');
     }
 }
