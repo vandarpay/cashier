@@ -10,6 +10,9 @@ class WithdrawalCreating{
 
     use Dispatchable, SerializesModels;
 
+    /**
+     * @var Withdrawal
+     */
     public $withdrawal;
 
     

@@ -43,6 +43,10 @@ class Vandar
                 $additional = 'business/' . config('vandar.business_slug') . '/subscription/authorization/' . $additional;
                 $api = 'MANDATE';
                 break;
+            case 'WITHDRAWAL':
+                $base_url = config('vandar.api_base_url', 'https://api.vandar.io/');
+                $additional = 'business/' . config('vandar.business_slug') . '/subscription/withdrawal/' . $additional;
+                break;
             default:
                 $base_url = config('vandar.api_base_url', 'https://api.vandar.io/');
         }
