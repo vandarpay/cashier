@@ -23,7 +23,7 @@ $factory->define(Withdrawal::class, function (Faker $faker) {
         'payment_number' => $faker->numerify('############'),
         'status' => $faker->randomElement(['INIT, PENDING, DONE, FAILED, CANCELED']),
         'description' => $faker->sentence(3),
-        'withdrawal_date' => $faker->date('Y-m-d'),
+        'withdrawal_date' => date('Y-m-d'),
         'error_code' => rand(0, 32),
         'error_message' => '',
     ];
