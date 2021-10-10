@@ -11,6 +11,8 @@ use Vandar\Cashier\Events\WithdrawalCreating;
  *
  * @property string authorization_id the uuid for the mandate in Vandar APIs
  * @property string withdrawal_id the uuid for this withdrawal in Vandar APIs
+ *
+ * @property User user
  */
 class Withdrawal extends Model
 {
@@ -39,7 +41,7 @@ class Withdrawal extends Model
      */
     public function user(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
     {
-        return $this->hasOneThrough(User::class, Mandate::class);
+        return $this->hasOneThrough(User::class, Mandate::class, 'authorization_id', 'id', 'authorization_id', 'user_id');
     }
 
     public function mandate()

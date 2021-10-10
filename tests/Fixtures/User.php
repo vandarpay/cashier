@@ -6,6 +6,9 @@ use Illuminate\Foundation\Auth\User as Model;
 use Vandar\Cashier\Traits\Billable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property int id
+ */
 class User extends Model
 {
     use Billable, Notifiable;

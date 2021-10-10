@@ -22,6 +22,6 @@ trait RelationsConcern
 
     public function withdrawals()
     {
-        return $this->hasMany(Withdrawal::class);
+        return $this->hasManyThrough(Withdrawal::class, Mandate::class, 'user_id', 'authorization_id', 'id', 'authorization_id');
     }
 }

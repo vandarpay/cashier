@@ -61,6 +61,14 @@ class Mandate extends Model
         'creating' => MandateCreating::class
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function withdrawals()
+    {
+        return $this->hasMany(Withdrawal::class, 'authorization_id', 'authorization_id');
+    }
+
     public function getUrlAttribute(): string
     {
         return Vandar::url('MANDATE', $this->token);
