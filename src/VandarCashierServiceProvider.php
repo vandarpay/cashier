@@ -2,6 +2,7 @@
 
 namespace Vandar\Cashier;
 
+use Illuminate\Support\Facades\Route;
 use Vandar\Cashier\Providers\EventServiceProvider;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -17,6 +18,7 @@ class VandarCashierServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->registerRoutes();
         $config_path = realpath(__DIR__ . '/../config/vandar.php');
         
         
@@ -43,22 +45,20 @@ class VandarCashierServiceProvider extends ServiceProvider
         $this->app->register(EventServiceProvider::class);
     }
 
-
-    protected function publishMigrations(array $publishables): void
+    /**
+     * Register the package routes.
+     *
+     * @return void
+     */
+    protected function registerRoutes()
     {
-        // Generate a list of migrations that have not been published yet.
-        $migrations = [];
-        foreach($publishables as $publishable)
-        {
-            // Migration already exists, continuing
-            if(class_exists($publishable)){
-                continue;
-            }
-            $file = Str::snake($publishable) . '.php';
-            $migrations[self::MIGRATIONS_PATH . $file . '.stub'] = database_path('migrations/'.date('Y_m_d_His', time())."_$file");
-        }
-
-        $this->publishes($migrations, 'migrations');
+            Route::group([
+                'prefix' => config('vandar.path'),
+                'namespace' => 'Vandar\Cashier\Http\Controllers',
+                'as' => 'vandar.',
+            ], function () {
+                $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+            });
     }
 
 }

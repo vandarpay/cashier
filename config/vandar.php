@@ -16,6 +16,8 @@ return [
     #------------------------
     'notify_url' => env('VANDAR_NOTIFY_URL'),
 
+    'path' => env('VANDAR_CASHIER_PATH', 'vandar'),
+
 
     #------------------------
     # Registered mobile number in Vandar for login
