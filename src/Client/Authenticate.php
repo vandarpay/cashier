@@ -17,8 +17,9 @@ class Authenticate
             self::setFreshToken();
         }
         // Token exists, but it has expired
-        else if (self::hasTokenExpired()) {
-            self::setRefreshedToken();
+        else if(self::hasTokenExpired())
+        {
+            self::setFreshToken(); // TODO fix malfunctioning logic
         }
 
         return Arr::get(self::getData(), 'access_token');
@@ -34,14 +35,18 @@ class Authenticate
     {
         $payload = ['mobile' => config('vandar.mobile'), 'password' => config('vandar.password')];
         $response = Client::request('post', Vandar::url('AUTH', 'login'), $payload, false)->json();
-        self::setToken($response);
+        if(is_array($response)){
+            self::setToken($response);
+        }
     }
 
     protected static function setRefreshedToken(): void
     {
         $payload = ['refreshtoken' => self::getData()['refresh_token']];
         $response = Client::request('post', Vandar::url('AUTH', 'refreshtoken'), $payload, false)->json();
-        self::setToken($response);
+        if(is_array($response)){
+            self::setToken($response);
+        }
     }
 
     /**
