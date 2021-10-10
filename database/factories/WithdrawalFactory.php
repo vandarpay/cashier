@@ -13,7 +13,6 @@ $factory->define(Withdrawal::class, function (Faker $faker) {
     return [
         'authorization_id' => factory(Mandate::class),
         'withdrawal_id' => Str::uuid(),
-        'user_id' => factory(User::class),
         'amount' => $faker->randomNumber(5, true),
         'wage_amount' => $faker->randomDigit(),
         'is_instant' => rand(0, 1),

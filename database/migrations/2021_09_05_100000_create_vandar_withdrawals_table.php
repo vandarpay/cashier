@@ -17,7 +17,6 @@ class CreateVandarWithdrawalsTable extends Migration
             $table->bigIncrements('id');
             $table->string('authorization_id')->index();
             $table->string('withdrawal_id')->index();
-            $table->unsignedBigInteger('user_id')->nullable();
             $table->decimal('amount', 20, 0)->comment('Cuurency : RIAL');;
             $table->decimal('wage_amount', 20, 0)->nullable()->comment('Cuurency : RIAL');
             $table->boolean('is_instant')->default(true);
@@ -31,8 +30,6 @@ class CreateVandarWithdrawalsTable extends Migration
             $table->integer('error_code')->nullable();
             $table->json('error_message')->nullable();
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
