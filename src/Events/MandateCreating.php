@@ -6,7 +6,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
 use Vandar\Cashier\Models\Mandate;
 
-class MandateCreating{
+class MandateCreating
+{
 
     use Dispatchable, SerializesModels;
 
