@@ -14,6 +14,7 @@ class SendMandateCreateRequest
     public function handle(MandateCreating $event)
     {
         $payload = $event->mandate->only(['bank_code', 'mobile_number', 'count', 'limit', 'name', 'email', 'expiration_date', 'wage_type']);
+        $payload['mobile_number'] = $payload['mobile_number'] ?? $event->mandate->user->mobile_number;
         $payload['callback_url'] = config('vandar.mandate_callback_url');
         $payload['expiration_date'] = $payload['expiration_date'] ?? date('Y-m-d', strtotime(date('Y-m-d') . ' + 3 years'));
 
