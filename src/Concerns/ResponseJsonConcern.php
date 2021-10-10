@@ -10,7 +10,7 @@ trait ResponseJsonConcern
     {
         $response = json_decode($this->getBody(), true);
 
-        if($format_response && $this->getStatusCode() > 299){
+        if($format_response && $this->getStatusCode() > 299 && is_array($response)){
             return CasingFormatter::convertFailedResponseFormat($response);
         }
 
