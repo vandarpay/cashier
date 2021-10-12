@@ -3,7 +3,6 @@
 namespace Vandar\Cashier\Tests\Unit;
 
 use Illuminate\Support\Facades\Event;
-use Vandar\Cashier\Client\Client;
 use Vandar\Cashier\Models\Withdrawal;
 use Vandar\Cashier\Tests\TestCase;
 
