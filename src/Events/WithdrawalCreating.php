@@ -2,11 +2,12 @@
 
 namespace Vandar\Cashier\Events;
 
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 use Vandar\Cashier\Models\Withdrawal;
 
-class WithdrawalCreating{
+class WithdrawalCreating
+{
 
     use Dispatchable, SerializesModels;
 
@@ -15,7 +16,7 @@ class WithdrawalCreating{
      */
     public $withdrawal;
 
-    
+
     public function __construct(Withdrawal $withdrawal)
     {
         $this->withdrawal = $withdrawal;

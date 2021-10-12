@@ -4,15 +4,14 @@
 namespace Vandar\Cashier\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Str;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
-use Vandar\Cashier\Vandar;
 use Vandar\Cashier\VandarCashierServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
 {
     use RefreshDatabase;
-    public function setUp() : void
+
+    public function setUp(): void
     {
         parent::setUp();
         $this->withFactories(__DIR__ . '/../database/factories');

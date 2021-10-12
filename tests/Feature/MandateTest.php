@@ -6,6 +6,7 @@ use Illuminate\Validation\ValidationException;
 use Vandar\Cashier\Models\Mandate;
 use Vandar\Cashier\Tests\Fixtures\User;
 use Vandar\Cashier\Tests\TestCase;
+
 class MandateTest extends TestCase
 {
     public function test_can_create_mandate()
@@ -17,7 +18,7 @@ class MandateTest extends TestCase
 
         try {
             $user->mandates()->save($mandate);
-        } catch (ValidationException $exception){
+        } catch (ValidationException $exception) {
             dump($exception->errors());
             $this->fail();
         }

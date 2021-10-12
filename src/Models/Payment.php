@@ -39,25 +39,14 @@ use Vandar\Cashier\Vandar;
  */
 class Payment extends Model
 {
-    protected $table = 'vandar_payments';
-    protected $guarded = ['id'];
-
     const STATUSES = [
         self::STATUS_SUCCEED,
         self::STATUS_FAILED
     ];
     const STATUS_SUCCEED = 'SUCCEED';
     const STATUS_FAILED = 'FAILED';
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-
+    protected $table = 'vandar_payments';
+    protected $guarded = ['id'];
     /**
      * The event map for the model.
      *
@@ -67,32 +56,31 @@ class Payment extends Model
         'creating' => PaymentCreating::class
     ];
 
-    public static function verifyFromRequest(Request $request) : bool
+    public static function verifyFromRequest(Request $request): bool
     {
         $status = $request->get('payment_status');
-        if($status === 'OK')
-        {
+        if ($status === 'OK') {
             $status = self::STATUS_SUCCEED;
         }
 
         return (new self)->where('token', $request->get('token'))->firstOrFail()->verify($request->get('payment_status'));
     }
-    
+
     /**
      * Verify a given transactions
      *
      * @return bool
      */
-    public function verify($request_status=null): bool
+    public function verify($request_status = null): bool
     {
         if ($request_status === 'OK')
-        if($this->status !== 'INIT'){
-            return $this->status == self::STATUS_SUCCEED;
-        }
+            if ($this->status !== 'INIT') {
+                return $this->status == self::STATUS_SUCCEED;
+            }
 
-        if ($request_status === self::STATUS_FAILED){
-         $this->update(['status' => self::STATUS_FAILED]);
-         return false;
+        if ($request_status === self::STATUS_FAILED) {
+            $this->update(['status' => self::STATUS_FAILED]);
+            return false;
         }
 
         $endpoint = Vandar::url('IPG_API', 'verify');
@@ -117,6 +105,14 @@ class Payment extends Model
         $this->update($response);
 
         return true;
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function getUrlAttribute(): string

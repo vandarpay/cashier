@@ -22,7 +22,7 @@ class Vandar
      * @param string|null $version_number the api version to which the requests should be sent, for backwards compatibility reasons
      * @return string full url for the selected endpoint
      */
-    public static function url(string $api, string $additional='', string $version_number=null): string
+    public static function url(string $api, string $additional = '', string $version_number = null): string
     {
         $api = strtoupper($api);
         $append_version = true;
@@ -51,7 +51,7 @@ class Vandar
                 $base_url = config('vandar.api_base_url', 'https://api.vandar.io/');
         }
 
-        if(! $append_version){
+        if (!$append_version) {
             return $base_url . $additional;
         }
 

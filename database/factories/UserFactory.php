@@ -2,10 +2,10 @@
 
 namespace Vandar\Cashier\Database\Factories;
 
-use Illuminate\Foundation\Auth\User;
-use Vandar\Cashier\Tests\Fixtures\User as UserFixture;
-use Illuminate\Support\Str;
 use Faker\Generator as Faker;
+use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Str;
+use Vandar\Cashier\Tests\Fixtures\User as UserFixture;
 
 
 $factory->define(User::class, function (Faker $faker) {

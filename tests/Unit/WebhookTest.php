@@ -8,7 +8,7 @@ use Vandar\Cashier\Tests\TestCase;
 
 class WebhookTest extends TestCase
 {
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
         Event::fake();

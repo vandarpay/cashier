@@ -5,7 +5,8 @@ namespace Vandar\Cashier\Tests\Unit;
 use Vandar\Cashier\Client\Client;
 use Vandar\Cashier\Tests\TestCase;
 
-class ClientTest extends TestCase {
+class ClientTest extends TestCase
+{
 
     public function test_can_get_json_response()
     {

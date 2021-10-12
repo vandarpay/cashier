@@ -2,9 +2,6 @@
 
 namespace Vandar\Cashier\Client;
 
-use GuzzleHttp\Psr7\MessageTrait;
-use GuzzleHttp\Psr7\Utils;
-use Vandar\Cashier\Exceptions\UnauthorizedException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Vandar\Cashier\Concerns\ResponseJsonConcern;
@@ -17,10 +14,13 @@ use Vandar\Cashier\Concerns\ResponseJsonConcern;
 class CustomResponse implements ResponseInterface
 {
     use ResponseJsonConcern;
+
     protected $response;
+
     /**
      */
-    public function __construct(ResponseInterface $response) {
+    public function __construct(ResponseInterface $response)
+    {
         $this->response = $response;
 
 //        if ($this->response->getStatusCode() > 299)

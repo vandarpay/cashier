@@ -2,9 +2,8 @@
 
 namespace Vandar\Cashier\Database\Factories;
 
-use Illuminate\Foundation\Auth\User;
-use Illuminate\Support\Str;
 use Faker\Generator as Faker;
+use Illuminate\Support\Str;
 use Vandar\Cashier\Models\Mandate;
 use Vandar\Cashier\Models\Withdrawal;
 

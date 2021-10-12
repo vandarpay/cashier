@@ -15,7 +15,8 @@ class UserWithdrawalRelationTest extends TestCase
      * @var User
      */
     protected $user;
-    public function setUp() : void
+
+    public function setUp(): void
     {
         parent::setUp();
         $this->user = factory(User::class)->create();

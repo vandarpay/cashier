@@ -7,6 +7,16 @@ use Illuminate\Support\Str;
 class CasingFormatter
 {
     /**
+     * Convert all array keys to snake-case naming
+     * @param $array
+     * @return array
+     */
+    public static function convertKeysToSnake($array): array
+    {
+        return self::convertKeyFormat('snake', $array);
+    }
+
+    /**
      * Convert key naming format to snake or camel case
      *
      * @param string $mode can be 'snake' or 'camel', destination naming format
@@ -34,18 +44,6 @@ class CasingFormatter
     }
 
     /**
-     * Convert all array keys to snake-case naming
-     * @param $array
-     * @return array
-     */
-    public static function convertKeysToSnake($array): array
-    {
-        return self::convertKeyFormat('snake', $array);
-    }
-
-
-
-    /**
      * Convert Mobile Number Format
      *
      * @param array $array
@@ -67,9 +65,8 @@ class CasingFormatter
     }
 
 
-
     /**
-     * Convert response error message key format 
+     * Convert response error message key format
      */
     public static function convertFailedResponseFormat($response)
     {

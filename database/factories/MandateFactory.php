@@ -2,11 +2,10 @@
 
 namespace Vandar\Cashier\Database\Factories;
 
+use Faker\Generator as Faker;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Str;
-use Faker\Generator as Faker;
 use Vandar\Cashier\Models\Mandate;
-
 
 
 $factory->define(Mandate::class, function (Faker $faker) {

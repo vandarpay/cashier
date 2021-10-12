@@ -15,48 +15,12 @@ class Authenticate
         // No previous token has been set, issue a completely new token.
         if (is_null(Arr::get(self::getData(), 'access_token'))) {
             self::setFreshToken();
-        }
-        // Token exists, but it has expired
-        else if(self::hasTokenExpired())
-        {
+        } // Token exists, but it has expired
+        else if (self::hasTokenExpired()) {
             self::setFreshToken(); // TODO fix malfunctioning logic
         }
 
         return Arr::get(self::getData(), 'access_token');
-    }
-
-    protected static function setToken($array): void
-    {
-        $array['expires_in'] += time();
-        self::setData($array);
-    }
-
-    protected static function setFreshToken(): void
-    {
-        $payload = ['mobile' => config('vandar.mobile'), 'password' => config('vandar.password')];
-        $response = Client::request('post', Vandar::url('AUTH', 'login'), $payload, false)->json();
-        if(is_array($response)){
-            self::setToken($response);
-        }
-    }
-
-    protected static function setRefreshedToken(): void
-    {
-        $payload = ['refreshtoken' => self::getData()['refresh_token']];
-        $response = Client::request('post', Vandar::url('AUTH', 'refreshtoken'), $payload, false)->json();
-        if(is_array($response)){
-            self::setToken($response);
-        }
-    }
-
-    /**
-     * Check whether current token has expired
-     *
-     * @return bool
-     */
-    protected static function hasTokenExpired(): bool
-    {
-        return time() >= Arr::get(self::getData(), 'expires_in', time() - 10);
     }
 
     protected static function getData(): array
@@ -70,8 +34,42 @@ class Authenticate
         return $data;
     }
 
+    protected static function setFreshToken(): void
+    {
+        $payload = ['mobile' => config('vandar.mobile'), 'password' => config('vandar.password')];
+        $response = Client::request('post', Vandar::url('AUTH', 'login'), $payload, false)->json();
+        if (is_array($response)) {
+            self::setToken($response);
+        }
+    }
+
+    protected static function setToken($array): void
+    {
+        $array['expires_in'] += time();
+        self::setData($array);
+    }
+
     protected static function setData(array $data): void
     {
         Storage::disk('local')->put('vandar_auth.json', json_encode($data));
+    }
+
+    /**
+     * Check whether current token has expired
+     *
+     * @return bool
+     */
+    protected static function hasTokenExpired(): bool
+    {
+        return time() >= Arr::get(self::getData(), 'expires_in', time() - 10);
+    }
+
+    protected static function setRefreshedToken(): void
+    {
+        $payload = ['refreshtoken' => self::getData()['refresh_token']];
+        $response = Client::request('post', Vandar::url('AUTH', 'refreshtoken'), $payload, false)->json();
+        if (is_array($response)) {
+            self::setToken($response);
+        }
     }
 }

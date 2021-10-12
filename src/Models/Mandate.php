@@ -29,9 +29,6 @@ use Vandar\Cashier\Vandar;
  */
 class Mandate extends Model
 {
-    protected $table = 'vandar_mandates';
-    protected $guarded = ['id'];
-
     const STATUSES = [
         self::STATUS_INIT,
         self::STATUS_SUCCEED,
@@ -42,6 +39,49 @@ class Mandate extends Model
     const STATUS_SUCCEED = 'SUCCEED';
     const STATUS_FAILED = 'FAILED';
     const STATUS_FAILED_TO_ACCESS_BANK = 'FAILED_TO_ACCESS_BANK';
+    protected $table = 'vandar_mandates';
+    protected $guarded = ['id'];
+    /**
+     * The event map for the model.
+     *
+     * @var array
+     */
+    protected $dispatchesEvents = [
+        'creating' => MandateCreating::class
+    ];
+
+    public static function verifyFromRequest(Request $request): bool
+    {
+        if (!$request->has(['status', 'token'])) {
+            abort(400);
+        }
+
+        $mandate = Mandate::where('token', $request->get('token'))->firstOrFail();
+        switch ($request->get('status')) {
+
+            case self::STATUS_SUCCEED:
+                $mandate->update([
+                    'is_active' => true,
+                    'status' => $request->get('status'),
+                    'authorization_id' => $request->get('authorization_id')
+                ]);
+                return true;
+            case 'FAILED':
+                $mandate->update([
+                    'errors' => json_encode('Failed_To_Access_Bank_Account'),
+                    'status' => $request->get('status')
+                ]);
+                return false;
+            case 'FAILED_TO_ACCESS_BANK':
+                $mandate->update([
+                    'errors' => json_encode('Failed_To_Access_Bank'),
+                    'status' => $request->get('status')
+                ]);
+                return false;
+            default:
+                return false;
+        }
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -50,16 +90,6 @@ class Mandate extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-
-     /**
-     * The event map for the model.
-     *
-     * @var array
-     */
-    protected $dispatchesEvents = [
-        'creating' => MandateCreating::class
-    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -84,45 +114,11 @@ class Mandate extends Model
     {
         $response = Client::request('delete', Vandar::url('MANDATE_API', $this->authorization_id), [], true);
 
-        if($response->getStatusCode() === 200){
+        if ($response->getStatusCode() === 200) {
             $this->update(['is_active' => false]);
             return true;
         }
-        
+
         return false;
-    }
-
-    public static function verifyFromRequest(Request $request) : bool
-    {
-        if(! $request->has(['status', 'token']))
-        {
-            abort(400);
-        }
-
-        $mandate = Mandate::where('token', $request->get('token'))->firstOrFail();
-        switch ($request->get('status')) {
-
-            case self::STATUS_SUCCEED:
-                $mandate->update([
-                        'is_active' => true,
-                        'status' => $request->get('status'),
-                        'authorization_id' => $request->get('authorization_id')
-                    ]);
-                return true;
-            case 'FAILED':
-                $mandate->update([
-                        'errors' => json_encode('Failed_To_Access_Bank_Account'),
-                        'status' => $request->get('status')
-                    ]);
-                return false;
-            case 'FAILED_TO_ACCESS_BANK':
-                $mandate->update([
-                        'errors' => json_encode('Failed_To_Access_Bank'),
-                        'status' => $request->get('status')
-                    ]);
-                return false;
-            default:
-                return false;
-        }
     }
 }

@@ -10,6 +10,7 @@ use Vandar\Cashier\Models\Mandate;
 use Vandar\Cashier\Models\Payment;
 use Vandar\Cashier\Models\Withdrawal;
 use Vandar\Cashier\Tests\TestCase;
+
 class ModelEventsTest extends TestCase
 {
     public function test_can_emit_payment_creating_event()

@@ -21,10 +21,9 @@ class SendMandateCreateRequest
         $payload = CasingFormatter::mobileKeyFormat($payload);
         $response = Client::request('post', Vandar::url('MANDATE_API', 'store'), $payload, true);
 
-        if((! in_array($response->getStatusCode(), [200, 201])))
-        {
+        if ((!in_array($response->getStatusCode(), [200, 201]))) {
             $event->mandate->status = Mandate::STATUS_FAILED;
-            throw ValidationException::withMessages((array) $response->json()['errors']);
+            throw ValidationException::withMessages((array)$response->json()['errors']);
 
         }
         $event->mandate->token = $response->json()['result']['authorization']['token'];

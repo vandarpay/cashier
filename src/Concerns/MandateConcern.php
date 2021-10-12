@@ -15,7 +15,7 @@ trait MandateConcern
         return false;
     }
 
-    public function authorizeMandate($bank_code, $count, $limit, $mobile_number=null, $expiration_date = null, $wage_type = null): string
+    public function authorizeMandate($bank_code, $count, $limit, $mobile_number = null, $expiration_date = null, $wage_type = null): string
     {
         /**
          * @var Mandate

@@ -20,10 +20,9 @@ class SendWithdrawalCreateRequest
         $response = Client::request('post', Vandar::url('WITHDRAWAL', 'store'), $payload, true);
 
 
-        if((! in_array($response->getStatusCode(), [200, 201])))
-        {
+        if ((!in_array($response->getStatusCode(), [200, 201]))) {
             $event->withdrawal->status = Withdrawal::STATUS_FAILED;
-            throw ValidationException::withMessages((array) $response->json()['errors']);
+            throw ValidationException::withMessages((array)$response->json()['errors']);
 
         }
         $event->withdrawal->status = $response->json()['result']['withdrawal']['status'];

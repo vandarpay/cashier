@@ -2,8 +2,8 @@
 
 namespace Vandar\Cashier\Models;
 
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User;
 use Vandar\Cashier\Events\WithdrawalCreating;
 
 /**
@@ -16,9 +16,6 @@ use Vandar\Cashier\Events\WithdrawalCreating;
  */
 class Withdrawal extends Model
 {
-    protected $table = 'vandar_withdrawals';
-    protected $guarded = ['id'];
-
     const STATUSES = [
         self::STATUS_INIT,
         self::STATUS_PENDING,
@@ -31,6 +28,9 @@ class Withdrawal extends Model
     const STATUS_DONE = 'DONE';
     const STATUS_CANCELED = 'CANCELED';
     const STATUS_FAILED = 'FAILED';
+
+    protected $table = 'vandar_withdrawals';
+    protected $guarded = ['id'];
 
     protected $dispatchesEvents = [
         'creating' => WithdrawalCreating::class,
