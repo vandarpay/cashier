@@ -14,8 +14,11 @@ return [
     #------------------------
     # Notify Url for getting webhook request from Vandar
     #------------------------
-    'notify_url' => env('VANDAR_NOTIFY_URL'),
+    'notify_url' => env('VANDAR_NOTIFY_URL', route('vandar.webhook.withdrawal')),
 
+    #------------------------
+    # Prefix for Vandar HTTP Routes
+    #------------------------
     'path' => env('VANDAR_CASHIER_PATH', 'vandar'),
 
 
