@@ -23,8 +23,8 @@ class CustomResponse implements ResponseInterface
     public function __construct(ResponseInterface $response) {
         $this->response = $response;
 
-        if ($this->response->getStatusCode() > 299)
-            throw new UnauthorizedException($this->response->getReasonPhrase());
+//        if ($this->response->getStatusCode() > 299)
+//            throw new UnauthorizedException($this->response->getReasonPhrase());
     }
 
     public function getStatusCode(): int
