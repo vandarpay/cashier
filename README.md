@@ -47,11 +47,7 @@ by you when you add a business in Vandar and `VANDAR_API_KEY` is obtained throug
 
 Currently, Vandar provides two services: **IPG** and **Direct Debit**. IPG is the more common method used which provides
 you with a link that the user can use to pay for a service. The direct debit service works by requesting access from a
-user's bank account and charging them periodically without a need for user interaction.
-
-As of version 1.0.0, Subscription and further Vandar API features are not yet implemented for this package. We're
-planning to release v1.1 with support for direct debti very soon.
-
+user's bank account and withdrawing from their accounts periodically without a need for user interaction.
 ## IPG
 
 ### Independent
@@ -154,7 +150,7 @@ Route::get('/initiate-mandate', function(){
 ```
 
 You are also going to need a callback url for the user to return to after they're finished with the mandate process,
-this path should be set as an absolute url through `ٰVANDAR_MANDATE_CALLBACK_URL` or editing the config file.
+this path should be set as an absolute url through `VANDAR_MANDATE_CALLBACK_URL` or editing the config file.
 
 You can verify whether the mandate was successfully made and update the mandate accordingly using
 the `Mandate::verifyFromRequest` method:
