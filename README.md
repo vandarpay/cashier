@@ -186,7 +186,7 @@ Once the mandate has been created successfully, you may create a withdrawal thro
 ```php
 $user = User::find(1);
 if($user->hasValidMandate()){
-    $user->create
+    $user->createWithdrawal($payload);
 }
 else {
     return redirect($user->authorizeMandate());
