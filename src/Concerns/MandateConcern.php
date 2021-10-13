@@ -25,4 +25,14 @@ trait MandateConcern
 
         return Vandar::url('MANDATE', $mandate->token);
     }
+
+    protected function getValidMandate()
+    {
+        return $this->mandates()->where('expiration_date', '>', date('Y-m-d'))->first();
+    }
+
+    public function createWithdrawal(array $parameters)
+    {
+        return $this->getValidMandate()->withdrawals()->create($parameters);
+    }
 }

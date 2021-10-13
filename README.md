@@ -109,10 +109,6 @@ application, you can either set the `VANDAR_CALLBACK_URL` environment variable o
 also need to add the callback URL in your Business Dashboard in Vandar or otherwise it will lead into an error.
 
 ## Direct-Debit
-
-**This package is in alpha state, as of now, direct-debit functionality is not supported in Vandar Cashier, this usage
-is kept for specification purposes and is subject to change at any time.**
-
 When setting up direct-debit, you have two main steps to take.
 
 1. Get user to allow for access to their account (also known as a Mandate)
@@ -147,15 +143,13 @@ class AddMobileNumbersColumnToUsersTable extends Migration
     }
 }
 ```
+You may also pass the `mobile_number` key in the array passed to authorizeMandate manually. 
 
-Once that is done, a mandate can be created through such a method:
-
+You can then create a mandate and redirect the user to the bank for authorizing the mandate:
 ```php
 Route::get('/initiate-mandate', function(){
     $user = auth()->user();
-    $mandate = $user->mandates()->create(['bank_code' => '062', 'count' => 3, 'limit' => 3, 'expiration_date' => '2021-01-01']);
-    
-    return redirect($mandate->url)
+    return redirect($user->authorizeMandate(['bank_code' => '062', 'count' => 3, 'limit' => '10000', 'expiration_date' => '2021-01-01']))
 })
 ```
 
@@ -184,18 +178,15 @@ use Vandar\Cashier\Models\Mandate
 $mandate = Mandate::find(1);
 $mandate->revoke(); // True if mandate was successful.
 ```
+Since the only way for a user to cancel a mandate is through your platform, it is standard to provide a way for users to do so 
+in a convenient way.
 
 ### Withdrawal
-
-Once the mandate has been created successfully, you may create a withdrawal using the `User::withdrawals()->create()`
-method.
-
-All the code below is used in this example:
-
+Once the mandate has been created successfully, you may create a withdrawal through the mandate:
 ```php
 $user = User::find(1);
 if($user->hasValidMandate()){
-    $user->withdrawals()->create($payload);
+    $user->create
 }
 else {
     return redirect($user->authorizeMandate());
