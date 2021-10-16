@@ -9,7 +9,7 @@ trait MandateConcern
 {
     public function hasValidMandate(): bool
     {
-        if ($this->mandates()->where('expiration_date', '>', date('Y-m-d'))->exists())
+        if ($this->mandates()->where('expiration_date', '>', date('Y-m-d'))->where('is_active', true)->exists())
             return true;
 
         return false;
@@ -28,7 +28,7 @@ trait MandateConcern
 
     protected function getValidMandate()
     {
-        return $this->mandates()->where('expiration_date', '>', date('Y-m-d'))->first();
+        return $this->mandates()->where('expiration_date', '>', date('Y-m-d'))->where('is_active', true)->first();
     }
 
     public function createWithdrawal(array $parameters)
