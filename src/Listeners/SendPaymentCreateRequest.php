@@ -21,10 +21,9 @@ class SendPaymentCreateRequest
 
         $response = Client::request('post', Vandar::url('IPG_API', 'send'), $payload, false);
 
-        if((! in_array($response->getStatusCode(), [200, 201])) || $response->json()['status'] !== 1)
-        {
+        if ((!in_array($response->getStatusCode(), [200, 201])) || $response->json()['status'] !== 1) {
             $event->payment->status = Payment::STATUS_FAILED;
-            throw ValidationException::withMessages($response->json()['errors']);
+            throw ValidationException::withMessages((array)$response->json()['errors']);
 
         }
         $event->payment->token = $response->json()['token'];

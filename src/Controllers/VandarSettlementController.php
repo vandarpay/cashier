@@ -15,9 +15,9 @@ class VandarSettlementController extends Controller
     /**
      * Store a new settlement
      *
-     * @param  array $params
-     * 
-     * @return array 
+     * @param array $params
+     *
+     * @return array
      */
     public function store(array $params): array
     {
@@ -38,7 +38,7 @@ class VandarSettlementController extends Controller
         # convert id to settlement_id for database compatible
         $db_data = $response->json()['data']['settlement'][0];
 
-        
+
         $db_data['settlement_id'] = $db_data['id'];
         unset($db_data['id']);
         unset($db_data['prediction']);
@@ -51,14 +51,24 @@ class VandarSettlementController extends Controller
         return $response->json();
     }
 
-
-
+    /**
+     * Prepare Settlement Url for sending request
+     *
+     * @param string|null $param
+     * @param string $version
+     *
+     * @return string
+     */
+    private function SETTLEMENT_URL($param = null, $version = 'v2.1'): string
+    {
+        return config('vandar.api_base_url') . "$version/business/" . config('vandar.business_name') . "/settlement/$param";
+    }
 
     /**
      * Get Complete Details about a settlement
      *
      * @param string $settlement_id
-     * 
+     *
      * @return array
      */
     public function show(string $settlement_id): array
@@ -67,9 +77,6 @@ class VandarSettlementController extends Controller
 
         return $response->json();
     }
-
-
-
 
     /**
      * Get the list of settlements
@@ -89,14 +96,11 @@ class VandarSettlementController extends Controller
         return $response->json();
     }
 
-
-
-
     /**
-     * Cancel the stored settlement 
+     * Cancel the stored settlement
      *
      * @param int $transaction_id
-     * 
+     *
      * @return string
      */
     public function cancel(int $transaction_id): array
@@ -118,20 +122,5 @@ class VandarSettlementController extends Controller
 
 
         return $response->json();
-    }
-
-
-
-    /**
-     * Prepare Settlement Url for sending request
-     *
-     * @param string|null $param
-     * @param string $version
-     * 
-     * @return string 
-     */
-    private function SETTLEMENT_URL($param = null, $version = 'v2.1'): string
-    {
-        return config('vandar.api_base_url') . "$version/business/" . config('vandar.business_name') . "/settlement/$param";
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Vandar\Cashier\Events;
 
-use Vandar\Cashier\Models\Payment;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
+use Vandar\Cashier\Models\Payment;
 
 class PaymentCreating
 {
@@ -12,7 +12,7 @@ class PaymentCreating
 
     public $payment;
 
-    
+
     public function __construct(Payment $payment)
     {
         $this->payment = $payment;

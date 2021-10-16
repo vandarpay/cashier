@@ -2,13 +2,13 @@
 
 namespace Vandar\Cashier\Providers;
 
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Vandar\Cashier\Events\MandateCreating;
 use Vandar\Cashier\Events\PaymentCreating;
 use Vandar\Cashier\Events\WithdrawalCreating;
 use Vandar\Cashier\Listeners\SendMandateCreateRequest;
 use Vandar\Cashier\Listeners\SendPaymentCreateRequest;
 use Vandar\Cashier\Listeners\SendWithdrawalCreateRequest;
-use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
 {

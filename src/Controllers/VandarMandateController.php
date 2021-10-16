@@ -5,10 +5,10 @@ namespace Vandar\Cashier\Controllers;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Redirect;
-use Vandar\Cashier\Models\Mandate;
-use Vandar\Cashier\RequestsValidation\MandateRequestValidation;
 use Vandar\Cashier\Client\CasingFormatter;
 use Vandar\Cashier\Client\Client;
+use Vandar\Cashier\Models\Mandate;
+use Vandar\Cashier\RequestsValidation\MandateRequestValidation;
 
 class VandarMandateController extends Controller
 {
@@ -28,7 +28,17 @@ class VandarMandateController extends Controller
         return $response->json();
     }
 
-
+    /**
+     * Prepare Mandate Url for sending requests
+     *
+     * @param string|null $param
+     *
+     * @return string
+     */
+    private function MANDATE_URL(string $param = null): string
+    {
+        return config('vandar.api_base_url') . 'v2/business/' . config('vandar.business_name') . '/subscription/authorization/' . $param;
+    }
 
     /**
      * Store new Mandate
@@ -58,17 +68,15 @@ class VandarMandateController extends Controller
 
         Mandate::create($params);
 
-        
+
         return Redirect::away(self::MANDATE_REDIRECT_URL . $params['token']);
     }
-
-
 
     /**
      * Show the mandate details
      *
      * @param string $authorization_id
-     * 
+     *
      * @return array
      */
     public function show(string $authorization_id): array
@@ -78,12 +86,11 @@ class VandarMandateController extends Controller
         return $response->json();
     }
 
-
     /**
      * Revoke Confirmed mandates
      *
      * @param string $authorization_id
-     * 
+     *
      * @return array
      */
     public function revoke(string $authorization_id): array
@@ -94,18 +101,5 @@ class VandarMandateController extends Controller
             ->update(['is_active' => false]);
 
         return $response->json();
-    }
-
-
-    /**
-     * Prepare Mandate Url for sending requests
-     *
-     * @param string|null $param
-     * 
-     * @return string 
-     */
-    private function MANDATE_URL(string $param = null): string
-    {
-        return config('vandar.api_base_url') . 'v2/business/' . config('vandar.business_name') . '/subscription/authorization/' . $param;
     }
 }

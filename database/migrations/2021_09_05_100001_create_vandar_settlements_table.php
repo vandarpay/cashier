@@ -15,7 +15,7 @@ class CreateVandarSettlementsTable extends Migration
     {
         Schema::create('vandar_settlements', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('settlement_id')->nullable();
+            $table->string('settlement_id')->nullable()->index();
             $table->decimal('amount', 20, 0)->comment('Cuurency : RIAL');
             $table->decimal('amount_toman', 20, 0)->comment('Cuurency : TOMAN')->nullable();
             $table->decimal('wage_toman', 20, 0)->comment('Cuurency : TOMAN')->nullable();

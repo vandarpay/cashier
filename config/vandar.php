@@ -2,15 +2,24 @@
 
 return [
     #------------------------
-    # Callback Url for return requests from bank page (Inserted in the Vandar dashboard)
+    # IPG Callback Url for return requests from bank page (Inserted in the Vandar dashboard)
     #------------------------
     'callback_url' => env('VANDAR_CALLBACK_URL'),
 
+    #------------------------
+    # Mandate Callback Url for return requests from bank page (Inserted in the Vandar dashboard)
+    #------------------------
+    'mandate_callback_url' => env('VANDAR_MANDATE_CALLBACK_URL'),
 
     #------------------------
     # Notify Url for getting webhook request from Vandar
     #------------------------
-    'notify_url' => env('VANDAR_NOTIFY_URL'),
+    'notify_url' => env('VANDAR_NOTIFY_URL', route('vandar.webhook.withdrawal')),
+
+    #------------------------
+    # Prefix for Vandar HTTP Routes
+    #------------------------
+    'path' => env('VANDAR_CASHIER_PATH', 'vandar'),
 
 
     #------------------------
@@ -36,6 +45,7 @@ return [
     #------------------------
     'api_key' => env('VANDAR_API_KEY'),
 
-    'api_base_url' =>  null,
-    'ipg_base_url' =>  null,
+//    'api_base_url' =>  null,
+//    'ipg_base_url' =>  null,
+//    'mandate_redirect_url' => null,
 ];

@@ -3,11 +3,9 @@
 namespace Vandar\Cashier\Client;
 
 
-use Psr\Http\Message\ResponseInterface;
-use Vandar\Cashier\Vandar;
 use GuzzleHttp;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ServerException;
+use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
@@ -47,7 +45,8 @@ class Client
 
         try {
             $response = $client->request($method, $url, $options);
-        } catch (ClientException $e) {}
+        } catch (ClientException $e) {
+        }
 
         return $response;
     }

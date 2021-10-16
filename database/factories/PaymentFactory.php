@@ -2,11 +2,10 @@
 
 namespace Vandar\Cashier\Database\Factories;
 
+use Faker\Generator as Faker;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Str;
-use Faker\Generator as Faker;
 use Vandar\Cashier\Models\Payment;
-
 
 
 $factory->define(Payment::class, function (Faker $faker) {
@@ -42,6 +41,6 @@ $factory->define(Payment::class, function (Faker $faker) {
             "amount باید عدد یا رشته‌ای از اعداد باشد",
             "کد ملی قابل قبول نیست.",
             "شماره کارت قابل قبول نیست.",
-          ]), rand(1, 14)),
+        ]), rand(1, 14)),
     ];
 });
