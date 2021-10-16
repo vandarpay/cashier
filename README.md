@@ -43,7 +43,7 @@ by you when you add a business in Vandar and `VANDAR_API_KEY` is obtained throug
 
 # Usage
 
-Currently, Vandar provides two services: **IPG** and **Direct Debit**. IPG is the more common method used which provides
+Currently, Vandar Cashier supports two of Vandar services: **IPG** and **Direct Debit**. IPG is the more common method used which provides
 you with a link that the user can use to pay for a service. The direct debit service works by requesting access from a
 user's bank account and withdrawing from their accounts periodically without a need for user interaction.
 ## IPG
