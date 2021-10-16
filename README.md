@@ -2,8 +2,9 @@ Vandar Cashier is a Laravel package that provides you with a seamless integratio
 Vandar Documentation for more information on the services we provide.
 
 # Setup
-**Note: Please note that Vandar Cashier is still in the process of change and development, use of this package in a
-production environment before it reaches a stable release is not recommended**
+**Note:** Vandar Cashier is still in the process of change and development, use of this package in a
+production environment before it reaches a stable release is not recommended.
+
 To use Vandar Cashier, you need to install it through Composer first:
 
 ```bash
@@ -103,7 +104,6 @@ application, you can either set the `VANDAR_CALLBACK_URL` environment variable o
 also need to add the callback URL in your Business Dashboard in Vandar or otherwise it will lead into an error.
 
 ## Direct-Debit
-**This package is in alpha state, as of now, direct-debit functionality is not supported in Vandar Cashier, this usage is kept for specification purposes and is subject to change at any time.**
 When setting up direct-debit, you have two main steps to take.
 
 1. Get user to allow for access to their account (also known as a Mandate)
@@ -171,7 +171,7 @@ You can also revoke any mandates through the Mandate model's revoke function:
 use Vandar\Cashier\Models\Mandate
 
 $mandate = Mandate::find(1);
-$mandate->revoke(); // True if mandate was successful.
+$mandate->revoke(); // true if mandate was successful.
 ```
 Since the only way for a user to cancel a mandate is through your platform, it is standard to provide a way for users to do so 
 in a convenient way.
