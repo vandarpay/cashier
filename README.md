@@ -171,7 +171,7 @@ You can also revoke any mandates through the Mandate model's revoke function:
 use Vandar\Cashier\Models\Mandate
 
 $mandate = Mandate::find(1);
-$mandate->revoke(); // true if mandate was successful.
+$mandate->revoke(); // true if mandate was revoked successfully
 ```
 Since the only way for a user to cancel a mandate is through your platform, it is standard to provide a way for users to do so 
 in a convenient way.
