@@ -3,6 +3,9 @@
 namespace Vandar\Cashier\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Vandar\Cashier\Client\Client;
+use Vandar\Cashier\Events\SettlementCreating;
+use Vandar\Cashier\Vandar;
 
 /**
  * Settlement Model
@@ -29,4 +32,19 @@ class Settlement extends Model
 {
     protected $table = 'vandar_settlements';
     protected $guarded = ['id'];
+
+    protected $dispatchesEvents = [
+        'creating' => SettlementCreating::class,
+    ];
+
+    public function cancel() : string
+    {
+        $response = Client::request('DELETE', Vandar::url('SETTLEMENT_LEGACY', $this->transaction_id));
+
+        if($response->getStatusCode() == 200) {
+            $this->update(['status' => 'CANCELED']);
+        }
+
+        return $this->status;
+    }
 }

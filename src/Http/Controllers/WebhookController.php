@@ -4,6 +4,7 @@ namespace Vandar\Cashier\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Vandar\Cashier\Models\Settlement;
 use Vandar\Cashier\Models\Withdrawal;
 
 class WebhookController extends Controller
@@ -15,5 +16,16 @@ class WebhookController extends Controller
             return;
         }
         $withdrawal->update($request->only(['status',]));
+    }
+
+    public function handleSettlementNotification(Request $request)
+    {
+        $settlement = Settlement::query()->where('transaction_id', $request->get('transaction_id'))->first();
+
+        if(! $settlement) {
+            return;
+        }
+
+        $settlement->update($request->only(['status', 'settlement_date', 'settlement_date_jalali']));
     }
 }
