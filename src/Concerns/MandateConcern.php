@@ -30,9 +30,4 @@ trait MandateConcern
     {
         return $this->mandates()->where('expiration_date', '>', date('Y-m-d'))->where('is_active', true)->first();
     }
-
-    public function createWithdrawal(array $parameters)
-    {
-        return $this->getValidMandate()->withdrawals()->create($parameters);
-    }
 }
