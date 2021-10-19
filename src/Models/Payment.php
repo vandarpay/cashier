@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Vandar\Cashier\Client\CasingFormatter;
 use Vandar\Cashier\Client\Client;
 use Vandar\Cashier\Events\PaymentCreating;
+use Vandar\Cashier\Exceptions\ResponseException;
 use Vandar\Cashier\Vandar;
 
 /**
@@ -86,16 +87,15 @@ class Payment extends Model
         $endpoint = Vandar::url('IPG_API', 'verify');
         $params = ['api_key' => config('vandar.api_key'), 'token' => $this->token];
 
-        $response = Client::request('post', $endpoint, $params, false);
-
-        if ($response->getStatusCode() != 200) {
+        try {
+            $response = Client::request('post', $endpoint, $params, false);
+        } catch (ResponseException $exception) {
             $this->update([
-                'errors' => json_encode($response->json()['errors']),
+                'errors' => json_encode($exception->getResponse()->json()['errors']),
                 'status' => 'FAILED'
             ]);
             return false;
         }
-
 
         # prepare response for making compatible with DB
         $response = CasingFormatter::convertKeysToSnake($response->json());

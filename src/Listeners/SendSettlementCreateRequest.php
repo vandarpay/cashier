@@ -19,12 +19,6 @@ class SendSettlementCreateRequest
 
         $response = Client::request('post', Vandar::url('SETTLEMENT', 'store'), $payload, true);
 
-        if ((!in_array($response->getStatusCode(), [200, 201]))) {
-            $event->settlement->status = 'FAILED';
-            throw ValidationException::withMessages((array)$response->json()['errors']);
-
-        }
-
         // Update model attributes that depend on Vandar response
         // Note: use of update method when in creating stage does not function correctly
         $data = $response->json()['data']['settlement'][0];
