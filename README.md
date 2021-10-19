@@ -2,9 +2,6 @@ Vandar Cashier is a Laravel package that provides you with a seamless integratio
 Vandar Documentation for more information on the services we provide.
 
 # Setup
-**Note:** Vandar Cashier is still in the process of change and development, use of this package in a
-production environment before it reaches a stable release is not recommended.
-
 To use Vandar Cashier, you need to install it through Composer first:
 
 ```bash
@@ -44,7 +41,7 @@ by you when you add a business in Vandar and `VANDAR_API_KEY` is obtained throug
 
 # Usage
 
-Currently, Vandar Cashier supports two of Vandar services: **IPG** and **Direct Debit**. IPG is the more common method used which provides
+Currently, Vandar Cashier supports three of Vandar services: **IPG**, **Direct Debit**, and **Settlement**. IPG is the more common method used which provides
 you with a link that the user can use to pay for a service. The direct debit service works by requesting access from a
 user's bank account and withdrawing from their accounts periodically without a need for user interaction.
 ## IPG
@@ -193,6 +190,23 @@ Note: if not provided, Vandar Cashier automatically sets `withdrawal_date` to no
 if you're not creating an instant withdrawal (`is_instant = false`) you can also cancel the withdrawal before it is run:
 ```php
 $status = $withdrawal->cancel(); // Returns 'CANCELED' on success, any other status (DONE, PENDING, INIT, FAILED) on failure.
+```
+
+## Settlement
+Vandar Cashier provides the ability to make requests for settlements:
+```php
+$settlement = Settlement::create(['amount' => 5000, 'iban' => 'IR000000000000000000000000']) // amount is in Toman
+```
+Once a settlement is created successfully, Vandar will queue the settlement and send it to bank. When the settlement is
+finalized, a notification will be sent to the URL specified in `settlement_notify_url` in vandar config. 
+
+Vandar Cashier provides a route that automatically handles settlement updates and updates your databases accordingly, so you don't need to 
+update the `settlement_notify_url` unless you need to implement your own solution.
+
+You may also cancel a settlement through the cancel method before it is done, if successful, `CANCELED` will be returned.
+if the cancel attempt fails, the last known settlement status is returned from the database:
+```php
+$settlement->cancel(); // Returns `CANCELED` on success.
 ```
 
 # License
