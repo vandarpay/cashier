@@ -99,6 +99,13 @@ class Mandate extends Model
         return $this->hasMany(Withdrawal::class, 'authorization_id', 'authorization_id');
     }
 
+    public function createWithdrawal(array $parameters) : Withdrawal
+    {
+        $parameters['authorization_id'] = $parameters['authorization_id'] ?? $this->authorization_id;
+
+        return $this->withdrawals()->create($parameters);
+    }
+
     public function getUrlAttribute(): string
     {
         return Vandar::url('MANDATE', $this->token);
