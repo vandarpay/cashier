@@ -144,7 +144,9 @@ You can then create a mandate and redirect the user to the bank for authorizing 
 ```php
 Route::get('/initiate-mandate', function(){
     $user = auth()->user();
-    return redirect($user->authorizeMandate(['bank_code' => '062', 'count' => 3, 'limit' => '10000', 'expiration_date' => '2021-01-01']))
+    if(! $user->hasValidMandate()){ // You may use the hasValidMandate method if your design requires each user to have only one active mandate
+    return redirect($user->authorizeMandate(['bank_code' => '062', 'count' => 3, 'limit' => '10000', 'expiration_date' => '2021-01-01']));
+    }
 })
 ```
 
@@ -179,16 +181,11 @@ in a convenient way.
 ### Withdrawal
 Once the mandate has been created successfully, you may create a withdrawal through the mandate:
 ```php
-$user = User::find(1);
-if($user->hasValidMandate()){
-    $user->createWithdrawal(['amount' => 10000, 'is_instant' => true, 'description' => 'Subscription renewal', 'max_retry_count' => 16]); // see https://vandarpay.github.io/docs/subscription/#withdrawal
-}
+$user->mandates()->first()->withdrawals()->create(['amount' => 10000, 'is_instant' => true, 'description' => 'Subscription renewal', 'max_retry_count' => 16]);
 ```
-This method fetches the first valid Mandate model and uses it to create a new withdrawal. if your system allows for creation of multiple mandates, 
-you may use the following sample code (which is practically identical to the helper function):
-```php
-Mandate::find(1)->withdrawals()->create(['amount' => 10000, 'is_instant' => true, 'description' => 'Subscription renewal', 'max_retry_count' => 16]);
-```
+Please note that you may use any method you like to find your current mandate, for example if you have more than one mandate per user, you may use different
+queries to find that particular mandate.
+
 When creating a new withdrawal, passing `authorization_id` and `notify_url` is not necessary as Cashier automatically sets these values.
 
 Note: if not provided, Vandar Cashier automatically sets `withdrawal_date` to now. (`date('Y-m-d')`)
