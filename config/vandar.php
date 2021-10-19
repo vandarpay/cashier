@@ -16,6 +16,12 @@ return [
     #------------------------
     'notify_url' => env('VANDAR_NOTIFY_URL'), // Default is route('vandar.webhook.withdrawal')
 
+
+    #------------------------
+    # Notify Url for getting webhook request from Vandar
+    #------------------------
+    'settlement_notify_url' => env('VANDAR_SETTLEMENT_NOTIFY_URL'), // Default is route('vandar.webhook.settlement')
+
     #------------------------
     # Prefix for Vandar HTTP Routes
     #------------------------

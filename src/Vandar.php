@@ -10,7 +10,8 @@ class Vandar
     protected const API_VERSIONS = [
         'AUTH' => '3',
         'TRANSACTION' => '2',
-        'SETTLEMENT' => '2.1',
+        'SETTLEMENT' => '3',
+        'SETTLEMENT_LEGACY' => '2.1',
         'IPG' => '3',
         'MANDATE' => '2',
         'WITHDRAWAL' => '2',
@@ -46,6 +47,11 @@ class Vandar
             case 'WITHDRAWAL':
                 $base_url = config('vandar.api_base_url', 'https://api.vandar.io/');
                 $additional = 'business/' . config('vandar.business_slug') . '/subscription/withdrawal/' . $additional;
+                break;
+            case 'SETTLEMENT_LEGACY':
+            case 'SETTLEMENT':
+                $base_url = config('vandar.api_base_url', 'https://api.vandar.io/');
+                $additional = 'business/' . config('vandar.business_slug') . '/settlement/' . $additional;
                 break;
             default:
                 $base_url = config('vandar.api_base_url', 'https://api.vandar.io/');
