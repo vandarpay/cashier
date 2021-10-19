@@ -178,7 +178,7 @@ in a convenient way.
 ### Withdrawal
 Once the mandate has been created successfully, you may create a withdrawal through the mandate:
 ```php
-$user->mandates()->first()->createWithdrawal(['amount' => 10000, 'is_instant' => true, 'description' => 'Subscription renewal', 'max_retry_count' => 16]);
+$user->mandates()->active()->first()->createWithdrawal(['amount' => 10000, 'is_instant' => true, 'description' => 'Subscription renewal', 'max_retry_count' => 16]);
 ```
 Please note that you may use any method you like to find your current mandate, for example if you have more than one mandate per user, you may use different
 queries to find that particular mandate.
