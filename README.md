@@ -190,6 +190,11 @@ When creating a new withdrawal, passing `authorization_id` and `notify_url` is n
 
 Note: if not provided, Vandar Cashier automatically sets `withdrawal_date` to now. (`date('Y-m-d')`)
 
+if you're not creating an instant withdrawal (`is_instant = false`) you can also cancel the withdrawal before it is run:
+```php
+$status = $withdrawal->cancel(); // Returns 'CANCELED' on success, any other status (DONE, PENDING, INIT, FAILED) on failure.
+```
+
 # License
 All material in this project (unless otherwise noted) are available under the MIT License. See LICENSE for more
 information.
