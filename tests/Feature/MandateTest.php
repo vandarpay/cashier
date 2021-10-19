@@ -2,7 +2,7 @@
 
 namespace Vandar\Cashier\Tests\Feature;
 
-use Illuminate\Validation\ValidationException;
+use Vandar\Cashier\Exceptions\InvalidPayloadException;
 use Vandar\Cashier\Models\Mandate;
 use Vandar\Cashier\Tests\Fixtures\User;
 use Vandar\Cashier\Tests\TestCase;
@@ -18,9 +18,9 @@ class MandateTest extends TestCase
 
         try {
             $user->mandates()->save($mandate);
-        } catch (ValidationException $exception) {
+        } catch (InvalidPayloadException $exception) {
             dump($exception->errors());
-            $this->fail();
+            throw $exception;
         }
 
         $this->assertEquals(1, $user->mandates()->count());

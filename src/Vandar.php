@@ -4,7 +4,7 @@ namespace Vandar\Cashier;
 
 class Vandar
 {
-    const VERSION = '1.0.0-a';
+    const VERSION = '1.0.0-b.6';
 
     // URL Generation Functionality
     protected const API_VERSIONS = [

@@ -4,7 +4,6 @@ namespace Vandar\Cashier\Client;
 
 
 use GuzzleHttp;
-use GuzzleHttp\Exception\ClientException;
 use Psr\Http\Message\ResponseInterface;
 
 class Client
@@ -32,6 +31,7 @@ class Client
                 'Accept' => 'application/json',
             ],
             'handler' => $stack,
+            'http_errors' => false,
         ];
 
         if ($payload) {
@@ -43,10 +43,8 @@ class Client
             $options['headers']['Authorization'] = 'Bearer ' . Authenticate::getToken();
         }
 
-        try {
-            $response = $client->request($method, $url, $options);
-        } catch (ClientException $e) {
-        }
+        $response = $client->request($method, $url, $options);
+        Thrower::process($response, ['url' => $url, 'options' => $options]);
 
         return $response;
     }

@@ -2,7 +2,7 @@
 
 namespace Vandar\Cashier\Tests\Feature;
 
-use Illuminate\Validation\ValidationException;
+use Vandar\Cashier\Exceptions\InvalidPayloadException;
 use Vandar\Cashier\Models\Settlement;
 use Vandar\Cashier\Tests\TestCase;
 
@@ -13,7 +13,7 @@ class SettlementTest extends TestCase
         try {
             /** @var Settlement $settlement */
             $settlement = Settlement::query()->create(['amount' => 5000, 'iban' => env('VANDAR_TESTING_IBAN')]);
-        } catch (ValidationException $exception) {
+        } catch (InvalidPayloadException $exception) {
             dump($exception->errors());
             $this->fail();
         }

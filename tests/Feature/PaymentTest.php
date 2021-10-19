@@ -2,7 +2,7 @@
 
 namespace Vandar\Cashier\Tests\Feature;
 
-use Illuminate\Validation\ValidationException;
+use Vandar\Cashier\Exceptions\InvalidPayloadException;
 use Vandar\Cashier\Models\Payment;
 use Vandar\Cashier\Tests\Fixtures\User;
 use Vandar\Cashier\Tests\TestCase;
@@ -18,7 +18,7 @@ class PaymentTest extends TestCase
         $payment->valid_card_number = env('VANDAR_TESTING_VALID_CARD');
         try {
             $user->payments()->save($payment);
-        } catch (ValidationException $exception) {
+        } catch (InvalidPayloadException $exception) {
             dump($exception->errors());
             $this->fail();
         }
