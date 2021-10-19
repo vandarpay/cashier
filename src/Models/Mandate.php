@@ -111,6 +111,11 @@ class Mandate extends Model
         return Vandar::url('MANDATE', $this->token);
     }
 
+    public function scopeActive()
+    {
+        return $this->where('is_active', 1)->where('expiration_date', '>', date('Y-m-d'));
+    }
+
     /**
      * Revoke Confirmed mandates
      *
