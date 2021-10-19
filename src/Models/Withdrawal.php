@@ -4,7 +4,9 @@ namespace Vandar\Cashier\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
+use Vandar\Cashier\Client\Client;
 use Vandar\Cashier\Events\WithdrawalCreating;
+use Vandar\Cashier\Vandar;
 
 /**
  * Withdrawal Model
@@ -47,5 +49,20 @@ class Withdrawal extends Model
     public function mandate()
     {
         return $this->belongsTo(Mandate::class, 'authorization_id', 'authorization_id');
+    }
+
+    public function cancel()
+    {
+        if($this->status === self::STATUS_DONE){
+            return $this->status;
+        }
+
+        $response = Client::request('put', Vandar::url('WITHDRAWAL', 'store'), $this->id, true);
+
+        if($response->getStatusCode() == 200){
+            $this->update(['status' => self::STATUS_CANCELED]);
+        }
+
+        return $this->status;
     }
 }
