@@ -27,5 +27,11 @@ class SendWithdrawalCreateRequest
 
         }
         $event->withdrawal->status = $response->json()['result']['withdrawal']['status'];
+        $event->withdrawal->gateway_transaction_id = $response->json()['result']['withdrawal']['gateway_transaction_id'];
+        $event->withdrawal->withdrawal_id = $response->json()['result']['withdrawal']['id'];
+
+        if(! $event->withdrawal->max_retry_count){
+            $event->withdrawal->max_retry_count = 1;
+        }
     }
 }
