@@ -17,7 +17,10 @@ class Authenticate
             self::setFreshToken();
         } // Token exists, but it has expired
         else if (self::hasTokenExpired()) {
-            self::setFreshToken(); // TODO fix malfunctioning logic
+            self::setFreshToken();
+        } // Token exists, but will expire in one hour
+        else if (self::tokenCloseToExpiry()) {
+            self::setRefreshedToken();
         }
 
         return Arr::get(self::getData(), 'access_token');
@@ -62,6 +65,16 @@ class Authenticate
     protected static function hasTokenExpired(): bool
     {
         return time() >= Arr::get(self::getData(), 'expires_in', time() - 10);
+    }
+
+    /**
+     * Check whether current token has expired
+     *
+     * @return bool
+     */
+    protected static function tokenCloseToExpiry(): bool
+    {
+        return time()+3600 >= Arr::get(self::getData(), 'expires_in', time() - 10);
     }
 
     protected static function setRefreshedToken(): void
