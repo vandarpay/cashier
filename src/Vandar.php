@@ -2,6 +2,8 @@
 
 namespace Vandar\Cashier;
 
+use Vandar\Cashier\Client\Client;
+
 class Vandar
 {
     const VERSION = '1.0.0-b.6';
@@ -16,6 +18,14 @@ class Vandar
         'MANDATE' => '2',
         'WITHDRAWAL' => '2',
     ];
+
+    /**
+     * @return array
+     */
+    public static function getBanksHealth() : array
+    {
+        return Client::request('GET', 'https://health.vandar.io/subscription')->json();
+    }
 
     /**
      * @param string $api can be AUTH, TRANSACTION, SETTLEMENT, IPG, MANDATE, or WITHDRAWAL
