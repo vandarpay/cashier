@@ -58,6 +58,11 @@ class Mandate extends Model
         }
 
         $mandate = Mandate::where('token', $request->get('token'))->firstOrFail();
+
+        if($mandate->status !== self::STATUS_INIT) {
+            abort(400);
+        }
+
         switch ($request->get('status')) {
 
             case self::STATUS_SUCCEED:
