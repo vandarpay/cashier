@@ -57,7 +57,7 @@ use Vandar\Cashier\Models\Payment;
 Route::get('/initiate-payment', function(Request $request) {
     // Amounts are in IRR
     // For more values, see Payment or https://vandarpay.github.io/docs/ipg/#step-1
-    $payment = Payment::create(['amount' => 10000]); // Will create a 422 Validation error if errors are returned by Vandar
+    $payment = Payment::create(['amount' => 10000]);
     return redirect($payment->url);
 });
 ```
@@ -72,7 +72,7 @@ Route::get('/initiate-payment', function(Request $request){
     $user = auth()->user(); // Added as a separate variable for clarity
     // Amounts are in IRR
     // For more values, see Payment or https://vandarpay.github.io/docs/ipg/#step-1
-    $payment = $user->payments()->create(['amount' => 10000]); // Will create a 422 Validation error if errors are returned by Vandar
+    $payment = $user->payments()->create(['amount' => 10000]);
     return redirect($payment->url); // See documentation for info on payload and callback
 });
 ```
@@ -208,6 +208,35 @@ if the cancel attempt fails, the last known settlement status is returned from t
 ```php
 $settlement->cancel(); // Returns `CANCELED` on success.
 ```
+
+
+## Utilities
+You may use the `Vandar::getBanksHealth()` method to get an array containing a list of all banks and whether they're healthy.
+
+## Error Handling
+When making contact with Vandar APIs, a series of exceptions may be raised due to errors while processing your requests in the APIs.
+All of these errors can be caught and processed through `Vandar\Exceptions\ResponseException` exception. This means that all exceptions raised
+by Cashier have the following methods:
+```php
+try {
+    ...
+} catch (\Vandar\Cashier\Exceptions\ResponseException $exception) {
+    dump($exception->context()) // Dumps all the information passed into Guzzle, including headers and configuration
+    dump($exception->getUrl()) // Dumps the url the request was sent to
+    dump($exception->getPayload()) // Dumps the payload that was sent to Vandar APIs
+    dump($exception->getResponse()) // Dumps the response object returned by Guzzle
+    dump($exception->getResponse()->json()) // Returns an associative array of json response.
+    dump($exception->errors()) // Useful especially in InvalidPayloadException, returns the "errors" key in the json response
+}
+```
+You may also attempt to differentiate between the errors based on the exception that was raised:
+
+* **ExternalAPIException** is raised when any 5xx error occurs
+* **AuthenticationException** is raised when there's an HTTP 401 error, this may only happen if you forgot to set your env or if your information is invalid, if this occurs in any other case, do let us know!
+* **DeprecatedAPIException** is raised when there's either an HTTP 404, 405 or 410 error, this probably means that the version of Vandar Cashier (and the APIs behind it) used is no longer supported by Vandar, run `composer update`!
+* **InvalidPayloadException** is raised when the attempted action was in any way invalid on Vandar's side raising an HTTP 422. (e.g. you're authorized to withdraw 1000 Toman and you attempt to withdraw more), We aim to break this down into more specific exceptions in the future.
+* **TooManyRequestsException** is raised if you attempt to send a very large sum of requests to Vandar in a short period of time, causing an HTTP 429 error.
+* **UnexpectedAPIErrorException** is raised when any other 4xx series error not in the scope of Vandar Cashier is returned. if this happens, consider updating Cashier or filing a bug with the full context of the exception you got.
 
 # License
 All material in this project (unless otherwise noted) are available under the MIT License. See LICENSE for more
