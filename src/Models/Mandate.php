@@ -130,7 +130,8 @@ class Mandate extends Model
      */
     public function revoke(): bool
     {
-        if(! $this->authorization_id && $this->status === self::STATUS_INIT) { // Cancel a mandate that has never been completed, only initialized.
+        if ((! $this->authorization_id && $this->status === self::STATUS_INIT) || ! $this->is_active) {
+            // Cancel a mandate that has never been completed, only initialized.
             $this->update(['is_active' => false]); 
             return true;
         }
