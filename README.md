@@ -209,6 +209,7 @@ if the cancel attempt fails, the last known settlement status is returned from t
 $settlement->cancel(); // Returns `CANCELED` on success.
 ```
 
+
 ## Utilities
 You may use the `Vandar::getBanksHealth()` method to get an array containing a list of all banks and whether they're healthy.
 
