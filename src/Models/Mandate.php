@@ -125,6 +125,11 @@ class Mandate extends Model
      */
     public function revoke(): bool
     {
+        if(! $this->authorization_id && $this->status === self::STATUS_INIT) { // Cancel a mandate that has never been completed, only initialized.
+            $this->update(['is_active' => false]); 
+            return true;
+        }
+        
         try {
             Client::request('delete', Vandar::url('MANDATE_API', $this->authorization_id), [], true);
         } catch (ResponseException $exception) {
