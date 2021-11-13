@@ -28,7 +28,7 @@ class Vandar
     }
 
     /**
-     * @param string $api can be AUTH, TRANSACTION, SETTLEMENT, IPG, MANDATE, or WITHDRAWAL
+     * @param string $api can be AUTH, TRANSACTION, SETTLEMENT, IPG, IPG_API, MANDATE, MANDATE_API, or WITHDRAWAL
      * @param string $additional Additional portion to add to the url
      * @param string|null $version_number the api version to which the requests should be sent, for backwards compatibility reasons
      * @return string full url for the selected endpoint
