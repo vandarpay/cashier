@@ -15,7 +15,7 @@ class Vandar
         'SETTLEMENT' => '3',
         'SETTLEMENT_LEGACY' => '2.1',
         'IPG' => '3',
-        'MANDATE' => '2',
+        'MANDATE' => '3',
         'WITHDRAWAL' => '2',
     ];
 
