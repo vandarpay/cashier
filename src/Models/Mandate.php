@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Vandar\Cashier\Client\Client;
 use Vandar\Cashier\Events\MandateCreating;
+use Vandar\Cashier\Exceptions\InvalidPayloadException;
 use Vandar\Cashier\Exceptions\ResponseException;
 use Vandar\Cashier\Vandar;
 
@@ -62,12 +63,21 @@ class Mandate extends Model
         switch ($request->get('status')) {
 
             case self::STATUS_SUCCEED:
-                $mandate->update([
-                    'is_active' => true,
-                    'status' => $request->get('status'),
-                    'authorization_id' => $request->get('authorization_id')
-                ]);
-                return true;
+                try {
+                    Client::request('PATCH', Vandar::url('MANDATE_API', $request->get('authorization_id') . '/verify'));
+                    $mandate->update([
+                        'is_active' => true,
+                        'status' => $request->get('status'),
+                        'authorization_id' => $request->get('authorization_id')
+                    ]);
+                    return true;
+                } catch (InvalidPayloadException $exception) {
+                    $mandate->update([
+                        'errors' => json_encode('FAILED_TO_VERIFY'),
+                        'status' => self::STATUS_FAILED,
+                    ]);
+                    return false;
+                }
             case 'FAILED':
                 $mandate->update([
                     'errors' => json_encode('Failed_To_Access_Bank_Account'),

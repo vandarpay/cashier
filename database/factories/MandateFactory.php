@@ -18,7 +18,7 @@ $factory->define(Mandate::class, function (Faker $faker) {
         'email' => $faker->unique()->safeEmail,
         'count' => rand(1, 30),
         'limit' => $faker->randomNumber(5, true),
-        'expiration_date' => $faker->dateTimeThisDecade(),
+        'expiration_date' => now()->addDays(3),
         'bank_code' => $faker->randomElement([
             '012', '016', '021', '055', '056', '058', '059', '062', '063', '066', '069', '060'
         ]),
