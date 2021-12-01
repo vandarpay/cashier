@@ -1,3 +1,4 @@
+# Vandar Cashier
 [![GitHub license](https://img.shields.io/github/license/vandarpay/cashier?style=flat-square)](https://github.com/vandarpay/cashier/blob/master/LICENSE)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/vandarpay/cashier/tests?style=flat-square)](https://github.com/vandarpay/cashier/actions/workflows/tests.yml)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/vandarpay/cashier?style=flat-square)](https://packagist.org/packages/vandarpay/cashier)
