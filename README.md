@@ -1,3 +1,10 @@
+# Vandar Cashier
+[![GitHub license](https://img.shields.io/github/license/vandarpay/cashier?style=flat-square)](https://github.com/vandarpay/cashier/blob/master/LICENSE)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/vandarpay/cashier/tests?style=flat-square)](https://github.com/vandarpay/cashier/actions/workflows/tests.yml)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/vandarpay/cashier?style=flat-square)](https://packagist.org/packages/vandarpay/cashier)
+![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/vandarpay/cashier?style=flat-square)
+![Laravel Version Support](https://img.shields.io/badge/Laravel-6.0%2C%207.0%2C%208.0-brightgreen?style=flat-square)
+
 Vandar Cashier is a Laravel package that provides you with a seamless integration with Vandar services. Take a look at
 Vandar Documentation for more information on the services we provide.
 
