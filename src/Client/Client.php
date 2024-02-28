@@ -44,7 +44,7 @@ class Client
         }
 
         $response = $client->request($method, $url, $options);
-        Thrower::process($response, ['url' => $url, 'options' => $options]);
+        Thrower::process($response, ['url' => $url, 'options' => $options, 'response_status' => $response->getStatusCode(), 'response_body' => json_decode($response->getBody(), true)]);
 
         return $response;
     }
