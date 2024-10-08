@@ -18,7 +18,7 @@ class CreateVandarMandatesTable extends Migration
             $table->bigIncrements('id');
             $table->string('token')->index();
             $table->string('authorization_id')->nullable()->index();
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->integer('user_id')->unsigned();
             $table->string('name')->nullable();
             $table->string('mobile_number')->nullable();
             $table->string('email')->nullable();
@@ -31,7 +31,10 @@ class CreateVandarMandatesTable extends Migration
             $table->json('errors')->nullable();
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
         });
     }
 
