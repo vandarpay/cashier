@@ -248,3 +248,23 @@ You may also attempt to differentiate between the errors based on the exception 
 # License
 All material in this project (unless otherwise noted) are available under the MIT License. See LICENSE for more
 information.
+
+# Laravel compatibility
+
+Dependency constraints allow Laravel 6–13. Laravel 13 requires PHP 8.3 or newer.
+The current compatibility suite covers Laravel 12–13 and PHP 8.3/8.4 in CI without calling
+Vandar APIs or requiring credentials:
+
+```sh
+composer install
+vendor/bin/phpunit -c phpunit.compatibility.xml
+```
+
+The original tests use legacy model factories and some call live Vandar APIs.
+They remain available separately through `phpunit.xml.dist`; they are not part
+of the offline compatibility suite.
+
+Laravel 10 and 11 dependency resolution is blocked by Composer security
+advisories on those framework versions, so they are excluded from the current
+CI matrix. Existing version constraints are retained for consumers on older
+Laravel versions; this suite does not certify those versions.

@@ -29,12 +29,14 @@ class Authenticate
     protected static function getData(): array
     {
         try {
-            $data = json_decode(Storage::disk('local')->get('vandar_auth.json'), true);
+            $contents = Storage::disk('local')->get('vandar_auth.json');
         } catch (FileNotFoundException $exception) {
-            $data = [];
+            return [];
         }
 
-        return $data;
+        $data = is_string($contents) ? json_decode($contents, true) : null;
+
+        return is_array($data) ? $data : [];
     }
 
     protected static function setFreshToken(): void

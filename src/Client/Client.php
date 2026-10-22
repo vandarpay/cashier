@@ -18,7 +18,7 @@ class Client
      * @param array|null $payload list of parameters for the request
      * @throws GuzzleHttp\Exception\GuzzleException
      */
-    public static function request(string $method, string $url, array $payload = null, bool $appendHeaders = true): ResponseInterface
+    public static function request(string $method, string $url, ?array $payload = null, bool $appendHeaders = true): ResponseInterface
     {
         $client = new GuzzleHttp\Client();
         $stack = new GuzzleHttp\HandlerStack(new GuzzleHttp\Handler\CurlHandler());
