@@ -24,7 +24,7 @@ class CasingFormatter
      * @param array|null $only_keys if set, only the given keys will be converted
      * @return array
      */
-    public static function convertKeyFormat(string $mode, array $array, array $only_keys = null): array
+    public static function convertKeyFormat(string $mode, array $array, ?array $only_keys = null): array
     {
         $keys = $only_keys ?? array_keys($array);
 

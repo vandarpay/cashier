@@ -55,6 +55,7 @@ class VandarCashierServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__ . '/../config/vandar.php', 'vandar');
         $this->app->register(EventServiceProvider::class);
     }
 
